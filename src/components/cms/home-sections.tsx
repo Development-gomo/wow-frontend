@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import { AccommodationGrid, type Accommodation } from "@/components/accommodation-listing";
 import { ProcessSteps, type ProcessStep } from "@/components/process-steps";
+import { SirvoyBooking } from "@/components/sirvoy-booking";
 import { Button } from "@/components/ui/button";
 import { StatsBand, type StatItem } from "@/components/stats-band";
 
@@ -250,6 +251,21 @@ export function HomeAccommodationTabs({
           </Link>
         </Button>
       </div>
+    </section>
+  );
+}
+
+/* -------------------- SIRVOY BOOKING SECTION -------------------- */
+
+/**
+ * SirvoyBooking renders only the widget host div. On /book-room the baseline
+ * wrapped it in a card that overlaps the hero; that wrapper is structural, so
+ * it lives here rather than becoming an editable field.
+ */
+export function SirvoyBookingSection() {
+  return (
+    <section aria-label="Room booking" className="relative z-10 mx-5 -mt-16 mb-[128px] bg-white md:mx-20 md:-mt-24">
+      <SirvoyBooking />
     </section>
   );
 }

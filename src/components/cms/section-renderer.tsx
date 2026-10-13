@@ -15,7 +15,6 @@ import { RoomDetailHero } from "@/components/room-detail-hero";
 import { RoomInformation } from "@/components/room-information";
 import { RoomVariations } from "@/components/room-variations";
 import { SimilarRooms } from "@/components/similar-rooms";
-import { SirvoyBooking } from "@/components/sirvoy-booking";
 import { StatsBand } from "@/components/stats-band";
 import { StayCtaBanner } from "@/components/stay-cta-banner";
 import { StayIntro } from "@/components/stay-intro";
@@ -28,6 +27,7 @@ import {
   HomeHero,
   HomeIntro,
   ProcessStepsSection,
+  SirvoyBookingSection,
 } from "./home-sections";
 import { lucideIcon, whyWowIcon, withLineBreaks } from "./icon-map";
 
@@ -151,7 +151,7 @@ function renderSection(section: ValidSection) {
       return <EnquiryForm {...section.props} />;
 
     case "sirvoy_booking":
-      return <SirvoyBooking />;
+      return <SirvoyBookingSection />;
 
     case "welcoming_locations":
       return <WelcomingLocations showViewAll={section.props.showViewAll ?? true} />;
