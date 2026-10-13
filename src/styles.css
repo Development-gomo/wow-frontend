@@ -1,0 +1,396 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-cta: var(--radius);
+  --spacing-cta: 0.75rem;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sand: var(--sand);
+  --color-linen: var(--linen);
+  --color-pearl: var(--pearl);
+  --color-cream: var(--cream);
+  --color-ivory: var(--ivory);
+  --color-clay: var(--clay);
+  --color-umber: var(--umber);
+  --color-taupe: var(--taupe);
+  --color-deep-taupe: var(--deep-taupe);
+  --color-warm-clay: var(--warm-clay);
+  --color-bronze: var(--bronze);
+  --color-bronze-soft: var(--bronze-soft);
+  --color-stone: var(--stone);
+  --color-muted-taupe: var(--muted-taupe);
+  --color-tile: var(--tile);
+  --color-white: var(--white);
+  --color-map-land: var(--map-land);
+  --color-map-water: var(--map-water);
+  --color-map-park: var(--map-park);
+  --shadow-accommodation: 0 4px 40px oklch(0 0 0 / 0.06);
+
+  --font-serif: 'Cormorant Garamond', serif;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-sans: 'Barlow Condensed', 'Inter', sans-serif;
+  --text-heading-one: 72px;
+  --text-heading-one--line-height: 79px;
+  --text-heading-two: 48px;
+  --text-heading-two--line-height: 55px;
+  --text-body-copy: 16px;
+  --text-body-copy--line-height: 30px;
+  --text-eyebrow: 12px;
+  --text-eyebrow--line-height: 15px;
+  --text-title-subtext: 18px;
+  --text-nav-label: 13px;
+  --text-cta-label: 13px;
+  --text-card-meta: 14px;
+  --text-chip-label: 14px;
+  --text-intro-eyebrow: 18px;
+  --text-intro-eyebrow--line-height: 30px;
+}
+
+:root {
+  --radius: 0.25rem;
+
+  /* Sand-beige toward dark taupe — Mary Hill inspired warm nordic palette */
+  --linen: oklch(0.965 0.008 78);
+  --sand: oklch(0.905 0.014 78);
+  --pearl: oklch(0.985 0.006 78);
+  --cream: oklch(0.975 0.007 78);
+  --ivory: oklch(0.935 0.010 78);
+  --white: oklch(1 0 0);
+  --clay: oklch(0.62 0.020 70);
+  --taupe: oklch(0.38 0.014 65);
+  --umber: oklch(0.28 0.010 60);
+  --deep-taupe: oklch(0.32 0.014 55);
+  --warm-clay: oklch(0.72 0.05 70);
+  --bronze: oklch(0.52 0.045 68);
+  --bronze-soft: oklch(0.58 0.040 68);
+  --stone: oklch(0.40 0.014 65);
+  --muted-taupe: oklch(0.44 0.014 65);
+  --tile: oklch(0.945 0.009 80);
+  --map-land: oklch(0.935 0.010 80);
+  --map-water: oklch(0.86 0.025 230);
+  --map-park: oklch(0.88 0.030 140);
+
+  --background: var(--sand);
+  --foreground: var(--taupe);
+  --card: var(--linen);
+  --card-foreground: var(--taupe);
+  --popover: var(--linen);
+  --popover-foreground: var(--taupe);
+  --primary: var(--taupe);
+  --primary-foreground: var(--linen);
+  --secondary: oklch(0.85 0.012 78);
+  --secondary-foreground: var(--taupe);
+  --muted: oklch(0.87 0.010 78);
+  --muted-foreground: oklch(0.50 0.014 70);
+  --accent: var(--clay);
+  --accent-foreground: var(--linen);
+  --destructive: oklch(0.55 0.18 30);
+  --destructive-foreground: var(--linen);
+  --border: oklch(0.78 0.012 78);
+  --input: oklch(0.78 0.012 78);
+  --ring: var(--clay);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    letter-spacing: 0.01em;
+  }
+}
+
+@keyframes accommodation-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@utility animate-accommodation-in {
+  animation: accommodation-in 300ms ease-out both;
+  @media (prefers-reduced-motion: reduce) { animation: none; }
+}
+
+/* Locations overview: map markers + list */
+.wow-loc-item { transition: background-color 220ms ease; }
+.wow-loc-item:focus-visible {
+  outline: 1px solid oklch(0.62 0.020 70);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.wow-marker { cursor: pointer; }
+.wow-marker circle, .wow-marker text { transition: all 220ms ease; }
+.wow-marker-label {
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: opacity 220ms ease, fill 220ms ease;
+}
+
+.included-benefits li:nth-child(2) { animation-delay: 90ms; }
+.included-benefits li:nth-child(3) { animation-delay: 180ms; }
+.included-benefits li:nth-child(4) { animation-delay: 270ms; }
+.included-benefits li:nth-child(5) { animation-delay: 360ms; }
+.included-benefits li:nth-child(6) { animation-delay: 450ms; }
+
+@keyframes wow-gallery-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.wow-logo-marquee-viewport {
+  overflow: hidden;
+}
+
+.wow-logo-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: wow-gallery-marquee 45s linear infinite;
+}
+
+.wow-logo-marquee-set {
+  display: flex;
+  align-items: center;
+  gap: clamp(48px, 8vw, 110px);
+  padding-right: clamp(48px, 8vw, 110px);
+}
+
+.wow-logo-marquee-viewport:hover .wow-logo-marquee-track,
+.wow-logo-marquee-viewport:focus-within .wow-logo-marquee-track { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wow-logo-marquee-track { animation: none; }
+}
+
+.wow-testimonial-track { transform: translateX(calc(-1 * var(--carousel-index) * 100%)); }
+.wow-testimonial-slide { width: 100%; }
+@media (min-width: 640px) {
+  .wow-testimonial-track { transform: translateX(calc(-1 * var(--carousel-index) * 50%)); }
+  .wow-testimonial-slide { width: 50%; }
+}
+@media (min-width: 1024px) {
+  .wow-testimonial-track { transform: translateX(calc(-1 * var(--carousel-index) * (100% / 3))); }
+  .wow-testimonial-slide { width: calc(100% / 3); }
+}
+
+.wow-gallery-track {
+  display: flex;
+  width: max-content;
+  animation: wow-gallery-marquee 60s linear infinite;
+}
+
+.wow-gallery-track.wow-gallery-reverse { animation-direction: reverse; }
+.wow-gallery-viewport:hover .wow-gallery-track,
+.wow-gallery-viewport:focus-within .wow-gallery-track { animation-play-state: paused; }
+
+.wow-gallery-set { display: flex; gap: 32px; padding-right: 32px; }
+.wow-gallery-arrow { transition: color 180ms ease, transform 220ms ease; }
+.wow-gallery-arrow:first-child:hover { transform: translateX(-3px); }
+.wow-gallery-arrow:last-child:hover { transform: translateX(3px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .wow-gallery-track { animation: none; }
+}
+
+.wow-faq-answer {
+  overflow: hidden;
+  transition: max-height 320ms ease, opacity 220ms ease, padding-bottom 320ms ease;
+}
+.wow-faq-plus-v { transition: opacity 200ms ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wow-faq-answer, .wow-faq-plus-v { transition: none; }
+}
+
+@keyframes wow-panel-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.wow-panel { animation: wow-panel-fade 240ms ease-out; }
+@media (prefers-reduced-motion: reduce) { .wow-panel { animation: none; } }
+
+@layer base {
+  a[href], button:not(:disabled), [role="button"], [role="tab"], summary, label[for], select {
+    cursor: pointer;
+  }
+  button:disabled { cursor: not-allowed; }
+}
+
+/* Shared editorial roles override old page-specific typography utilities. */
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-heading-one);
+  line-height: var(--text-heading-one--line-height);
+  font-weight: 300;
+  letter-spacing: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-heading-two);
+  line-height: var(--text-heading-two--line-height);
+  font-weight: 300;
+  letter-spacing: 0;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+/* Body copy role — but anything deliberately set in the serif face (card price lines,
+   editorial paragraphs, review names) is not body copy and keeps its own type. */
+body, p:not([class~="font-serif"]), address, input, textarea, select,
+:is(section, article, footer) :is(span, li, div):not([class~="font-serif"])[class*="text-[13px]"],
+:is(section, article, footer) :is(span, li, div):not([class~="font-serif"])[class*="text-[14px]"],
+:is(section, article, footer) :is(span, li, div):not([class~="font-serif"])[class*="text-[15px]"],
+:is(section, article, footer) :is(span, li, div):not([class~="font-serif"])[class*="text-[16px]"],
+:is(section, article, footer) :is(span, li, div):not([class~="font-serif"])[class*="text-[18px]"],
+:is(section, article, footer) :is(span, li, div):not([class~="font-serif"])[class~="text-base"],
+:is(section, article, footer) :is(span, li, div):not([class~="font-serif"])[class~="text-sm"],
+:is(section, article, footer) li:not([class~="font-serif"])[class~="text-lg"],
+:is(section, article, footer) li:not([class~="font-serif"])[class~="text-xl"] {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-copy);
+  line-height: var(--text-body-copy--line-height);
+  font-weight: 300;
+}
+
+header h3, #wow-full-menu h3 {
+  font-family: var(--font-sans);
+  font-size: var(--text-eyebrow);
+  line-height: var(--text-eyebrow--line-height);
+  font-weight: 300;
+}
+
+:is(p, span, div, dt)[class~="uppercase"]:not(header *):not(a *):not(button *) {
+  font-family: var(--font-sans);
+  font-size: var(--text-eyebrow);
+  line-height: var(--text-eyebrow--line-height);
+  font-weight: 300;
+}
+
+.rounded-cta, a[class*="border-b"][class~="uppercase"] {
+  font-family: var(--font-sans);
+  font-size: var(--text-cta-label);
+}
+
+/* CTA labels inherit the 13px CTA size, unless the span sets its own size (e.g. serif FAQ questions, price figures). */
+.rounded-cta :is(span, p):not([class*="text-["]):not([class~="text-sm"]):not([class~="text-base"]) {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* Supporting copy directly below page and module titles, and the intro sections below heroes. */
+:is(h1, h2) + p:not(.uppercase),
+:is(h1, h2) + div > p:first-child:not(.uppercase),
+p[class~="title-subtext"] {
+  font-size: var(--text-title-subtext);
+  line-height: 30px;
+}
+
+header nav a, #wow-full-menu nav a:not(.rounded-cta) {
+  font-family: var(--font-sans);
+  font-size: var(--text-nav-label);
+  font-weight: 300;
+}
+
+/* Sidebar accordion menu: large group headings, smaller links beneath. */
+#wow-full-menu nav ul a:not(.rounded-cta) {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+#wow-full-menu nav h3 {
+  font-size: 14px;
+  line-height: 28px;
+  font-weight: 500;
+}
+
+/* Chip labels only; preserve each chip's existing font, weight and line height. */
+.wow-chip[class] {
+  font-size: var(--text-chip-label);
+}
+
+/* Accommodation size and guest labels only, not card titles or body copy. */
+.wow-card-meta[class] {
+  font-size: var(--text-card-meta);
+}
+
+/* Hero scrim for bright, sunlit photography: a sheer white band at the very
+   top for the navbar, plus a warm vignette centred on the title so the pale
+   serif lettering stays readable. */
+.wow-hero-scrim {
+  background-image:
+    linear-gradient(
+      to bottom,
+      oklch(1 0 0 / 0.55) 0%,
+      oklch(1 0 0 / 0.32) 18%,
+      oklch(1 0 0 / 0) 46%
+    ),
+    radial-gradient(
+      ellipse 78% 58% at 50% 52%,
+      oklch(0.28 0.01 60 / 0.58) 0%,
+      oklch(0.28 0.01 60 / 0.34) 50%,
+      oklch(0.28 0.01 60 / 0) 88%
+    );
+}
+
+/* Soft warm shadow that lifts a pale serif hero title off bright photography. */
+.wow-hero-title-shadow {
+  text-shadow:
+    0 1px 2px oklch(0.28 0.01 60 / 0.6),
+    0 0 26px oklch(0.28 0.01 60 / 0.5),
+    0 0 64px oklch(0.28 0.01 60 / 0.4);
+}
+
+@media (max-width: 360px) {
+  header > div { padding-inline: 8px; gap: 4px; }
+  header > div > div:first-child a > span:first-child {
+    font-size: 20px;
+    letter-spacing: 0;
+  }
+  header > div > div:first-child a > span:last-child {
+    font-size: 5px;
+    letter-spacing: 0;
+  }
+  header .rounded-cta { padding-inline: 4px; letter-spacing: 0; }
+  header button[aria-label="Open menu"] { width: 32px; }
+}
