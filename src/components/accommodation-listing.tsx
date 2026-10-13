@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import { useUi } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -32,12 +33,12 @@ type AccommodationListingProps = {
   accommodations: Accommodation[];
   actionLabel: string;
   /** Where the card action button leads: the room or the apartment booking page. */
-  actionTo?: "/book-room" | "/book-apartment";
+  actionTo?: string;
   /** Hides the divider above the card actions and widens the action spacing to 48px. */
   hideDivider?: boolean;
   /** Extra classes for the section, e.g. a custom top padding override. */
   className?: string;
-  viewAllTo?: "/rooms" | "/apartments";
+  viewAllTo?: string;
   viewAllLabel?: string;
 };
 
@@ -102,7 +103,8 @@ function CardCarousel({ images, title, heightClass = "h-[240px]" }: { images: st
   );
 }
 
-export function AccommodationCard({ accommodation, actionLabel, actionTo, hideDivider }: { accommodation: Accommodation; actionLabel: string; actionTo?: "/book-room" | "/book-apartment"; hideDivider?: boolean }) {
+export function AccommodationCard({ accommodation, actionLabel, actionTo, hideDivider }: { accommodation: Accommodation; actionLabel: string; actionTo?: string; hideDivider?: boolean }) {
+  const ui = useUi();
   const wide = Boolean(accommodation.wide);
   const photos = [accommodation.image, ...(accommodation.images ?? [])];
   return (
@@ -160,7 +162,7 @@ export function AccommodationCard({ accommodation, actionLabel, actionTo, hideDi
         {accommodation.variations && accommodation.variations.length > 0 && (
           <>
             <div className="mt-5 pl-[0.32em] text-[10px] uppercase tracking-[0.32em] text-clay">
-              Variations
+              {ui.variations}
             </div>
             <ul className="m-0 mt-2.5 list-none p-0">
               {accommodation.variations.map((variation) => (
@@ -179,14 +181,14 @@ export function AccommodationCard({ accommodation, actionLabel, actionTo, hideDi
           {accommodation.detailPath ? (
             <Link
               to={accommodation.detailPath}
-              aria-label={`Read more about the ${accommodation.title}`}
+              aria-label={`${ui.readMore ?? ""}: ${accommodation.title}`}
               className={readMoreCls}
             >
-              Read more
+              {ui.readMore}
             </Link>
           ) : (
-            <a href="#" aria-label={`Read more about the ${accommodation.title}`} className={readMoreCls}>
-              Read more
+            <a href="#" aria-label={`${ui.readMore ?? ""}: ${accommodation.title}`} className={readMoreCls}>
+              {ui.readMore}
             </a>
           )}
           <Button asChild className="h-9 rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.24em] text-pearl hover:bg-umber">

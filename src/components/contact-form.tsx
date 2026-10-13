@@ -1,7 +1,16 @@
 import { useState } from "react";
+import { useSite } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
+import { list, text } from "@/lib/cms/globals";
 
+/**
+ * Contact form. Every label, option and message comes from WordPress ›
+ * Site settings › Interface text › Contact form; the recipient is the
+ * contact email in Site settings › Contact.
+ */
 export function ContactForm() {
+  const { contactForm, contact } = useSite();
+  const t = (key: string) => text(contactForm, key);
   const [status, setStatus] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
@@ -16,25 +25,26 @@ export function ContactForm() {
     const message = String(form.get("message") ?? "").trim();
 
     if (!name || !email || !message) {
-      setStatus("Please complete all fields.");
+      setStatus(t("msgIncomplete"));
       return;
     }
     if (checkIn && checkOut && checkOut <= checkIn) {
-      setStatus("Check-out must be after check-in.");
+      setStatus(t("msgDates"));
       return;
     }
 
-    const subject = encodeURIComponent(`Website enquiry from ${name}`);
-    const dates = `Check-in: ${checkIn || "Not specified"}\nCheck-out: ${checkOut || "Not specified"}`;
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nPurpose of stay: ${purpose || "Not specified"}\n${dates}\n\n${message}`);
-    window.location.href = `mailto:anna@wowapartments.se?subject=${subject}&body=${body}`;
-    setStatus("Your email app is opening with your message.");
+    const none = t("notSpecified");
+    const subject = encodeURIComponent(t("mailSubject").replace("{name}", name));
+    const dates = `${t("checkIn")}: ${checkIn || none}\n${t("checkOut")}: ${checkOut || none}`;
+    const body = encodeURIComponent(`${t("name")}: ${name}\n${t("email")}: ${email}\n${t("purpose")}: ${purpose || none}\n${dates}\n\n${message}`);
+    window.location.href = `mailto:${contact.email}?subject=${subject}&body=${body}`;
+    setStatus(t("msgOpening"));
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col" noValidate>
       <label htmlFor="contact-name" className="pl-[0.32em] text-[10px] font-medium uppercase tracking-[0.32em] text-clay">
-        Name
+        {t("name")}
       </label>
       <input
         id="contact-name"
@@ -46,7 +56,7 @@ export function ContactForm() {
       />
 
       <label htmlFor="contact-email" className="mt-7 pl-[0.32em] text-[10px] font-medium uppercase tracking-[0.32em] text-clay">
-        Email
+        {t("email")}
       </label>
       <input
         id="contact-email"
@@ -60,7 +70,7 @@ export function ContactForm() {
       <div className="mt-7 grid grid-cols-1 gap-7 sm:grid-cols-2 sm:gap-5">
         <div className="flex flex-col">
           <label htmlFor="contact-checkin" className="pl-[0.32em] text-[10px] font-medium uppercase tracking-[0.32em] text-clay">
-            Check-in
+            {t("checkIn")}
           </label>
           <input
             id="contact-checkin"
@@ -77,7 +87,7 @@ export function ContactForm() {
         </div>
         <div className="flex flex-col">
           <label htmlFor="contact-checkout" className="pl-[0.32em] text-[10px] font-medium uppercase tracking-[0.32em] text-clay">
-            Check-out
+            {t("checkOut")}
           </label>
           <input
             id="contact-checkout"
@@ -93,7 +103,7 @@ export function ContactForm() {
 
 
       <label htmlFor="contact-purpose" className="mt-7 pl-[0.32em] text-[10px] font-medium uppercase tracking-[0.32em] text-clay">
-        Purpose of stay
+        {t("purpose")}
       </label>
       <select
         id="contact-purpose"
@@ -101,16 +111,14 @@ export function ContactForm() {
         defaultValue=""
         className="mt-3 h-12 w-full cursor-pointer appearance-none rounded-[4px] border border-clay/35 bg-pearl bg-[url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23716a60%22%20stroke-width%3D%221.2%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-[length:16px] bg-[right_1rem_center] bg-no-repeat px-4 pr-11 text-[15px] font-light text-taupe outline-none transition-colors focus:border-taupe"
       >
-        <option value="">Select an option</option>
-        <option value="Leisure">Leisure</option>
-        <option value="Business">Business</option>
-        <option value="Relocation">Relocation</option>
-        <option value="Long-term stay">Long-term stay</option>
-        <option value="Other">Other</option>
+        <option value="">{t("purposePlaceholder")}</option>
+        {list(contactForm, "purposeOptions").map((option) => (
+          <option key={option} value={option}>{option}</option>
+        ))}
       </select>
 
       <label htmlFor="contact-message" className="mt-7 pl-[0.32em] text-[10px] font-medium uppercase tracking-[0.32em] text-clay">
-        Message
+        {t("message")}
       </label>
       <textarea
         id="contact-message"
@@ -121,7 +129,7 @@ export function ContactForm() {
       />
 
       <Button type="submit" className="mt-8 h-12 self-start rounded-cta bg-taupe px-8 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl shadow-none transition-colors hover:bg-umber">
-        Send message
+        {t("submit")}
       </Button>
       <p role="status" aria-live="polite" className="mt-4 min-h-5 text-[13px] font-light text-taupe/75">
         {status}

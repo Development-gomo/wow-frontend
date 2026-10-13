@@ -1,76 +1,51 @@
 import { Link } from "@tanstack/react-router";
-import foreningsgatanFacade from "@/assets/locations/foreningsgatan-facade.jpg";
-import foreningsgatanTrees from "@/assets/locations/foreningsgatan-trees.jpg";
-import foreningsgatanNeighbourhood from "@/assets/locations/foreningsgatan-neighbourhood.jpg";
-import sanktSigfridsgatanAvenue from "@/assets/locations/sankt-sigfridsgatan-avenue.jpg";
-import sanktSigfridsgatanStreet from "@/assets/locations/sankt-sigfridsgatan-street.jpg";
-import sanktSigfridsgatanNeighbourhood from "@/assets/locations/sankt-sigfridsgatan-neighbourhood.jpg";
-import fridkullagatanBuilding from "@/assets/locations/fridkullagatan-building.jpg";
-import fridkullagatanGarden from "@/assets/locations/fridkullagatan-garden.jpg";
-import fridkullagatanNeighbourhood from "@/assets/locations/fridkullagatan-neighbourhood.jpg";
 
 type LocationPhoto = {
   src: string;
   alt: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
 };
 
-export function WelcomingLocations({ showViewAll = true }: { showViewAll?: boolean }) {
-  const locations = [
-    {
-      name: "Föreningsgatan 7 & 9",
-      area: "Vasastan",
-      stay: "Shorter & longer stay",
-      desc: "Vasastan sits at the heart of central Gothenburg — nineteenth-century stone buildings, tree-lined boulevards and cafés on every corner give the district its character. Haga, Avenyn and Slottsskogen are all within walking distance, yet Föreningsgatan itself keeps the calm rhythm of a real residential street.",
-      detail: "Our original two buildings, side by side. Rooms, suites, the Penthouse apartment and longer-stay apartments — all opening onto a shared garden terrace at the back.",
-      imgs: [
-        { src: foreningsgatanFacade, alt: "Historic facade at Föreningsgatan in Vasastan", width: 1024, height: 1280 },
-        { src: foreningsgatanTrees, alt: "Tree-lined street around Föreningsgatan in Vasastan", width: 1024, height: 1280 },
-        { src: foreningsgatanNeighbourhood, alt: "Historic streetscape and corner café near Föreningsgatan", width: 1280, height: 1024 },
-      ] satisfies LocationPhoto[],
-    },
-    {
-      name: "Sankt Sigfridsgatan 64 and 66",
-      area: "Örgryte",
-      stay: "Longer stay",
-      desc: "Örgryte has a quiet elegance — grand villas, avenues lined with older trees, and a stillness that feels a long way from the centre, even though Korsvägen, Liseberg and the heart of the city are only minutes away by tram. It is where the parks meet the city, with the Delsjön nature reserve just beyond.",
-      detail: "Spacious apartments on a peaceful residential block, a short walk to the tram at Korsvägen and the cultural quarter around Liseberg and Universeum.",
-      imgs: [
-        { src: sanktSigfridsgatanAvenue, alt: "Historic villas at Sankt Sigfridsgatan in Örgryte", width: 1024, height: 1280 },
-        { src: sanktSigfridsgatanStreet, alt: "Leafy street and tram near Sankt Sigfridsgatan", width: 1024, height: 1280 },
-        { src: sanktSigfridsgatanNeighbourhood, alt: "Green residential avenue near Sankt Sigfridsgatan", width: 1280, height: 1024 },
-      ] satisfies LocationPhoto[],
-    },
-    {
-      name: "Fridkullagatan 2",
-      area: "Johanneberg",
-      stay: "Longer stay",
-      desc: "Johanneberg is where the city gives way to green. Surrounded by gardens and stately 1930s architecture, it has the feel of an oasis without losing touch with the city around it. Fridkullagatan is a quiet street close to Chalmers and Mossen — the kind where you wake to birdsong rather than traffic.",
-      detail: "Apartments with access to a shared garden — several with their own balcony or terrace for a quiet morning coffee outside.",
-      imgs: [
-        { src: fridkullagatanBuilding, alt: "Fridkullagatan residence and shared garden in Johanneberg", width: 1024, height: 1280 },
-        { src: fridkullagatanGarden, alt: "Leafy shared courtyard at Fridkullagatan", width: 1024, height: 1280 },
-        { src: fridkullagatanNeighbourhood, alt: "Leafy residential garden path around Fridkullagatan", width: 1280, height: 1024 },
-      ] satisfies LocationPhoto[],
-    },
-  ];
+export type WelcomingLocation = {
+  name: string;
+  area: string;
+  stay: string;
+  desc: string;
+  detail: string;
+  imgs: LocationPhoto[];
+};
 
+type WelcomingLocationsProps = {
+  eyebrow?: string;
+  heading?: string;
+  showViewAll?: boolean;
+  viewAllLabel?: string;
+  viewAllTo?: string;
+  locations?: WelcomingLocation[];
+};
+
+/** Addresses come from WordPress › Locations; the headings and link from the section. */
+export function WelcomingLocations({ eyebrow, heading, showViewAll = true, viewAllLabel, viewAllTo, locations = [] }: WelcomingLocationsProps) {
   return (
     <section id="locations" className="scroll-mt-20 bg-sand px-6 py-24 md:px-10 md:py-32">
       <div className="mx-auto mb-16 max-w-[1200px] text-center">
-        <span className="mb-5 block text-[10px] uppercase tracking-[0.35em] text-clay">
-          Our addresses
-        </span>
-        <h2 className="font-serif text-3xl font-light leading-tight text-taupe md:text-5xl">
-          Our welcoming locations in Gothenburg
-        </h2>
-        {showViewAll && (
+        {eyebrow && (
+          <span className="mb-5 block text-[10px] uppercase tracking-[0.35em] text-clay">
+            {eyebrow}
+          </span>
+        )}
+        {heading && (
+          <h2 className="font-serif text-3xl font-light leading-tight text-taupe md:text-5xl">
+            {heading}
+          </h2>
+        )}
+        {showViewAll && viewAllLabel && viewAllTo && (
           <Link
-            to="/locations"
+            to={viewAllTo}
             className="mt-10 inline-flex items-center gap-3.5 border-b border-clay/55 pb-1.5 text-[11px] font-medium uppercase tracking-[0.32em] text-taupe transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-clay focus-visible:outline-offset-4 md:mt-12"
           >
-            View all locations
+            {viewAllLabel}
             <svg viewBox="0 0 16 12" width="16" height="12" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
               <path d="M1 6h13m-4-4 4 4-4 4" />
             </svg>

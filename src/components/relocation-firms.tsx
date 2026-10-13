@@ -4,27 +4,31 @@ import { Button } from "@/components/ui/button";
 
 export type RelocationFirmPoint = { title: string; text: string };
 
-const DEFAULT_POINTS: RelocationFirmPoint[] = [
-  { title: "Longer stays only", text: "Apartment stays of at least 7 nights for employees relocating or working on longer assignments." },
-  { title: "Your company’s requirements", text: "Tell us your preferred dates, number of employees and accommodation needs." },
-  { title: "A personal response from WOW", text: "Our team reviews your requirements and gets back to you with availability and next steps." },
-];
-
 const POINT_ICONS = [CalendarDays, Users, Building2];
 
-type RelocationFirmsProps = { heading: string; description: string; points?: RelocationFirmPoint[] };
+type RelocationFirmsProps = {
+  eyebrow?: string;
+  heading: string;
+  description: string;
+  points?: RelocationFirmPoint[];
+  ctaLabel?: string;
+  ctaTo?: string;
+};
 
-export function RelocationFirms({ heading, description, points = DEFAULT_POINTS }: RelocationFirmsProps) {
+/** All copy, the points and the button come from the page's Relocation firms section in WordPress. */
+export function RelocationFirms({ eyebrow, heading, description, points = [], ctaLabel, ctaTo }: RelocationFirmsProps) {
   return (
     <section aria-labelledby="relocation-firms-heading" className="bg-pearl px-6 py-[128px] text-taupe md:px-10">
       <div className="mx-auto grid max-w-[1200px] items-center gap-12 lg:grid-cols-2 lg:gap-24">
         <div>
-          <p className="text-eyebrow font-light uppercase tracking-[0.3em] text-clay">Relocation Firms</p>
+          {eyebrow && <p className="text-eyebrow font-light uppercase tracking-[0.3em] text-clay">{eyebrow}</p>}
           <h2 id="relocation-firms-heading" className="mt-6 font-serif text-heading-two font-light">{heading}</h2>
           <p className="mt-4 max-w-[520px] text-title-subtext font-light leading-[30px]">{description}</p>
-          <Button asChild className="mt-8 h-12 rounded-cta bg-taupe px-8 text-cta-label text-linen uppercase tracking-[0.15em] shadow-none hover:bg-umber hover:text-linen">
-            <Link to="/apartments">Discuss employee stays</Link>
-          </Button>
+          {ctaLabel && ctaTo && (
+            <Button asChild className="mt-8 h-12 rounded-cta bg-taupe px-8 text-cta-label text-linen uppercase tracking-[0.15em] shadow-none hover:bg-umber hover:text-linen">
+              <Link to={ctaTo}>{ctaLabel}</Link>
+            </Button>
+          )}
         </div>
         <ul className="divide-y divide-clay/30">
           {points.map((point, index) => {

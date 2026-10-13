@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useId, useState } from "react";
+import { useUi } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +34,7 @@ export function GuestExperiences({
   reviews,
   className,
 }: GuestExperiencesProps) {
+  const ui = useUi();
   const headingId = `wow-guest-heading-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   const halfStarId = `wow-half-star-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
 
@@ -114,7 +116,7 @@ export function GuestExperiences({
             </div>
             {reviewSource ? <span className="font-serif text-[22px] leading-[1.2]">{reviewSource}</span> : null}
             {typeof reviewCount === "number" ? (
-              <span className="text-[12px] leading-[1.4] text-clay">Based on {reviewCount} verified reviews</span>
+              <span className="text-[12px] leading-[1.4] text-clay">{[ui.reviewsBasedOn, reviewCount, ui.reviewsVerified].filter((part) => part !== undefined && part !== "").join(" ")}</span>
             ) : null}
           </div>
         </div>

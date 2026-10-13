@@ -1,28 +1,30 @@
 import { z } from "zod";
 
 /**
- * Adapter for the original TanStack `createServerFn` newsletter subscription.
+ * Newsletter sign-up client.
  *
- * TanStack Start's server functions have no Next.js equivalent, so the handler
- * body moved verbatim into the Route Handler at src/app/api/newsletter/route.ts
- * and this module keeps the exact call signature the footer already uses:
- *   await subscribeNewsletter({ data: { email } })  ->  { success, message }
+ * The route returns a status code rather than a sentence; the footer turns it
+ * into the wording set in WordPress › Site settings › Newsletter, so every
+ * message a visitor sees is editable there.
  */
 export const newsletterInput = z.object({ email: z.string().email() });
 
-export async function subscribeNewsletter({ data }: { data: { email: string } }) {
-  const parsed = newsletterInput.parse(data);
+export type NewsletterStatus = "subscribed" | "already" | "invalid" | "error";
 
-  const res = await fetch("/api/newsletter", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(parsed),
-  });
+export async function subscribeNewsletter({ data }: { data: { email: string } }): Promise<NewsletterStatus> {
+  const parsed = newsletterInput.safeParse(data);
+  if (!parsed.success) return "invalid";
 
-  const body = (await res.json()) as { success?: boolean; message?: string };
-  if (!res.ok || !body.success) {
-    throw new Error(body.message ?? "Could not subscribe. Please try again.");
+  try {
+    const res = await fetch("/api/newsletter", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(parsed.data),
+    });
+
+    const body = (await res.json()) as { status?: NewsletterStatus };
+    return body.status ?? "error";
+  } catch {
+    return "error";
   }
-
-  return { success: true as const, message: body.message ?? "You are subscribed." };
 }

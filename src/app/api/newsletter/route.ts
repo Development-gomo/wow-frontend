@@ -1,14 +1,19 @@
 import { NextResponse } from "next/server";
 
-import { newsletterInput } from "@/lib/newsletter.functions";
+import { newsletterInput, type NewsletterStatus } from "@/lib/newsletter.functions";
 
-/** Handler body carried over unchanged from the original newsletter server function. */
+/**
+ * Newsletter sign-up. Returns a status code; the visible wording lives in
+ * WordPress › Site settings › Newsletter and is applied by the footer.
+ */
+const reply = (status: NewsletterStatus, code = 200) => NextResponse.json({ status }, { status: code });
+
 export async function POST(request: Request) {
   let data: { email: string };
   try {
     data = newsletterInput.parse(await request.json());
   } catch {
-    return NextResponse.json({ success: false, message: "Enter a valid email address." }, { status: 400 });
+    return reply("invalid", 400);
   }
 
   try {
@@ -19,20 +24,12 @@ export async function POST(request: Request) {
       .insert({ email: data.email.toLowerCase().trim() });
 
     if (error) {
-      if (error.code === "23505") {
-        return NextResponse.json({ success: true, message: "You are already subscribed." });
-      }
-      return NextResponse.json(
-        { success: false, message: "Could not subscribe. Please try again." },
-        { status: 500 },
-      );
+      // 23505: unique violation, the address is already on the list.
+      return error.code === "23505" ? reply("already") : reply("error", 500);
     }
 
-    return NextResponse.json({ success: true, message: "You are subscribed." });
+    return reply("subscribed");
   } catch {
-    return NextResponse.json(
-      { success: false, message: "Could not subscribe. Please try again." },
-      { status: 500 },
-    );
+    return reply("error", 500);
   }
 }

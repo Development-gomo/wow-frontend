@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { useUi } from "@/components/cms/site-context";
 
 export type SimilarRoom = {
   title: string;
@@ -24,6 +25,7 @@ const arrowCls =
   "flex h-11 w-11 items-center justify-center rounded-full border border-taupe bg-taupe text-pearl transition-colors duration-150 hover:border-umber hover:bg-umber";
 
 export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabel }: SimilarRoomsProps) {
+  const ui = useUi();
   const viewport = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
 
@@ -94,9 +96,9 @@ export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabe
                     {room.chips.map((chip) => <li key={chip} className="wow-chip rounded-full bg-ivory px-3.5 py-2 text-xs font-normal">{chip}</li>)}
                   </ul>
                   {room.href ? (
-                    <Link to={room.href} className="mt-auto inline-flex self-start pt-8 border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">Read more</Link>
+                    <Link to={room.href} className="mt-auto inline-flex self-start pt-8 border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">{ui.readMore}</Link>
                   ) : (
-                    <a href="#" className="mt-auto inline-flex self-start pt-8 border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">Read more</a>
+                    <a href="#" className="mt-auto inline-flex self-start pt-8 border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">{ui.readMore}</a>
                   )}
                 </div>
               </article>

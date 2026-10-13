@@ -33,7 +33,7 @@ export const WhyWowIcons = {
 } as const;
 
 export function WhyWow({
-  eyebrow = "Why WOW",
+  eyebrow,
   heading,
   description,
   items,
@@ -53,7 +53,7 @@ export function WhyWow({
     <section className={cn("bg-taupe text-linen px-6 py-20 md:px-10 md:py-28 lg:px-20 lg:py-32", className)}>
       <div className="mx-auto grid max-w-[1200px] items-center gap-16 lg:grid-cols-[5fr_7fr] lg:gap-24">
         <div className="flex flex-col items-start">
-          <span className="pl-[0.45em] text-[10px] font-normal uppercase tracking-[0.45em] text-sand/75">{eyebrow}</span>
+          {eyebrow && <span className="pl-[0.45em] text-[10px] font-normal uppercase tracking-[0.45em] text-sand/75">{eyebrow}</span>}
           <h2 className="mt-6 font-serif text-[42px] font-normal leading-[1.15] md:text-[48px]">{heading}</h2>
           <p className="mt-4 max-w-[420px] text-[15px] font-light leading-[1.75] text-linen/80">
             {description}
@@ -66,7 +66,7 @@ export function WhyWow({
           ) : null}
         </div>
 
-        <ul aria-label="Why WOW benefits" className="grid grid-cols-2 mt-1.5">
+        <ul aria-label={eyebrow} className="grid grid-cols-2 mt-1.5">
           {items.map((item, index) => (
             <li key={item.title} className={`flex flex-col gap-4 ${index % 2 === 0 ? "pb-10 pr-5 sm:pr-10" : "pb-10 border-l border-linen/20 pl-5 sm:pl-10"} ${index < 2 ? "border-b border-linen/20" : "pt-10"}`}>
               {item.icon}

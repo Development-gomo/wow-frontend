@@ -23,10 +23,23 @@ export type RoomInformationProps = {
   };
   rules: { intro: string; items: RuleItem[] };
   cancellation?: CancellationInfo;
+  /** Tab names and fixed labels, edited per page in the Room information section. */
+  labels?: RoomInformationLabels;
 };
 
-const BASE_TABS = ["Amenities", "Map & location", "House rules"] as const;
-const CANCELLATION_TAB = "Cancellation policy";
+export type RoomInformationLabels = {
+  tabAmenities?: string;
+  tabLocation?: string;
+  tabRules?: string;
+  tabCancellation?: string;
+  notIncludedHeading?: string;
+  notIncludedText?: string;
+  mapsLink?: string;
+  nearbyHeading?: string;
+  timelineStart?: string;
+  timelineEnd?: string;
+};
+
 // Tier accent colours, from most to least favourable.
 const TIER_TONES = ["text-bronze border-bronze bg-bronze", "text-bronze-soft border-bronze-soft bg-bronze-soft", "text-stone border-stone bg-stone"];
 
@@ -41,12 +54,12 @@ function Icon({ icon: I, size = 28 }: { icon: LucideIcon; size?: number }) {
 }
 
 export function RoomInformation(props: RoomInformationProps) {
-  const { eyebrow: kicker = "Room information", heading = "Everything you need to know before booking." } = props;
+  const { eyebrow: kicker, heading, labels = {} } = props;
   const [active, setActive] = useState(0);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const uid = useId();
 
-  const tabs = props.cancellation ? [...BASE_TABS, CANCELLATION_TAB] : [...BASE_TABS];
+  const tabs = [labels.tabAmenities, labels.tabLocation, labels.tabRules, ...(props.cancellation ? [labels.tabCancellation] : [])];
 
   const onKeyDown = (e: KeyboardEvent) => {
     const keys: Record<string, number> = { ArrowRight: active + 1, ArrowLeft: active - 1, Home: 0, End: tabs.length - 1 };
@@ -59,16 +72,16 @@ export function RoomInformation(props: RoomInformationProps) {
 
   const panels = [
     <AmenitiesPanel key="a" {...props} />,
-    <LocationPanel key="l" {...props.location} />,
-    <RulesPanel key="r" {...props.rules} />,
-    ...(props.cancellation ? [<CancellationPanel key="c" {...props.cancellation} />] : []),
+    <LocationPanel key="l" {...props.location} labels={labels} />,
+    <RulesPanel key="r" {...props.rules} title={labels.tabRules} />,
+    ...(props.cancellation ? [<CancellationPanel key="c" {...props.cancellation} labels={labels} />] : []),
   ];
 
   return (
     <section className="flex flex-col items-center bg-sand px-5 py-16 text-taupe md:px-10 lg:px-20">
       <div className="flex flex-col items-center text-center">
-        <div className={eyebrow}>{kicker}</div>
-        <h2 className="mt-6 font-serif text-[34px] font-normal leading-[1.15] text-taupe md:text-[48px]">{heading}</h2>
+        {kicker && <div className={eyebrow}>{kicker}</div>}
+        {heading && <h2 className="mt-6 font-serif text-[34px] font-normal leading-[1.15] text-taupe md:text-[48px]">{heading}</h2>}
       </div>
 
       <div
@@ -79,7 +92,7 @@ export function RoomInformation(props: RoomInformationProps) {
       >
         {tabs.map((label, i) => (
           <button
-            key={label}
+            key={i}
             ref={(el) => { tabRefs.current[i] = el; }}
             role="tab"
             id={`${uid}-tab-${i}`}
@@ -108,7 +121,7 @@ export function RoomInformation(props: RoomInformationProps) {
   );
 }
 
-function AmenitiesPanel({ amenitiesHeading, amenities, notIncluded }: RoomInformationProps) {
+function AmenitiesPanel({ amenitiesHeading, amenities, notIncluded, labels = {} }: RoomInformationProps) {
   return (
     <>
       <h3 className={panelHeading}>{amenitiesHeading}</h3>
@@ -121,9 +134,9 @@ function AmenitiesPanel({ amenitiesHeading, amenities, notIncluded }: RoomInform
         ))}
       </ul>
 
-      <h3 className="mt-14 font-serif text-[28px] font-medium leading-[1.15] text-muted-taupe">Not included</h3>
-      <p className="mt-2 text-base font-light leading-[1.7] text-muted-taupe/85">Available as paid extras on request.</p>
-      <ul aria-label="Amenities not included, available as paid extras" className={cn(grid3, "mt-7 gap-4")}>
+      {labels.notIncludedHeading && <h3 className="mt-14 font-serif text-[28px] font-medium leading-[1.15] text-muted-taupe">{labels.notIncludedHeading}</h3>}
+      {labels.notIncludedText && <p className="mt-2 text-base font-light leading-[1.7] text-muted-taupe/85">{labels.notIncludedText}</p>}
+      <ul aria-label={labels.notIncludedHeading} className={cn(grid3, "mt-7 gap-4")}>
         {notIncluded.map(({ icon, label }) => (
           <li key={label} className="flex items-center gap-4 rounded-[20px] border border-dashed border-clay/55 px-7 py-5 text-lg leading-[1.2] text-muted-taupe">
             <Icon icon={icon} size={24} />
@@ -135,25 +148,27 @@ function AmenitiesPanel({ amenitiesHeading, amenities, notIncluded }: RoomInform
   );
 }
 
-function LocationPanel({ heading, description, address, mapsHref, nearby }: RoomInformationProps["location"]) {
+function LocationPanel({ heading, description, address, mapsHref, nearby, labels }: RoomInformationProps["location"] & { labels: RoomInformationLabels }) {
   return (
     <div className="grid grid-cols-1 items-start gap-y-12 lg:grid-cols-[560px_1fr] lg:gap-x-[72px]">
       <div>
         <h3 className={cn(panelHeading, "mb-10 md:text-[32px]")}>{heading}</h3>
         <div className="overflow-hidden rounded-[20px]">
-          <LocationMap />
+          <LocationMap label={heading} />
         </div>
         <p className={cn(bodyText, "mt-3.5 max-w-[520px]")}>{description}</p>
         <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-base text-taupe">
           <span className="flex items-center gap-2.5"><Icon icon={MapPin} size={18} />{address}</span>
-          <a href={mapsHref} target="_blank" rel="noopener noreferrer" className="text-bronze underline underline-offset-4">
-            Open in Google Maps
-          </a>
+          {labels.mapsLink && (
+            <a href={mapsHref} target="_blank" rel="noopener noreferrer" className="text-bronze underline underline-offset-4">
+              {labels.mapsLink}
+            </a>
+          )}
         </div>
       </div>
 
       <div className="lg:mt-[86px]">
-        <div className={eyebrow}>What's nearby</div>
+        {labels.nearbyHeading && <div className={eyebrow}>{labels.nearbyHeading}</div>}
         <div className="mt-7 grid grid-cols-1 gap-x-10 gap-y-11 sm:grid-cols-2">
           {nearby.map(({ category, icon, place, distance }) => (
             <div key={category}>
@@ -170,13 +185,13 @@ function LocationPanel({ heading, description, address, mapsHref, nearby }: Room
   );
 }
 
-function LocationMap() {
+function LocationMap({ label }: { label: string }) {
   const roads: [string, number][] = [
     ["M0 70 L560 110", 10], ["M120 0 L180 340", 10], ["M360 0 L330 230", 12], ["M0 160 L560 140", 6], ["M260 0 L250 230", 5],
     ["M460 0 L500 190", 5], ["M40 0 L70 240", 4], ["M0 30 L560 50", 4], ["M0 205 L330 190", 4],
   ];
   return (
-    <svg viewBox="0 0 560 340" role="img" aria-label="Map showing the room's location in Gothenburg" className="block h-auto w-full">
+    <svg viewBox="0 0 560 340" role="img" aria-label={label} className="block h-auto w-full">
       <rect width="560" height="340" className="fill-map-land" />
       <path d="M-10 250 C 90 220, 160 262, 250 228 S 420 170, 570 196 L 570 240 C 430 214, 330 262, 250 270 S 90 262, -10 292 Z" className="fill-map-water" />
       <g fill="none" strokeLinecap="round" className="stroke-pearl">
@@ -189,15 +204,15 @@ function LocationMap() {
         <path d="M16 36s-13-11.3-13-21a13 13 0 0 1 26 0c0 9.7-13 21-13 21z" />
         <circle cx="16" cy="15" r="5" className="fill-pearl" />
       </g>
-      <text x="300" y="312" textAnchor="middle" fontSize="11" letterSpacing="3" className="fill-stone/90 font-sans">GÖTA ÄLV</text>
+      <text x="300" y="312" textAnchor="middle" fontSize="11" letterSpacing="3" className="fill-stone/90 font-sans">GÖTA ÄLV</text>{/* content-exempt: river label drawn into the decorative map artwork */}
     </svg>
   );
 }
 
-function RulesPanel({ intro, items }: RoomInformationProps["rules"]) {
+function RulesPanel({ intro, items, title }: RoomInformationProps["rules"] & { title?: string }) {
   return (
     <>
-      <h3 className={panelHeading}>House rules</h3>
+      {title && <h3 className={panelHeading}>{title}</h3>}
       <p className={cn(bodyText, "mt-3 max-w-[640px]")}>{intro}</p>
       <ul className={cn(grid3, "mt-10 gap-5")}>
         {items.map(({ icon, label, detail }) => (
@@ -214,15 +229,15 @@ function RulesPanel({ intro, items }: RoomInformationProps["rules"]) {
   );
 }
 
-function CancellationPanel({ intro, tiers, notes }: CancellationInfo) {
+function CancellationPanel({ intro, tiers, notes, labels }: CancellationInfo & { labels: RoomInformationLabels }) {
   return (
     <>
-      <h3 className={panelHeading}>Cancellation policy</h3>
+      {labels.tabCancellation && <h3 className={panelHeading}>{labels.tabCancellation}</h3>}
       <p className={cn(bodyText, "mt-3 max-w-[640px]")}>{intro}</p>
       <div aria-hidden="true" className="mt-11 grid grid-cols-3 gap-5">
         {tiers.map((t, i) => <div key={t.title} className={cn("h-1 rounded-[2px]", TIER_TONES[i].split(" ")[2])} />)}
       </div>
-      <div className={cn(eyebrow, "mt-2.5 flex justify-between")}><span>Booking</span><span>Check-in</span></div>
+      <div className={cn(eyebrow, "mt-2.5 flex justify-between")}><span>{labels.timelineStart}</span><span>{labels.timelineEnd}</span></div>
       <ol className={cn(grid3, "mt-7 gap-5 sm:grid-cols-1 lg:grid-cols-3")}>
         {tiers.map(({ window, title, detail }, i) => {
           const [text, border] = TIER_TONES[i].split(" ");

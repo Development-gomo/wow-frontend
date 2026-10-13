@@ -2,26 +2,32 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import "../styles.css";
+import { getGlobals } from "@/lib/cms/client";
 import { Providers } from "./providers";
 
-/** Ported from the `head()` of the original src/routes/__root.tsx. */
-export const metadata: Metadata = {
-  // Next resolves relative og:image/twitter:image paths against this base.
-  // The Lovable original emitted them relative; set NEXT_PUBLIC_SITE_URL per environment.
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
-  title: "WOW Apartments & Rooms",
-  description: "Thoughtfully furnished rooms and apartments in Gothenburg.",
-  openGraph: {
-    title: "WOW Apartments & Rooms",
-    description: "Thoughtfully furnished rooms and apartments in Gothenburg.",
-    type: "website",
-  },
-  twitter: { card: "summary" },
-};
+/** Site-wide defaults, from WordPress › Site settings › Brand. Pages override them. */
+export async function generateMetadata(): Promise<Metadata> {
+  const { seo } = await getGlobals();
+
+  return {
+    // Next resolves relative og:image/twitter:image paths against this base.
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+    title: seo.title || undefined,
+    description: seo.description || undefined,
+    openGraph: {
+      title: seo.title || undefined,
+      description: seo.description || undefined,
+      type: "website",
+    },
+    twitter: { card: "summary" },
+  };
+}
 
 export const viewport = { width: "device-width", initialScale: 1 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const globals = await getGlobals();
+
   return (
     <html lang="en">
       <head>
@@ -33,7 +39,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <Providers globals={globals}>{children}</Providers>
       </body>
     </html>
   );

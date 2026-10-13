@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { useUi } from "@/components/cms/site-context";
+
 export type ExplorePlace = {
   kicker: string;
   title: string;
@@ -22,6 +24,7 @@ type Props = {
 };
 
 export function NeighbourhoodExplorer({ eyebrow, title, description, neighbourhoods }: Props) {
+  const ui = useUi();
   const [active, setActive] = useState(0);
   const current = neighbourhoods[active];
 
@@ -63,7 +66,7 @@ export function NeighbourhoodExplorer({ eyebrow, title, description, neighbourho
         className="mt-14 flex w-full max-w-[1200px] flex-col items-center"
       >
         <div className="text-center">
-          <h3 className="font-serif text-[30px] font-normal leading-[1.15] sm:text-[34px]">Explore {current.name}</h3>
+          <h3 className="font-serif text-[30px] font-normal leading-[1.15] sm:text-[34px]">{ui.explore} {current.name}</h3>
           <p className="mx-auto mt-4 max-w-[640px] text-[15px] font-light leading-[1.7] opacity-85">{current.intro}</p>
         </div>
 
@@ -89,7 +92,7 @@ export function NeighbourhoodExplorer({ eyebrow, title, description, neighbourho
                     href={p.href ?? "#"}
                     className="mt-4 inline-flex items-center gap-2.5 self-start border-b border-clay/55 pb-1 pt-1 text-[11px] font-medium uppercase tracking-[0.32em] transition-colors duration-[180ms] hover:border-umber/70 hover:text-umber"
                   >
-                    <span>Explore place</span>
+                    <span>{ui.explorePlace}</span>
                     <svg viewBox="0 0 16 12" width="14" height="10" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
                       <path d="M1 6 H14 M10 2 L14 6 L10 10" />
                     </svg>

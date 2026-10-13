@@ -30,6 +30,21 @@ import {
   SirvoyBookingSection,
 } from "./home-sections";
 import { lucideIcon, whyWowIcon, withLineBreaks } from "./icon-map";
+import {
+  AboutStory,
+  BookingCta,
+  CareersCallout,
+  ContactDetails,
+  EditorialSplit,
+  GalleryGrid,
+  GettingAround,
+  GiftCardSection,
+  LocationCards,
+  LocationsMap,
+  PageIntro,
+  QuoteBand,
+  StatementBand,
+} from "./page-sections";
 
 /**
  * Renders the ordered sections a page returns from the CMS.
@@ -46,7 +61,7 @@ function UnknownSection({ section }: { section: Section }) {
 
   return (
     <div className="border-2 border-dashed border-destructive/50 bg-destructive/5 p-6 text-center text-sm text-destructive">
-      <strong>CMS section not rendered:</strong> {section.type}
+      <strong>CMS section not rendered:</strong> {section.type}{/* content-exempt: development-only diagnostic, hidden in production */}
       {!section.valid && <> — {section.reason}</>}
     </div>
   );
@@ -67,14 +82,7 @@ function renderSection(section: ValidSection) {
       const p = section.props;
       return (
         <HomeAccommodationTabs
-          eyebrow={p.eyebrow}
-          heading={p.heading}
-          description={p.description}
-          roomsTabLabel={p.roomsTabLabel ?? "Rooms"}
-          apartmentsTabLabel={p.apartmentsTabLabel ?? "Apartments"}
-          roomsActionLabel={p.roomsActionLabel ?? "Book"}
-          apartmentsActionLabel={p.apartmentsActionLabel ?? "See Availability"}
-          viewAllLabel={p.viewAllLabel}
+          {...p}
           rooms={p.rooms as Accommodation[]}
           apartments={p.apartments as Accommodation[]}
         />
@@ -118,7 +126,7 @@ function renderSection(section: ValidSection) {
     }
 
     case "included_benefits":
-      return <IncludedBenefits benefits={section.props.benefits} />;
+      return <IncludedBenefits {...section.props} />;
 
     case "guest_experiences":
       return <GuestExperiences {...section.props} />;
@@ -154,7 +162,7 @@ function renderSection(section: ValidSection) {
       return <SirvoyBookingSection />;
 
     case "welcoming_locations":
-      return <WelcomingLocations showViewAll={section.props.showViewAll ?? true} />;
+      return <WelcomingLocations {...section.props} showViewAll={section.props.showViewAll ?? true} />;
 
     case "neighbourhood_explorer":
       return <NeighbourhoodExplorer {...section.props} />;
@@ -226,9 +234,49 @@ function renderSection(section: ValidSection) {
             })),
           }}
           cancellation={p.cancellation}
+          labels={p.labels}
         />
       );
     }
+
+    case "about_story":
+      return <AboutStory {...section.props} />;
+
+    case "quote_band":
+      return <QuoteBand {...section.props} />;
+
+    case "location_cards":
+      return <LocationCards {...section.props} />;
+
+    case "editorial_split":
+      return <EditorialSplit {...section.props} />;
+
+    case "careers_callout":
+      return <CareersCallout {...section.props} />;
+
+    case "contact_details":
+      return <ContactDetails {...section.props} />;
+
+    case "gift_card":
+      return <GiftCardSection {...section.props} />;
+
+    case "page_intro":
+      return <PageIntro {...section.props} />;
+
+    case "gallery_grid":
+      return <GalleryGrid {...section.props} />;
+
+    case "booking_cta":
+      return <BookingCta {...section.props} />;
+
+    case "locations_map":
+      return <LocationsMap {...section.props} />;
+
+    case "statement_band":
+      return <StatementBand {...section.props} />;
+
+    case "getting_around":
+      return <GettingAround {...section.props} />;
 
     default: {
       // Exhaustiveness guard: adding a layout to the CMS without a branch here

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Calendar, ChevronDown, Lock } from "lucide-react";
 
+import { useSite } from "@/components/cms/site-context";
+import { text } from "@/lib/cms/globals";
+
 export type EnquiryFormProps = {
   eyebrow: string;
   heading: string;
@@ -14,7 +17,7 @@ export type EnquiryFormProps = {
     /** When provided, renders a dropdown with these options (plus the default value) instead of the locked field. */
     options?: string[];
   };
-  /** Caption under the locked field. Defaults to "Selected from this page". */
+  /** Caption under the locked field; falls back to Site settings › Enquiry form. */
   lockedCaption?: string;
   /** Optional add-on checkboxes in the left column. */
   services: string[];
@@ -86,12 +89,15 @@ export function EnquiryForm({
   heading,
   description,
   locked,
-  lockedCaption = "Selected from this page",
+  lockedCaption,
   services,
-  submitLabel = "Send enquiry",
+  submitLabel,
   minStayNights = 7,
   maxGuests = 6,
 }: EnquiryFormProps) {
+  // Field labels and placeholders: WordPress › Site settings › Interface text › Enquiry form.
+  const { enquiryForm } = useSite();
+  const t = (key: string) => text(enquiryForm, key);
   const [checkin, setCheckin] = useState("");
   const [size, setSize] = useState("");
   const sizes = APARTMENT_SIZES.filter((guests) => guests <= maxGuests);
@@ -147,11 +153,11 @@ export function EnquiryForm({
               </div>
             )}
             {!locked.options && <input type="hidden" name={locked.hiddenName} value={locked.hiddenValue} form="wow-enquire-form" />}
-            <p className="mt-1.5 text-[11px] text-clay/85">{lockedCaption}</p>
+            <p className="mt-1.5 text-[11px] text-clay/85">{lockedCaption || t("lockedCaption")}</p>
           </div>
 
           <div>
-            <p className="m-0 pl-[0.32em] text-[10px] font-normal uppercase tracking-[0.32em] text-clay">Optional services</p>
+            <p className="m-0 pl-[0.32em] text-[10px] font-normal uppercase tracking-[0.32em] text-clay">{t("servicesHeading")}</p>
             <div className="mt-4 flex flex-col gap-3">
               {services.map((service) => (
                 <label key={service} className="inline-flex cursor-pointer select-none items-center gap-3 text-[15px] text-taupe">
@@ -171,34 +177,34 @@ export function EnquiryForm({
         {/* Right: form */}
         <form
           id="wow-enquire-form"
-          aria-label="Enquire about your stay"
+          aria-label={t("ariaLabel")}
           onSubmit={(event) => event.preventDefault()}
         >
           <div className="grid grid-cols-1 gap-x-8 gap-y-[22px] sm:grid-cols-2">
             <div>
-              <FieldLabel htmlFor="wow-first">First name</FieldLabel>
-              <input id="wow-first" name="firstName" type="text" required placeholder="e.g. Anna" autoComplete="given-name" className={FIELD_CLASS} />
+              <FieldLabel htmlFor="wow-first">{t("firstName")}</FieldLabel>
+              <input id="wow-first" name="firstName" type="text" required placeholder={t("firstNamePlaceholder")} autoComplete="given-name" className={FIELD_CLASS} />
             </div>
             <div>
-              <FieldLabel htmlFor="wow-surname">Surname</FieldLabel>
-              <input id="wow-surname" name="surname" type="text" required placeholder="e.g. Andersson" autoComplete="family-name" className={FIELD_CLASS} />
-            </div>
-
-            <div>
-              <FieldLabel htmlFor="wow-phone">Phone</FieldLabel>
-              <input id="wow-phone" name="phone" type="tel" required placeholder="e.g. +46 70 123 45 67" autoComplete="tel" className={FIELD_CLASS} />
-            </div>
-            <div>
-              <FieldLabel htmlFor="wow-email">Email</FieldLabel>
-              <input id="wow-email" name="email" type="email" required placeholder="e.g. anna@company.com" autoComplete="email" className={FIELD_CLASS} />
+              <FieldLabel htmlFor="wow-surname">{t("surname")}</FieldLabel>
+              <input id="wow-surname" name="surname" type="text" required placeholder={t("surnamePlaceholder")} autoComplete="family-name" className={FIELD_CLASS} />
             </div>
 
             <div>
-              <FieldLabel htmlFor="wow-people">Number of people</FieldLabel>
-              <input id="wow-people" name="people" type="number" min={1} max={maxGuests} required placeholder="e.g. 4" onChange={(event) => handlePeopleChange(event.target.value)} className={FIELD_CLASS} />
+              <FieldLabel htmlFor="wow-phone">{t("phone")}</FieldLabel>
+              <input id="wow-phone" name="phone" type="tel" required placeholder={t("phonePlaceholder")} autoComplete="tel" className={FIELD_CLASS} />
             </div>
             <div>
-              <FieldLabel htmlFor="wow-size">Apartment size</FieldLabel>
+              <FieldLabel htmlFor="wow-email">{t("email")}</FieldLabel>
+              <input id="wow-email" name="email" type="email" required placeholder={t("emailPlaceholder")} autoComplete="email" className={FIELD_CLASS} />
+            </div>
+
+            <div>
+              <FieldLabel htmlFor="wow-people">{t("people")}</FieldLabel>
+              <input id="wow-people" name="people" type="number" min={1} max={maxGuests} required placeholder={t("peoplePlaceholder")} onChange={(event) => handlePeopleChange(event.target.value)} className={FIELD_CLASS} />
+            </div>
+            <div>
+              <FieldLabel htmlFor="wow-size">{t("size")}</FieldLabel>
               <div className="relative">
                 <select
                   id="wow-size"
@@ -209,11 +215,11 @@ export function EnquiryForm({
                   className={`${FIELD_CLASS} cursor-pointer appearance-none pr-11 ${size ? "" : "text-clay/80"}`}
                 >
                   <option value="" disabled>
-                    Select size
+                    {t("sizePlaceholder")}
                   </option>
                   {sizes.map((guests) => (
                     <option key={guests} value={guests} className="text-taupe">
-                      Up to {guests} guests
+                      {[t("sizeUpTo"), guests, t("sizeGuests")].filter((part) => part !== "").join(" ")}
                     </option>
                   ))}
                 </select>
@@ -221,31 +227,31 @@ export function EnquiryForm({
               </div>
             </div>
 
-            <DateField id="wow-checkin" name="checkin" label="Check in" onChange={setCheckin} />
-            <DateField id="wow-checkout" name="checkout" label="Check out" min={addDays(checkin, minStayNights)} />
+            <DateField id="wow-checkin" name="checkin" label={t("checkIn")} onChange={setCheckin} />
+            <DateField id="wow-checkout" name="checkout" label={t("checkOut")} min={addDays(checkin, minStayNights)} />
           </div>
 
           <div className="mt-[22px]">
             <label htmlFor="wow-notes" className="mb-2 block text-xs font-normal tracking-[0.02em] text-taupe">
-              Other information we need to know
+              {t("other")}
             </label>
             <textarea
               id="wow-notes"
               name="notes"
               rows={3}
-              placeholder="e.g. purpose of stay, company, special requests..."
+              placeholder={t("otherPlaceholder")}
               className="min-h-[100px] w-full resize-y rounded-[4px] border border-clay/30 bg-pearl px-3.5 py-3 font-sans text-[15px] font-light leading-[1.5] text-taupe transition-[border-color,box-shadow] duration-[180ms] outline-none placeholder:text-clay/80 focus:border-taupe focus:shadow-[0_0_0_3px_var(--color-clay)/0.14] motion-reduce:transition-none"
             />
           </div>
 
-          <p className="mt-4 text-xs text-clay">* Required fields</p>
+          <p className="mt-4 text-xs text-clay">{t("requiredNote")}</p>
 
           <div className="mt-8">
             <button
               type="submit"
               className="inline-flex h-12 cursor-pointer items-center justify-center gap-3.5 rounded-cta bg-taupe px-9 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl transition-colors duration-[180ms] motion-safe:hover:bg-[oklch(0.28_0.010_60)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-clay motion-reduce:transition-none"
             >
-              <span>{submitLabel}</span>
+              <span>{submitLabel || t("submit")}</span>
             </button>
           </div>
         </form>

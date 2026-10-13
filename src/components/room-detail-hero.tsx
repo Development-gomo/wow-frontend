@@ -1,12 +1,13 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import { useUi } from "@/components/cms/site-context";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type RoomGalleryImage = { url: string; alt: string };
 
 type RoomDetailHeroProps = {
-  breadcrumbParent: { label: string; to: "/rooms" | "/apartments" };
+  breadcrumbParent: { label: string; to: string };
   kicker: string;
   title: string;
   description: string;
@@ -25,6 +26,7 @@ const THUMBS_VISIBLE = 4;
 
 /** Detail-page hero: gallery with dark side arrows and a hover-revealed dot cluster, plus room summary. */
 export function RoomDetailHero({ breadcrumbParent, kicker, title, description, location, chips, optionsLabel, note, ctaLabel, ctaHref, images }: RoomDetailHeroProps) {
+  const ui = useUi();
   const [index, setIndex] = useState(0);
   const [thumbStart, setThumbStart] = useState(0);
   const total = images.length;
@@ -42,7 +44,7 @@ export function RoomDetailHero({ breadcrumbParent, kicker, title, description, l
   return (
     <section className="flex flex-col items-center bg-sand px-6 pb-16 pt-28 sm:pt-32 md:px-20">
       <nav aria-label="Breadcrumb" className="w-full max-w-[1200px] text-[11px] font-normal uppercase tracking-[0.24em] text-clay">
-        <Link to="/" className="transition-colors duration-200 hover:text-umber">Home</Link>
+        <Link to="/" className="transition-colors duration-200 hover:text-umber">{ui.breadcrumbHome}</Link>
         <span aria-hidden="true" className="px-3">›</span>
         <Link to={breadcrumbParent.to} className="transition-colors duration-200 hover:text-umber">{breadcrumbParent.label}</Link>
         <span aria-hidden="true" className="px-3">›</span>

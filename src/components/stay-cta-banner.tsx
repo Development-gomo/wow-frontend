@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import contactBedroom from "@/assets/contact/contact-callout-bedroom.jpg.asset.json";
 import { cn } from "@/lib/utils";
 
 type StayCtaBannerProps = {
@@ -13,40 +12,44 @@ type StayCtaBannerProps = {
   /** Omit to render a single-button banner. */
   secondaryLabel?: string;
   secondaryTo?: string;
-  /** Override the background photo for this banner only; defaults to the shared bedroom photo. */
+  /** Background photo, from the CMS. */
   imageUrl?: string;
   /** Screen-reader description of the photo. */
   imageAlt?: string;
 };
 
 export function StayCtaBanner({
-  eyebrow = "Stay your way",
+  eyebrow,
   title,
   titleClassName,
   description,
-  primaryLabel = "Book room",
-  primaryTo = "/book-room",
+  primaryLabel,
+  primaryTo,
   secondaryLabel,
-  secondaryTo = "/book-apartment",
-  imageUrl = contactBedroom.url,
-  imageAlt = "A warm bedroom and sunlit window in one of our homes",
+  secondaryTo,
+  imageUrl,
+  imageAlt = "",
 }: StayCtaBannerProps) {
   return (
     <section
       aria-labelledby="stay-cta-heading"
       className="relative overflow-hidden px-6 py-[88px] sm:px-20"
     >
-      <img
-        src={imageUrl}
-        alt={imageAlt}
-        className="absolute inset-0 h-full w-full object-cover object-center"
-        loading="lazy"
-      />
+      {imageUrl && (
+        <img
+          src={imageUrl}
+          alt={imageAlt}
+          className="absolute inset-0 h-full w-full object-cover object-center"
+          loading="lazy"
+        />
+      )}
       <div aria-hidden="true" className="absolute inset-0 bg-umber/50" />
       <div className="relative mx-auto flex max-w-[620px] flex-col items-center text-center">
-        <p className="pl-[0.45em] text-[10px] font-normal uppercase tracking-[0.45em] text-pearl/85">
-          {eyebrow}
-        </p>
+        {eyebrow && (
+          <p className="pl-[0.45em] text-[10px] font-normal uppercase tracking-[0.45em] text-pearl/85">
+            {eyebrow}
+          </p>
+        )}
         <h2
           id="stay-cta-heading"
           className={cn(
@@ -62,13 +65,15 @@ export function StayCtaBanner({
           </p>
         ) : null}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-cta">
-          <Link
-            to={primaryTo}
-            className="inline-flex h-12 items-center justify-center rounded-cta border border-pearl bg-pearl px-8 text-[11px] font-medium uppercase tracking-[0.28em] text-taupe transition-colors duration-200 hover:bg-sand hover:text-umber"
-          >
-            {primaryLabel}
-          </Link>
-          {secondaryLabel ? (
+          {primaryLabel && primaryTo ? (
+            <Link
+              to={primaryTo}
+              className="inline-flex h-12 items-center justify-center rounded-cta border border-pearl bg-pearl px-8 text-[11px] font-medium uppercase tracking-[0.28em] text-taupe transition-colors duration-200 hover:bg-sand hover:text-umber"
+            >
+              {primaryLabel}
+            </Link>
+          ) : null}
+          {secondaryLabel && secondaryTo ? (
             <Link
               to={secondaryTo}
               className="inline-flex h-12 items-center justify-center rounded-cta border border-pearl/60 bg-transparent px-8 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl transition-colors duration-200 hover:border-pearl hover:bg-pearl hover:text-taupe"

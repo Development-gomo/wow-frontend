@@ -3,7 +3,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 
+import { SiteProvider } from "@/components/cms/site-context";
 import { SiteNavbar } from "@/components/site-navbar";
+import type { Globals } from "@/lib/cms/globals";
 import { SiteFooter } from "@/components/site-footer";
 
 /**
@@ -14,14 +16,16 @@ import { SiteFooter } from "@/components/site-footer";
  * beneath them) keep their original hooks and event handlers without needing a
  * "use client" directive added to any migrated component file.
  */
-export function Providers({ children }: { children: ReactNode }) {
+export function Providers({ children, globals }: { children: ReactNode; globals: Globals }) {
   const [queryClient] = useState(() => new QueryClient());
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SiteNavbar />
-      {children}
-      <SiteFooter />
+      <SiteProvider value={globals}>
+        <SiteNavbar />
+        {children}
+        <SiteFooter />
+      </SiteProvider>
     </QueryClientProvider>
   );
 }

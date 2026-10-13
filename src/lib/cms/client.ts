@@ -1,5 +1,6 @@
 import "server-only";
 
+import { EMPTY_GLOBALS, globalsSchema, type Globals } from "./globals";
 import { pageIndexSchema, pageSchema, parseSection, type Section } from "./schema";
 
 /**
@@ -20,6 +21,7 @@ const NAMESPACE = "wow/v1";
 export const CACHE_TAGS = {
   all: "cms",
   pages: "cms:pages",
+  globals: "cms:globals",
   page: (slug: string) => `cms:page:${slug || "home"}`,
 } as const;
 
@@ -130,4 +132,31 @@ export async function getPage(slug: string, { preview = false } = {}): Promise<C
     seo: parsed.data.seo,
     sections,
   };
+}
+
+/**
+ * Site settings and menus.
+ *
+ * Fetched once per render tree by the root layout and handed to the client
+ * through SiteProvider. Falls back to an all-empty value if WordPress is
+ * unreachable, so the site degrades to missing copy instead of crashing.
+ */
+export async function getGlobals(): Promise<Globals> {
+  try {
+    const raw = await cmsFetch("/globals", { tags: [CACHE_TAGS.globals] });
+
+    if (!raw) return EMPTY_GLOBALS;
+
+    const parsed = globalsSchema.safeParse(raw);
+
+    if (!parsed.success) {
+      console.error("[cms] /globals failed validation:", parsed.error.issues.slice(0, 5));
+      return EMPTY_GLOBALS;
+    }
+
+    return parsed.data;
+  } catch (error) {
+    console.error("[cms] could not load globals:", error);
+    return EMPTY_GLOBALS;
+  }
 }
