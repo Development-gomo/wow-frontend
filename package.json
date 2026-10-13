@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prebuild": "node scripts/generate-cms-safelist.mjs",
+    "safelist": "node scripts/generate-cms-safelist.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
