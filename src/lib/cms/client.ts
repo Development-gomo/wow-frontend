@@ -1,6 +1,6 @@
 import "server-only";
 
-import { EMPTY_GLOBALS, globalsSchema, type Globals } from "./globals";
+import { globalsSchema, type Globals } from "./globals";
 import { pageIndexSchema, pageSchema, parseSection, type Section } from "./schema";
 
 /**
@@ -47,6 +47,15 @@ type FetchOptions = {
   noStore?: boolean;
 };
 
+/**
+ * Fetch one CMS endpoint and return its parsed JSON.
+ *
+ * Anything other than a 200 JSON answer is an error, never data. A host bot
+ * check (SiteGround's sgcaptcha replies 202 with an HTML redirect page), a
+ * maintenance page or a proxy error must not be rendered as an empty site
+ * and cached: throwing makes the build fail, and during background
+ * revalidation Next keeps serving the last good page instead.
+ */
 async function cmsFetch(path: string, { tags = [], noStore = false }: FetchOptions = {}) {
   const url = `${BASE}/wp-json/${NAMESPACE}${path}`;
 
@@ -57,11 +66,15 @@ async function cmsFetch(path: string, { tags = [], noStore = false }: FetchOptio
       : { next: { revalidate: REVALIDATE_SECONDS, tags: [CACHE_TAGS.all, ...tags] } }),
   });
 
-  if (!response.ok) {
-    // 404 is a legitimate answer for "no such page", not an outage.
-    if (response.status === 404) return null;
+  // 404 is a legitimate answer for "no such page", not an outage.
+  if (response.status === 404) return null;
 
-    throw new Error(`CMS ${response.status} for ${path}`);
+  const type = response.headers.get("content-type") ?? "";
+
+  if (response.status !== 200 || !type.includes("application/json")) {
+    const body = await response.text().catch(() => "");
+    const challenged = body.includes("sgcaptcha") ? " (host bot challenge)" : "";
+    throw new Error(`CMS ${response.status} ${type || "no content-type"} for ${path}${challenged}`);
   }
 
   return response.json();
@@ -113,8 +126,9 @@ export async function getPage(slug: string, { preview = false } = {}): Promise<C
   const parsed = pageSchema.safeParse(raw);
 
   if (!parsed.success) {
+    // Not "page not found": a malformed answer must not be cached as a 404.
     console.error(`[cms] page "${slug}" failed validation:`, parsed.error.issues.slice(0, 5));
-    return null;
+    throw new Error(`CMS page "${slug}" failed validation`);
   }
 
   const sections = parsed.data.sections.map(parseSection);
@@ -138,25 +152,24 @@ export async function getPage(slug: string, { preview = false } = {}): Promise<C
  * Site settings and menus.
  *
  * Fetched once per render tree by the root layout and handed to the client
- * through SiteProvider. Falls back to an all-empty value if WordPress is
- * unreachable, so the site degrades to missing copy instead of crashing.
+ * through SiteProvider.
+ *
+ * An unreachable or invalid CMS throws rather than returning empty values:
+ * a site without its navigation and footer must never be rendered and cached.
+ * During revalidation Next then keeps serving the last good version.
  */
 export async function getGlobals(): Promise<Globals> {
-  try {
-    const raw = await cmsFetch("/globals", { tags: [CACHE_TAGS.globals] });
+  const raw = await cmsFetch("/globals", { tags: [CACHE_TAGS.globals] });
 
-    if (!raw) return EMPTY_GLOBALS;
+  // The endpoint always exists; a 404 means the plugin is missing.
+  if (!raw) throw new Error("CMS /globals not found");
 
-    const parsed = globalsSchema.safeParse(raw);
+  const parsed = globalsSchema.safeParse(raw);
 
-    if (!parsed.success) {
-      console.error("[cms] /globals failed validation:", parsed.error.issues.slice(0, 5));
-      return EMPTY_GLOBALS;
-    }
-
-    return parsed.data;
-  } catch (error) {
-    console.error("[cms] could not load globals:", error);
-    return EMPTY_GLOBALS;
+  if (!parsed.success) {
+    console.error("[cms] /globals failed validation:", parsed.error.issues.slice(0, 5));
+    throw new Error("CMS /globals failed validation");
   }
+
+  return parsed.data;
 }
