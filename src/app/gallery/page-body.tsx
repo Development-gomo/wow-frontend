@@ -2,6 +2,7 @@
 
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { BookActions } from "@/components/book-actions";
 import { Button } from "@/components/ui/button";
 import bedroom from "@/assets/gallery/gallery-bedroom.jpg.asset.json";
 import living from "@/assets/uploads/IMG_1256.asset.json";
@@ -98,12 +99,7 @@ export function GalleryPage() {
           Rooms for a few nights and apartments for longer stays, in three calm Gothenburg neighbourhoods — Vasastan, Örgryte and Johanneberg. Each home is furnished with care, so you can arrive, unpack and feel settled from the first evening.
         </p>
         <div className="mt-9 flex flex-wrap justify-center gap-cta">
-          <Button asChild className="h-12 rounded-cta bg-taupe px-8 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl shadow-none hover:bg-umber">
-            <Link to="/rooms">Book room</Link>
-          </Button>
-          <Button asChild variant="outline" className="h-12 rounded-cta border-taupe/40 bg-transparent px-8 text-[11px] font-medium uppercase tracking-[0.28em] text-taupe shadow-none hover:bg-sand">
-            <Link to="/apartments">Book apartment</Link>
-          </Button>
+          <BookActions />
         </div>
       </section>
 

@@ -81,7 +81,7 @@ export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabe
           {rooms.map((room, cardIndex) => (
             <div key={`${room.title}-${cardIndex}`} data-similar-card className="flex w-full flex-none snap-start md:w-[calc((100%-32px)/2)] lg:w-[calc((100%-64px)/3)]">
               <article className="group flex w-full flex-col transition-transform duration-300 motion-safe:hover:-translate-y-0.5 motion-reduce:transition-none">
-                <div className="aspect-[3/2] overflow-hidden rounded-[4px]">
+                <div className="aspect-[3/2] overflow-hidden">
                   <img src={room.image} alt={room.imageAlt} loading="lazy" className="h-full w-full object-cover" />
                 </div>
                 <div className="relative z-10 mx-auto -mt-5 flex w-[calc(100%-24px)] flex-1 flex-col bg-pearl px-6 py-6 shadow-accommodation">

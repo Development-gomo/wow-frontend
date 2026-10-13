@@ -31,7 +31,7 @@ export function RoomVariations({ title, options, label }: RoomVariationsProps) {
           {options.map((option) => (
             <li key={option.title} className="flex">
               <article className="group flex w-full flex-col transition-transform duration-[220ms] motion-safe:hover:-translate-y-0.5 motion-reduce:transition-none">
-                <div className="relative h-[240px] shrink-0 overflow-hidden rounded-[4px]">
+                <div className="relative h-[240px] shrink-0 overflow-hidden">
                   <img src={option.image} alt={option.imageAlt} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
                 </div>
 
