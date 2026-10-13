@@ -274,12 +274,19 @@ export function HomeAccommodationTabs({
  * SirvoyBooking renders only the widget host div. On /book-room the baseline
  * wrapped it in a card that overlaps the hero; that wrapper is structural, so
  * it lives here rather than becoming an editable field.
+ *
+ * The 128px margin under the card is bare page background. The original page
+ * sat on a bg-linen wrapper, so that gap matched the listing below it; the CMS
+ * page wrapper is bg-background (sand), so the gap needs its own linen backing.
+ * flow-root keeps the margin inside this box so the backing covers it.
  */
 export function SirvoyBookingSection() {
   return (
-    <section aria-label="Room booking" /* content-exempt: landmark label for the booking widget region */ className="relative z-10 mx-5 -mt-16 mb-[128px] bg-white md:mx-20 md:-mt-24">
-      <SirvoyBooking />
-    </section>
+    <div className="flow-root bg-linen">
+      <section aria-label="Room booking" /* content-exempt: landmark label for the booking widget region */ className="relative z-10 mx-5 -mt-16 mb-[128px] bg-white md:mx-20 md:-mt-24">
+        <SirvoyBooking />
+      </section>
+    </div>
   );
 }
 
