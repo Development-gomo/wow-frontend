@@ -107,7 +107,7 @@ export function HomeIntro({
   stats: StatItem[];
 }) {
   return (
-    <section className="px-6 pt-16 pb-16 md:px-10 text-center">
+    <section className="px-6 py-32 md:px-10 text-center">
       <div className="mx-auto max-w-4xl">
         <span className="block text-[10px] uppercase tracking-[0.35em] text-clay mb-6">
           {eyebrow}
