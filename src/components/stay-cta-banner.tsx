@@ -1,4 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { CmsImage } from "@/components/cms/cms-image";
+import { SIZES } from "@/lib/cms/image";
 import { cn } from "@/lib/utils";
 
 type StayCtaBannerProps = {
@@ -36,11 +38,14 @@ export function StayCtaBanner({
       className="relative overflow-hidden px-6 py-[88px] sm:px-20"
     >
       {imageUrl && (
-        <img
+        <CmsImage
           src={imageUrl}
           alt={imageAlt}
-          className="absolute inset-0 h-full w-full object-cover object-center"
+          width={1920}
+          height={1080}
+          sizes={SIZES.fullWidth}
           loading="lazy"
+          className="absolute inset-0 h-full w-full object-cover object-center"
         />
       )}
       <div aria-hidden="true" className="absolute inset-0 bg-umber/50" />

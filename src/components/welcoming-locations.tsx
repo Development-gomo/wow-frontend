@@ -1,4 +1,12 @@
 import { Link } from "@tanstack/react-router";
+import { CmsImage } from "@/components/cms/cms-image";
+
+/** Each collage photo's share of the 7/12 column (≈700px at most), full width below md. */
+const COLLAGE_SIZES = [
+  "(min-width: 1280px) 500px, (min-width: 768px) 42vw, 72vw",
+  "(min-width: 1280px) 310px, (min-width: 768px) 26vw, 44vw",
+  "(min-width: 1280px) 320px, (min-width: 768px) 27vw, 46vw",
+];
 
 type LocationPhoto = {
   src: string;
@@ -72,12 +80,13 @@ export function WelcomingLocations({ eyebrow, heading, showViewAll = true, viewA
                           ][photoIndex]
                         }`}
                       >
-                        <img
+                        <CmsImage
                           src={photo.src}
                           alt={photo.alt}
                           loading="lazy"
-                          width={photo.width}
-                          height={photo.height}
+                          width={photo.width ?? 1024}
+                          height={photo.height ?? 1280}
+                          sizes={COLLAGE_SIZES[photoIndex]}
                           className="h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out group-hover:scale-105"
                         />
                       </div>

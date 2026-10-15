@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { useUi } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
+import { CmsImage } from "@/components/cms/cms-image";
+import { SIZES } from "@/lib/cms/image";
 import { cn } from "@/lib/utils";
 
 export type Accommodation = {
@@ -42,10 +44,13 @@ type AccommodationListingProps = {
   viewAllLabel?: string;
 };
 
+/** A wide card's photo takes 52% of the row from md up. */
+const WIDE_CARD_SIZES = "(min-width: 1280px) 624px, (min-width: 768px) 52vw, 100vw";
+
 const readMoreCls =
   "border-b border-clay/50 pb-[3px] text-[11px] font-medium uppercase tracking-[0.24em] text-taupe transition-colors duration-150 hover:text-umber";
 
-function CardCarousel({ images, title, heightClass = "h-[240px]" }: { images: string[]; title: string; heightClass?: string }) {
+function CardCarousel({ images, title, heightClass = "h-[240px]", sizes = SIZES.card }: { images: string[]; title: string; heightClass?: string; sizes?: string }) {
   const [index, setIndex] = useState(0);
   const count = images.length;
   const go = (step: number) => setIndex((i) => (i + step + count) % count);
@@ -58,10 +63,13 @@ function CardCarousel({ images, title, heightClass = "h-[240px]" }: { images: st
         style={{ transform: `translateX(-${index * 100}%)` }}
       >
         {images.map((src, i) => (
-          <img
+          <CmsImage
             key={`${src}-${i}`}
             src={src}
             alt={`${title} photo ${i + 1} of ${count}`}
+            width={800}
+            height={600}
+            sizes={sizes}
             loading="lazy"
             aria-hidden={i !== index}
             className="h-full w-full flex-none object-cover"
@@ -111,7 +119,7 @@ export function AccommodationCard({ accommodation, actionLabel, actionTo, hideDi
     <article className={`group flex w-full flex-col ${wide ? "md:col-span-2 md:flex-row lg:col-span-3" : ""}`}>
       {wide ? (
         <div className="md:w-[52%] md:shrink-0">
-          <CardCarousel images={photos} title={accommodation.title} heightClass="h-[240px] md:h-full" />
+          <CardCarousel images={photos} title={accommodation.title} heightClass="h-[240px] md:h-full" sizes={WIDE_CARD_SIZES} />
         </div>
       ) : (
         <CardCarousel images={photos} title={accommodation.title} />

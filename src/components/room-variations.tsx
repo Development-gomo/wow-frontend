@@ -1,5 +1,7 @@
 import { BedSingle, Expand, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CmsImage } from "@/components/cms/cms-image";
+import { SIZES } from "@/lib/cms/image";
 
 export type RoomVariation = {
   title: string;
@@ -38,7 +40,7 @@ export function RoomVariations({ title, options, label, heading, pricePrefix, pr
             <li key={option.title} className="flex">
               <article className="group flex w-full flex-col transition-transform duration-[220ms] motion-safe:hover:-translate-y-0.5 motion-reduce:transition-none">
                 <div className="relative h-[240px] shrink-0 overflow-hidden">
-                  <img src={option.image} alt={option.imageAlt} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+                  <CmsImage src={option.image} alt={option.imageAlt} width={800} height={480} sizes={SIZES.card} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
                 </div>
 
                 <div className="relative z-10 mx-auto -mt-5 flex w-[calc(100%-24px)] min-w-0 flex-1 flex-col bg-pearl shadow-accommodation">

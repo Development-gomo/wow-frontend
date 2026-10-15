@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils";
+import { CmsImage } from "@/components/cms/cms-image";
+import { SIZES } from "@/lib/cms/image";
 import { ProcessSteps, type ProcessStep } from "@/components/process-steps";
 
 type PageHeroProps = {
@@ -37,11 +39,15 @@ export function PageHero({
         className,
       )}
     >
-      <img
+      <CmsImage
         src={media.imageUrl}
         alt={media.imageAlt}
-        className="absolute inset-0 h-full w-full object-cover object-center"
+        width={1920}
+        height={850}
+        sizes={SIZES.fullWidth}
+        loading="eager"
         fetchPriority="high"
+        className="absolute inset-0 h-full w-full object-cover object-center"
       />
       <div aria-hidden="true" className={cn("absolute inset-0", overlayClassName)} />
       <div

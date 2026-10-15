@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 import { useUi } from "@/components/cms/site-context";
+import { CmsImage } from "@/components/cms/cms-image";
+import { SIZES } from "@/lib/cms/image";
 
 export type ExplorePlace = {
   kicker: string;
@@ -76,9 +78,12 @@ export function NeighbourhoodExplorer({ eyebrow, title, description, neighbourho
               <article className="group flex h-full flex-col overflow-hidden rounded-[4px] bg-pearl shadow-[0_4px_40px_rgba(0,0,0,0.06)] transition-[transform,box-shadow] duration-[260ms] ease-out hover:-translate-y-[3px] hover:shadow-[0_14px_46px_rgba(0,0,0,0.10)]">
                 <div className="aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-sand to-clay/50">
                   {p.image && (
-                    <img
+                    <CmsImage
                       src={p.image}
                       alt={p.title}
+                      width={1600}
+                      height={1000}
+                      sizes={SIZES.card}
                       loading="lazy"
                       className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                     />

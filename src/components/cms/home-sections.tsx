@@ -3,6 +3,9 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
+import { CmsImage } from "@/components/cms/cms-image";
+import { optimizedSrc } from "@/lib/cms/image";
+
 import { AccommodationGrid, type Accommodation } from "@/components/accommodation-listing";
 import { ProcessSteps, type ProcessStep } from "@/components/process-steps";
 import { SirvoyBooking } from "@/components/sirvoy-booking";
@@ -46,7 +49,8 @@ export function HomeHero({
     <section id="top" className="relative h-[100svh] min-h-[640px] w-full overflow-hidden">
       <video
         src={videoUrl}
-        poster={posterUrl}
+        // A poster has no srcset: one optimized 1920px frame instead of the raw upload.
+        poster={optimizedSrc(posterUrl, 960)}
         autoPlay
         muted
         loop
@@ -161,7 +165,7 @@ export function HomeGallery({
           {[0, 1].map((pass) => (
             <div key={pass} className="wow-gallery-set" aria-hidden={pass === 1 ? true : undefined}>
               {photos.map((photo, i) => (
-                <img key={i} src={photo.src} alt={pass === 0 ? photo.alt : ""} loading="lazy" className="w-[220px] md:w-[340px] aspect-[3/4] object-cover shrink-0" />
+                <CmsImage key={i} src={photo.src} alt={pass === 0 ? photo.alt : ""} width={340} height={453} sizes="(min-width: 768px) 340px, 220px" loading="lazy" className="w-[220px] md:w-[340px] h-auto aspect-[3/4] object-cover shrink-0" />
               ))}
             </div>
           ))}

@@ -8,6 +8,10 @@ import { BookActions } from "@/components/book-actions";
 import { ContactForm } from "@/components/contact-form";
 import { useSite } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
+import { getImageProps } from "next/image";
+
+import { CmsImage } from "./cms-image";
+import { SIZES } from "@/lib/cms/image";
 
 import { withLineBreaks } from "./icon-map";
 
@@ -51,7 +55,7 @@ export function AboutStory({ imageUrl, imageAlt, captionName, captionRole, eyebr
         <div className="flex min-w-0 flex-col gap-6">
           <div className="aspect-[1/1.08] w-full overflow-hidden lg:h-[480px] lg:aspect-auto">
             {imageUrl && (
-              <img src={imageUrl} alt={imageAlt} loading="lazy" className="h-full w-full object-cover object-center" />
+              <CmsImage src={imageUrl} alt={imageAlt} width={1100} height={1188} sizes="(min-width: 1280px) 530px, (min-width: 1024px) 42vw, 100vw" loading="lazy" className="h-full w-full object-cover object-center" />
             )}
           </div>
           <div className="flex items-center gap-[18px] px-1">
@@ -141,9 +145,12 @@ export function LocationCards({ eyebrow, heading, linkLabel, linkTo, cards }: {
           <article key={i} className="group flex min-w-0 flex-col">
             <div className="aspect-[4/3] w-full overflow-hidden">
               {card.image && (
-                <img
+                <CmsImage
                   src={card.image}
                   alt={card.imageAlt}
+                  width={800}
+                  height={600}
+                  sizes="(min-width: 1280px) 380px, (min-width: 768px) 31vw, 100vw"
                   loading="lazy"
                   className="h-full w-full object-cover object-center transition-transform duration-[1400ms] ease-out group-hover:scale-[1.05]"
                 />
@@ -190,7 +197,7 @@ export function EditorialSplit({ eyebrow, lead, text, linkLabel, linkTo, imageUr
 
         <div className="aspect-[1/0.88] w-full overflow-hidden lg:self-center">
           {imageUrl && (
-            <img src={imageUrl} alt={imageAlt} loading="lazy" className="h-full w-full object-cover object-center" />
+            <CmsImage src={imageUrl} alt={imageAlt} width={1100} height={968} sizes={SIZES.half} loading="lazy" className="h-full w-full object-cover object-center" />
           )}
         </div>
       </div>
@@ -227,7 +234,7 @@ export function CareersCallout({ imageUrl, imageAlt, eyebrow, heading, text, ema
       <div className="mx-auto flex max-w-[1200px] flex-col gap-12 md:flex-row md:gap-[96px]">
         <div className="aspect-[4/5] w-full min-w-0 flex-1 overflow-hidden md:aspect-auto md:h-auto">
           {imageUrl && (
-            <img src={imageUrl} alt={imageAlt} loading="lazy" width={1024} height={1280} className="h-full w-full object-cover object-center" />
+            <CmsImage src={imageUrl} alt={imageAlt} width={1024} height={1280} sizes="(min-width: 1280px) 460px, (min-width: 768px) 40vw, 100vw" loading="lazy" className="h-full w-full object-cover object-center" />
           )}
         </div>
 
@@ -412,12 +419,26 @@ export function PageIntro({ eyebrow, title, subtitle, text }: { eyebrow: string;
 
 type GalleryPhoto = { src: string; alt: string; shape: "small" | "feature" | "portrait" | "wide" };
 
+/** Rendered width per tile shape: 4 columns from md (max 1400px), 2 below. */
+const GALLERY_SIZES: Record<GalleryPhoto["shape"], string> = {
+  feature: "(min-width: 1400px) 680px, (min-width: 768px) 50vw, 100vw",
+  wide: "(min-width: 1400px) 680px, (min-width: 768px) 50vw, 100vw",
+  portrait: "(min-width: 1400px) 340px, (min-width: 768px) 25vw, 50vw",
+  small: "(min-width: 1400px) 340px, (min-width: 768px) 25vw, 50vw",
+};
+
 const SHAPE_CLASS: Record<GalleryPhoto["shape"], string> = {
   feature: "col-span-2 row-span-2 aspect-square md:aspect-auto",
   portrait: "row-span-2 aspect-[1/2] md:aspect-auto",
   wide: "col-span-2 aspect-[2/1] md:aspect-auto",
   small: "aspect-square md:aspect-auto",
 };
+
+/** Optimized src/srcSet for the full-screen viewer, sized to the viewport. */
+function viewerSource(src: string) {
+  const { props } = getImageProps({ src, alt: "", fill: true, sizes: "100vw" });
+  return { src: props.src, srcSet: props.srcSet, sizes: props.sizes };
+}
 
 function Arrow({ direction }: { direction: "left" | "right" }) {
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="h-6 w-6"><path d={direction === "left" ? "M19 12H5m6-6-6 6 6 6" : "M5 12h14m-6-6 6 6-6 6"} /></svg>;
@@ -457,7 +478,7 @@ export function GalleryGrid({ ariaLabel, photos }: { ariaLabel: string; photos: 
               aria-label={`${index + 1} / ${count}: ${photo.alt}`}
               className={`group relative block h-auto min-w-0 overflow-hidden rounded-[4px] bg-sand p-0 shadow-none hover:bg-sand focus-visible:ring-2 focus-visible:ring-clay ${SHAPE_CLASS[photo.shape]}`}
             >
-              <img src={photo.src} alt={photo.alt} loading={index < 5 ? "eager" : "lazy"} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.035] motion-reduce:transition-none" />
+              <CmsImage src={photo.src} alt={photo.alt} width={1200} height={1200} sizes={GALLERY_SIZES[photo.shape]} loading={index < 5 ? "eager" : "lazy"} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.035] motion-reduce:transition-none" />
               <span className="sr-only">{photo.alt}</span>
             </Button>
           ))}
@@ -474,7 +495,18 @@ export function GalleryGrid({ ariaLabel, photos }: { ariaLabel: string; photos: 
           </div>
           <div className="relative flex min-h-0 flex-1 items-center justify-center px-14 sm:px-24">
             <Button type="button" variant="ghost" size="icon" aria-label="Previous" /* content-exempt: control label */ onClick={() => setActive((active - 1 + count) % count)} className="absolute left-2 z-10 h-11 w-11 rounded-none text-linen hover:bg-linen/10 hover:text-linen sm:left-7"><Arrow direction="left" /></Button>
-            <img key={active} src={selected.src} alt={selected.alt} className="max-h-full max-w-full object-contain" />
+            {/* Plain <img> keeps the viewer's natural-size sizing; the optimizer supplies the srcset,
+                and the original file is the fallback if a variant cannot be produced. */}
+            <img
+              key={active}
+              {...viewerSource(selected.src)}
+              alt={selected.alt}
+              onError={(event) => {
+                const img = event.currentTarget;
+                if (img.src !== selected.src) { img.srcset = ""; img.src = selected.src; }
+              }}
+              className="max-h-full max-w-full object-contain"
+            />
             <Button type="button" variant="ghost" size="icon" aria-label="Next" /* content-exempt: control label */ onClick={() => setActive((active + 1) % count)} className="absolute right-2 z-10 h-11 w-11 rounded-none text-linen hover:bg-linen/10 hover:text-linen sm:right-7"><Arrow direction="right" /></Button>
           </div>
           <p className="shrink-0 px-4 py-5 text-center text-[13px] font-light tracking-[0.03em] text-linen/80">{selected.alt}</p>

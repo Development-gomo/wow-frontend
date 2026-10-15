@@ -1,3 +1,5 @@
+import { CmsImage } from "@/components/cms/cms-image";
+
 type Props = {
   eyebrow: string;
   title: string;
@@ -28,11 +30,14 @@ export function ExternalGuideCallout({ eyebrow, title, description, ctaLabel, ct
             </svg>
           </a>
         </div>
-        <img
+        <CmsImage
           src={image}
           alt={imageAlt}
+          width={1600}
+          height={1000}
+          sizes="(min-width: 1280px) 580px, (min-width: 1024px) 48vw, 100vw"
           loading="lazy"
-          className="aspect-[16/10] w-full rounded-[4px] object-cover"
+          className="aspect-[16/10] h-auto w-full rounded-[4px] object-cover"
         />
       </div>
     </section>

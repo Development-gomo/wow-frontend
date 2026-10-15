@@ -2,6 +2,8 @@ import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useUi } from "@/components/cms/site-context";
+import { CmsImage } from "@/components/cms/cms-image";
+import { SIZES } from "@/lib/cms/image";
 
 export type SimilarRoom = {
   title: string;
@@ -84,7 +86,7 @@ export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabe
             <div key={`${room.title}-${cardIndex}`} data-similar-card className="flex w-full flex-none snap-start md:w-[calc((100%-32px)/2)] lg:w-[calc((100%-64px)/3)]">
               <article className="group flex w-full flex-col transition-transform duration-300 motion-safe:hover:-translate-y-0.5 motion-reduce:transition-none">
                 <div className="aspect-[3/2] overflow-hidden">
-                  <img src={room.image} alt={room.imageAlt} loading="lazy" className="h-full w-full object-cover" />
+                  <CmsImage src={room.image} alt={room.imageAlt} width={900} height={600} sizes={SIZES.card} loading="lazy" className="h-full w-full object-cover" />
                 </div>
                 <div className="relative z-10 mx-auto -mt-5 flex w-[calc(100%-24px)] flex-1 flex-col bg-pearl px-6 py-6 shadow-accommodation">
                   <div>
