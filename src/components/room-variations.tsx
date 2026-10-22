@@ -1,5 +1,6 @@
 import { BedSingle, Expand, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PhotoCarousel } from "@/components/photo-carousel";
 
 export type RoomVariation = {
   title: string;
@@ -9,6 +10,8 @@ export type RoomVariation = {
   description: string;
   image: string;
   imageAlt: string;
+  /** More photos for the option's carousel; without any, the option shows just `image`. */
+  images?: string[];
   features: string[];
   guests?: string;
   bed?: string;
@@ -37,9 +40,13 @@ export function RoomVariations({ title, options, label, heading, pricePrefix, pr
           {options.map((option) => (
             <li key={option.title} className="flex">
               <article className="group flex w-full flex-col transition-transform duration-[220ms] motion-safe:hover:-translate-y-0.5 motion-reduce:transition-none">
-                <div className="relative h-[240px] shrink-0 overflow-hidden">
-                  <img src={option.image} alt={option.imageAlt} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
-                </div>
+                {option.images && option.images.length > 0 ? (
+                  <PhotoCarousel images={[option.image, ...option.images]} title={option.title} heightClass="h-[240px] shrink-0" />
+                ) : (
+                  <div className="relative h-[240px] shrink-0 overflow-hidden">
+                    <img src={option.image} alt={option.imageAlt} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+                  </div>
+                )}
 
                 <div className="relative z-10 mx-auto -mt-5 flex w-[calc(100%-24px)] min-w-0 flex-1 flex-col bg-pearl shadow-accommodation">
                   <div className="flex flex-1 flex-col px-6 py-6">

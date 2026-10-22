@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Calendar, ChevronDown, Lock } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { Calendar, ChevronDown } from "lucide-react";
 
 import { useSite } from "@/components/cms/site-context";
 import { text } from "@/lib/cms/globals";
+import { cn } from "@/lib/utils";
 
 export type EnquiryFormProps = {
   eyebrow: string;
@@ -26,17 +27,40 @@ export type EnquiryFormProps = {
   minStayNights?: number;
   /** Largest party the apartment(s) on this page can host; limits the size options and the people count. */
   maxGuests?: number;
+  /** Show the people, apartment size and date fields. Defaults to true; pages that are not stay enquiries pass false. */
+  stayFields?: boolean;
+  /** Heading and note above the add-on checkboxes; fall back to Site settings › Enquiry form. */
+  servicesTitle?: string;
+  servicesNote?: string;
+  /** Label and placeholder for the free-text field; fall back to Site settings › Enquiry form. */
+  notesLabel?: string;
+  notesPlaceholder?: string;
+  /** Accessible name of the form; falls back to Site settings › Enquiry form. */
+  formLabel?: string;
+  /** Where a submitted enquiry is stored. Unset keeps the form local (no submission). */
+  submitTo?: "gift_card";
+  /** Section surface overrides (spacing), merged with cn so the page value wins. */
+  className?: string;
 };
 
 /** Apartment sizes offered in the size dropdown, by guest capacity. */
 const APARTMENT_SIZES = [2, 4, 6];
 
-const FIELD_CLASS =
+export const FIELD_CLASS =
   "h-11 w-full rounded-[4px] border border-clay/30 bg-pearl px-3.5 font-sans text-[15px] font-light text-taupe transition-[border-color,box-shadow] duration-[180ms] outline-none placeholder:text-clay/80 focus:border-taupe focus:shadow-[0_0_0_3px_var(--color-clay)/0.14] motion-reduce:transition-none";
+
+/** Shared enquiry-form styles, reused by every enquiry form on the site. */
+export const LABEL_CLASS = "mb-2 block text-xs font-normal tracking-[0.02em] text-taupe";
+export const TEXTAREA_CLASS =
+  "min-h-[100px] w-full resize-y rounded-[4px] border border-clay/30 bg-pearl px-3.5 py-3 font-sans text-[15px] font-light leading-[1.5] text-taupe transition-[border-color,box-shadow] duration-[180ms] outline-none placeholder:text-clay/80 focus:border-taupe focus:shadow-[0_0_0_3px_var(--color-clay)/0.14] motion-reduce:transition-none";
+export const CHECKBOX_CLASS =
+  "relative h-[18px] w-[18px] shrink-0 cursor-pointer appearance-none rounded-[3px] border border-clay/55 bg-pearl transition-colors duration-[180ms] checked:border-taupe checked:bg-taupe after:absolute after:left-[5px] after:top-px after:hidden after:h-2.5 after:w-[5px] after:rotate-45 after:border-b-[1.5px] after:border-r-[1.5px] after:border-pearl after:content-[''] checked:after:block motion-reduce:transition-none";
+export const SUBMIT_CLASS =
+  "inline-flex h-12 cursor-pointer items-center justify-center gap-3.5 rounded-cta bg-taupe px-9 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl transition-colors duration-[180ms] motion-safe:hover:bg-[oklch(0.28_0.010_60)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-clay motion-reduce:transition-none";
 
 function FieldLabel({ htmlFor, children }: { htmlFor: string; children: string }) {
   return (
-    <label htmlFor={htmlFor} className="mb-2 block text-xs font-normal tracking-[0.02em] text-taupe">
+    <label htmlFor={htmlFor} className={LABEL_CLASS}>
       {children}
       <span aria-hidden="true" className="ml-0.5 text-clay">*</span>
     </label>
@@ -94,12 +118,21 @@ export function EnquiryForm({
   submitLabel,
   minStayNights = 7,
   maxGuests = 6,
+  stayFields = true,
+  servicesTitle,
+  servicesNote,
+  notesLabel,
+  notesPlaceholder,
+  formLabel,
+  submitTo,
+  className,
 }: EnquiryFormProps) {
   // Field labels and placeholders: WordPress › Site settings › Interface text › Enquiry form.
   const { enquiryForm } = useSite();
   const t = (key: string) => text(enquiryForm, key);
   const [checkin, setCheckin] = useState("");
   const [size, setSize] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const sizes = APARTMENT_SIZES.filter((guests) => guests <= maxGuests);
 
   // Typing the party size preselects the smallest apartment that fits, unless the
@@ -111,8 +144,33 @@ export function EnquiryForm({
     if (fit && (!size || Number(size) < people)) setSize(String(fit));
   };
 
+  // Stores the enquiry when the page asks for it; the labels shown come from Site settings.
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!submitTo || status === "sending") return;
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const extras = services.filter((service) => data.get(service.toLowerCase().replace(/\s+/g, "-")) === "on");
+    setStatus("sending");
+    try {
+      const response = await fetch("/api/gift-card-enquiry", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          firstName: data.get("firstName"), surname: data.get("surname"), phone: data.get("phone"), email: data.get("email"),
+          giftFor: data.get(locked.hiddenName) ?? "", extras, notes: data.get("notes") ?? "", website: data.get("website") ?? "",
+        }),
+      });
+      if (!response.ok) throw new Error(String(response.status));
+      form.reset();
+      setStatus("sent");
+    } catch {
+      setStatus("error");
+    }
+  }
+
   return (
-    <section id="enquire" aria-labelledby="enquire-heading" className="bg-sand px-5 py-16 text-taupe md:px-10 lg:px-20 lg:py-20">
+    <section id="enquire" aria-labelledby="enquire-heading" className={cn("bg-sand px-5 py-16 text-taupe md:px-10 lg:px-20 lg:py-20", className)}>
       <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-start gap-12 lg:grid-cols-[340px_1fr] lg:gap-20">
         {/* Left: context column */}
         <aside className="flex flex-col gap-10">
@@ -123,7 +181,7 @@ export function EnquiryForm({
           </div>
 
           <div>
-            <span className="mb-2 block text-xs font-normal tracking-[0.02em] text-taupe">{locked.label}</span>
+            <span className={LABEL_CLASS}>{locked.label}</span>
             {locked.options ? (
               <div className="relative">
                 <select
@@ -149,7 +207,6 @@ export function EnquiryForm({
                 className="flex h-11 w-full items-center justify-between gap-3 rounded-[4px] border border-clay/30 bg-pearl px-3.5 text-[15px] text-taupe"
               >
                 <span>{locked.value}</span>
-                <Lock aria-hidden="true" size={13} strokeWidth={1.2} className="shrink-0 text-clay" />
               </div>
             )}
             {!locked.options && <input type="hidden" name={locked.hiddenName} value={locked.hiddenValue} form="wow-enquire-form" />}
@@ -157,7 +214,8 @@ export function EnquiryForm({
           </div>
 
           <div>
-            <p className="m-0 pl-[0.32em] text-[10px] font-normal uppercase tracking-[0.32em] text-clay">{t("servicesHeading")}</p>
+            <p className="m-0 pl-[0.32em] text-[10px] font-normal uppercase tracking-[0.32em] text-clay">{servicesTitle || t("servicesHeading")}</p>
+            {(servicesNote || t("servicesNote")) && <p className="mt-2 pl-[0.32em] text-[12px] font-light text-clay">{servicesNote || t("servicesNote")}</p>}
             <div className="mt-4 flex flex-col gap-3">
               {services.map((service) => (
                 <label key={service} className="inline-flex cursor-pointer select-none items-center gap-3 text-[15px] text-taupe">
@@ -165,7 +223,7 @@ export function EnquiryForm({
                     type="checkbox"
                     name={service.toLowerCase().replace(/\s+/g, "-")}
                     form="wow-enquire-form"
-                    className="relative h-[18px] w-[18px] shrink-0 cursor-pointer appearance-none rounded-[3px] border border-clay/55 bg-pearl transition-colors duration-[180ms] checked:border-taupe checked:bg-taupe after:absolute after:left-[5px] after:top-px after:hidden after:h-2.5 after:w-[5px] after:rotate-45 after:border-b-[1.5px] after:border-r-[1.5px] after:border-pearl after:content-[''] checked:after:block motion-reduce:transition-none"
+                    className={CHECKBOX_CLASS}
                   />
                   <span>{service}</span>
                 </label>
@@ -177,9 +235,10 @@ export function EnquiryForm({
         {/* Right: form */}
         <form
           id="wow-enquire-form"
-          aria-label={t("ariaLabel")}
-          onSubmit={(event) => event.preventDefault()}
+          aria-label={formLabel || t("ariaLabel")}
+          onSubmit={handleSubmit}
         >
+          <div className="hidden" aria-hidden="true"><label>Website{/* content-exempt: spam trap, never shown */}<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
           <div className="grid grid-cols-1 gap-x-8 gap-y-[22px] sm:grid-cols-2">
             <div>
               <FieldLabel htmlFor="wow-first">{t("firstName")}</FieldLabel>
@@ -199,6 +258,8 @@ export function EnquiryForm({
               <input id="wow-email" name="email" type="email" required placeholder={t("emailPlaceholder")} autoComplete="email" className={FIELD_CLASS} />
             </div>
 
+            {stayFields && (
+              <>
             <div>
               <FieldLabel htmlFor="wow-people">{t("people")}</FieldLabel>
               <input id="wow-people" name="people" type="number" min={1} max={maxGuests} required placeholder={t("peoplePlaceholder")} onChange={(event) => handlePeopleChange(event.target.value)} className={FIELD_CLASS} />
@@ -229,18 +290,20 @@ export function EnquiryForm({
 
             <DateField id="wow-checkin" name="checkin" label={t("checkIn")} onChange={setCheckin} />
             <DateField id="wow-checkout" name="checkout" label={t("checkOut")} min={addDays(checkin, minStayNights)} />
+              </>
+            )}
           </div>
 
           <div className="mt-[22px]">
-            <label htmlFor="wow-notes" className="mb-2 block text-xs font-normal tracking-[0.02em] text-taupe">
-              {t("other")}
+            <label htmlFor="wow-notes" className={LABEL_CLASS}>
+              {notesLabel || t("other")}
             </label>
             <textarea
               id="wow-notes"
               name="notes"
               rows={3}
-              placeholder={t("otherPlaceholder")}
-              className="min-h-[100px] w-full resize-y rounded-[4px] border border-clay/30 bg-pearl px-3.5 py-3 font-sans text-[15px] font-light leading-[1.5] text-taupe transition-[border-color,box-shadow] duration-[180ms] outline-none placeholder:text-clay/80 focus:border-taupe focus:shadow-[0_0_0_3px_var(--color-clay)/0.14] motion-reduce:transition-none"
+              placeholder={notesPlaceholder || t("otherPlaceholder")}
+              className={TEXTAREA_CLASS}
             />
           </div>
 
@@ -249,11 +312,14 @@ export function EnquiryForm({
           <div className="mt-8">
             <button
               type="submit"
-              className="inline-flex h-12 cursor-pointer items-center justify-center gap-3.5 rounded-cta bg-taupe px-9 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl transition-colors duration-[180ms] motion-safe:hover:bg-[oklch(0.28_0.010_60)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-3 focus-visible:outline-clay motion-reduce:transition-none"
+              disabled={status === "sending"}
+              className={`${SUBMIT_CLASS} disabled:opacity-70`}
             >
-              <span>{submitLabel || t("submit")}</span>
+              <span>{status === "sending" && t("sending") ? t("sending") : submitLabel || t("submit")}</span>
             </button>
           </div>
+          {status === "sent" && t("msgSent") ? <p role="status" className="mt-4 text-[15px] text-taupe">{t("msgSent")}</p> : null}
+          {status === "error" && t("msgError") ? <p role="alert" className="mt-4 text-[15px] text-destructive">{t("msgError")}</p> : null}
         </form>
       </div>
     </section>

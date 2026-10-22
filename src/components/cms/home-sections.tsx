@@ -315,14 +315,14 @@ export function ProcessStepsSection({
   }
 
   return (
-    <section aria-labelledby="how-it-works-heading" className="bg-white px-5 py-24 text-center md:py-28">
+    <section aria-labelledby="how-it-works-heading" className="bg-white px-5 py-[128px] text-center">
       {eyebrow && <p className="m-0 pl-[0.45em] uppercase tracking-[0.45em] text-clay">{eyebrow}</p>}
       {heading && (
         <h2 id="how-it-works-heading" className="mx-auto mt-6 max-w-[720px] font-serif text-[42px] font-normal leading-[1.15] text-taupe md:text-[48px]">
           {heading}
         </h2>
       )}
-      <ProcessSteps steps={steps} variant={variant} className={className} />
+      <ProcessSteps steps={steps} variant={variant ?? "section"} className={className ?? "mt-14"} />
     </section>
   );
 }

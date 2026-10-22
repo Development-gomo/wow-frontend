@@ -22,7 +22,7 @@ export function StayIntro({ eyebrow, heading, paragraphs, stats, className }: St
         <span className="block pl-[0.45em] text-[10px] uppercase tracking-[0.45em] text-clay">{eyebrow}</span>
         <h2 className="mt-6 font-serif text-4xl font-normal leading-[1.15] text-taupe md:text-5xl">{heading}</h2>
         {paragraphs.map((paragraph, index) => (
-          <p key={index} className={cn("title-subtext font-light", index === 0 ? "mt-10" : "mt-8")}>
+          <p key={index} className={cn("title-subtext font-light", index === 0 ? "mt-4" : "mt-8")}>
             {paragraph}
           </p>
         ))}

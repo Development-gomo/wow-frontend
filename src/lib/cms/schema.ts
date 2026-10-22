@@ -141,6 +141,14 @@ const sectionProps = {
     className: z.string().optional(),
   }),
 
+  split_intro: z.object({
+    eyebrow: text,
+    heading: text,
+    lead: z.string().optional(),
+    paragraphs,
+    className: z.string().optional(),
+  }),
+
   stats_band: z.object({
     eyebrow: z.string().optional(),
     stats: z.array(statItem).optional().default([]),
@@ -235,6 +243,7 @@ const sectionProps = {
     secondaryTo: z.string().optional(),
     imageUrl: z.string().optional(),
     imageAlt: z.string().optional(),
+    className: z.string().optional(),
   }),
 
   relocation_firms: z.object({
@@ -265,11 +274,37 @@ const sectionProps = {
     submitLabel: z.string().optional(),
     minStayNights: z.number().optional(),
     maxGuests: z.number().optional(),
+    stayFields: z.boolean().optional(),
+    servicesTitle: z.string().optional(),
+    servicesNote: z.string().optional(),
+    notesLabel: z.string().optional(),
+    notesPlaceholder: z.string().optional(),
+    formLabel: z.string().optional(),
+    submitTo: z.enum(["gift_card"]).optional().catch(undefined),
+    className: z.string().optional(),
   }),
 
   sirvoy_booking: z.object({
     formId: z.string(),
     lang: z.string().optional(),
+  }),
+
+  corporate_enquiry_form: z.object({
+    eyebrow: text,
+    heading: text,
+    description: text,
+    noteStrong: z.string().optional(),
+    note: z.string().optional(),
+    formLabel: text,
+    fields: z.record(z.string(), z.object({ label: z.string().optional(), placeholder: z.string().optional() })).optional().default({}),
+    accommodationOptions: z.array(z.string()).optional().default([]),
+    pdf: z.record(z.string(), z.string()).optional().default({}),
+    optionalSuffix: text,
+    consent: text,
+    submit: text,
+    sending: text,
+    success: z.record(z.string(), z.string()).optional().default({}),
+    messages: z.record(z.string(), z.string()).optional().default({}),
   }),
 
   welcoming_locations: z.object({
@@ -305,24 +340,36 @@ const sectionProps = {
                 title: z.string(),
                 description: z.string(),
                 image: z.string().optional(),
+                images: z.array(z.string()).optional(),
                 href: z.string().optional(),
               }),
             )
             .default([]),
+          heading: z.string().optional(),
         }),
       )
       .optional()
       .default([]),
+    tabsLabel: z.string().optional(),
+    linkLabel: z.string().optional(),
+    cardHoverMotion: z.boolean().optional(),
+    className: z.string().optional(),
+    panelClassName: z.string().optional(),
   }),
 
   external_guide_callout: z.object({
     eyebrow: z.string().optional().default(""),
     title: z.string().optional().default(""),
-    description: z.string().optional().default(""),
+    description: z.union([z.string(), z.array(z.string())]).optional().default(""),
     ctaLabel: z.string().optional().default(""),
     ctaHref: z.string().optional().default(""),
     image: z.string().optional().default(""),
     imageAlt: z.string().optional().default(""),
+    className: z.string().optional(),
+    contentClassName: z.string().optional(),
+    imageClassName: z.string().optional(),
+    titleClassName: z.string().optional(),
+    descriptionClassName: z.string().optional(),
   }),
 
   rich_text: z.object({
@@ -365,6 +412,7 @@ const sectionProps = {
           image: z.string().optional().default(""),
           imageAlt: z.string().optional().default(""),
           features: z.array(z.string()).default([]),
+          images: z.array(z.string()).optional(),
           guests: z.string().optional(),
           bed: z.string().optional(),
         }),
@@ -387,11 +435,14 @@ const sectionProps = {
           chips: z.array(z.string()).default([]),
           image: z.string().optional().default(""),
           imageAlt: z.string().optional().default(""),
+          images: z.array(z.string()).optional(),
           href: z.string().optional(),
         }),
       )
       .optional()
       .default([]),
+    actionLabel: z.string().optional(),
+    actionTo: z.string().optional(),
   }),
 
   room_information: z.object({
@@ -448,6 +499,7 @@ const sectionProps = {
     eyebrow: text,
     lead: text,
     paragraphs,
+    className: z.string().optional(),
   }),
 
   quote_band: z.object({
@@ -460,6 +512,8 @@ const sectionProps = {
   location_cards: z.object({
     eyebrow: text,
     heading: text,
+    description: z.string().optional(),
+    className: z.string().optional(),
     linkLabel: z.string().optional(),
     linkTo: z.string().optional(),
     cards: z
@@ -476,6 +530,36 @@ const sectionProps = {
     linkTo: z.string().optional(),
     imageUrl: text,
     imageAlt: text,
+    className: z.string().optional(),
+  }),
+
+  editorial_pillars: z.object({
+    eyebrow: text,
+    title: text,
+    description: z.string().optional(),
+    items: z.array(z.object({ number: text, eyebrow: text, title: text, description: text, note: z.string().optional() })).optional().default([]),
+    className: z.string().optional(),
+  }),
+
+  location_facts: z.object({
+    eyebrow: text,
+    title: text,
+    description: text,
+    listLabel: z.string().optional(),
+    cards: z
+      .array(
+        z.object({
+          number: text,
+          area: text,
+          name: text,
+          description: text,
+          facts: z.array(z.object({ label: text, value: text })).optional().default([]),
+          cta: z.object({ label: text, href: text }).optional().default({ label: "", href: "" }),
+        }),
+      )
+      .optional()
+      .default([]),
+    className: z.string().optional(),
   }),
 
   careers_callout: z.object({
@@ -490,11 +574,16 @@ const sectionProps = {
     linkTo: z.string().optional(),
   }),
 
+  guest_contact: z.object({
+    className: z.string().optional(),
+  }),
+
   contact_details: z.object({
     eyebrow: text,
     heading: text,
     text,
     contactHeading: text,
+    contacts: z.array(z.object({ heading: text, name: text, email: text })).optional(),
     formEyebrow: text,
     formHeading: text,
   }),
@@ -565,6 +654,69 @@ const sectionProps = {
     heading: text,
     text,
     columns: z.array(z.object({ value: text, title: text, body: text })).optional().default([]),
+    listLabel: z.string().optional(),
+    className: z.string().optional(),
+  }),
+
+  editorial_discovery: z.object({
+    eyebrow: text,
+    title: text,
+    description: text,
+    quote: text,
+    image: text,
+    imageAlt: text,
+  }),
+
+  city_guide: z.object({
+    eyebrow: text,
+    title: text,
+    entries: z.array(z.object({ number: text, eyebrow: text, title: text, description: text, highlights: paragraphs, image: text, imageAlt: text })).optional().default([]),
+  }),
+
+  editorial_map: z.object({
+    eyebrow: text,
+    title: text,
+    description: text,
+    image: text,
+    imageAlt: text,
+  }),
+
+  seasonal_notes: z.object({
+    eyebrow: text,
+    title: text,
+    description: z.string().optional(),
+    bestForLabel: z.string().optional(),
+    entries: z.array(z.object({ season: text, months: text, title: text, description: text, bestFor: text })).optional().default([]),
+  }),
+
+  stay_pathways: z.object({
+    eyebrow: text,
+    title: text,
+    description: text,
+    items: z.array(z.object({ number: text, label: text, title: text, description: text, linkLabel: text, targetId: text })).optional().default([]),
+    className: z.string().optional(),
+  }),
+
+  offer_listing: z.object({
+    eyebrow: text,
+    title: text,
+    description: text,
+    offers: z
+      .array(
+        z.object({
+          kicker: text,
+          title: z.string(),
+          description: text,
+          image: z.string().optional(),
+          images: z.array(z.string()).optional(),
+          price: priceSchema.optional(),
+          action: z.object({ label: z.string(), to: z.string() }).optional(),
+        }),
+      )
+      .optional()
+      .default([]),
+    className: z.string().optional(),
+    panelClassName: z.string().optional(),
   }),
 } as const;
 

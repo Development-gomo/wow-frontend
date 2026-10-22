@@ -1,8 +1,11 @@
 import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 import { ProcessSteps, type ProcessStep } from "@/components/process-steps";
 
 type PageHeroProps = {
   title: string;
+  description?: string;
+  action?: ReactNode;
   titleClassName?: string;
   overlayClassName?: string;
   /** Optional height override, e.g. for pages that need a shorter banner. */
@@ -18,6 +21,8 @@ type PageHeroProps = {
 /** Full-width media banner with a centred serif title, shared by content pages. */
 export function PageHero({
   title,
+  description,
+  action,
   titleClassName = "text-linen",
   overlayClassName = "bg-gradient-to-b from-taupe/20 via-transparent to-taupe/40",
   className,
@@ -33,7 +38,7 @@ export function PageHero({
       className={cn(
         "relative w-full overflow-hidden",
         // Heroes without the step row keep the photo-driven banner height.
-        hasSteps ? "" : "h-[55svh] min-h-[360px] md:h-[70svh] md:min-h-[520px]",
+        hasSteps ? "" : "flex flex-col min-h-[max(55svh,360px)] md:min-h-[max(70svh,520px)]",
         className,
       )}
     >
@@ -53,7 +58,7 @@ export function PageHero({
           // pulls itself up by 64px on phones and 96px on desktop.
           hasSteps
             ? "relative gap-8 pb-[96px] pt-[97px] md:pb-[128px] md:pt-[113px]"
-            : "absolute inset-0 justify-center py-10",
+            : "relative flex-1 justify-center py-[97px] md:py-[113px]",
         )}
       >
         <h1
@@ -64,7 +69,9 @@ export function PageHero({
         >
           {title}
         </h1>
-        {hasSteps ? <ProcessSteps steps={steps!} variant={stepsVariant} /> : null}
+        {description ? <p className="mt-5 max-w-[600px] text-title-subtext text-linen">{description}</p> : null}
+        {action ? <div className="mt-8">{action}</div> : null}
+        {hasSteps && steps ? <ProcessSteps steps={steps} variant={stepsVariant} /> : null}
       </div>
     </section>
   );

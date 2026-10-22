@@ -82,6 +82,14 @@ async function main() {
     }
   }
 
+  // Site settings carry class overrides too (e.g. the guest contact photo focus).
+  try {
+    const response = await fetch(`${BASE}/wp-json/wow/v1/globals?${bust()}`, { signal: AbortSignal.timeout(30000) });
+    if (response.ok) collectClasses(await response.json(), classes);
+  } catch {
+    // Globals are optional for the safelist.
+  }
+
   if (classes.size === 0) {
     console.warn("[safelist] no classes found; keeping the existing safelist.");
     return;

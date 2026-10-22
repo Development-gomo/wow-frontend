@@ -3,6 +3,11 @@
 import type { Section, ValidSection } from "@/lib/cms/schema";
 
 import { AccommodationListing, type Accommodation } from "@/components/accommodation-listing";
+import { EditorialCityGuide, EditorialDiscovery, EditorialMap, SeasonalNotes } from "@/components/city-editorial";
+import { CorporateEnquiryForm } from "@/components/corporate-enquiry-form";
+import { EditorialPillars } from "@/components/editorial-pillars";
+import { LocationCards as LocationFacts } from "@/components/location-cards";
+import { StayPathways } from "@/components/stay-pathways";
 import { EnquiryForm } from "@/components/enquiry-form";
 import { ExternalGuideCallout } from "@/components/external-guide-callout";
 import { FaqSection } from "@/components/faq-section";
@@ -39,10 +44,12 @@ import {
   GalleryGrid,
   GettingAround,
   GiftCardSection,
+  GuestContact,
   LocationCards,
   LocationsMap,
   PageIntro,
   QuoteBand,
+  SplitIntro,
   StatementBand,
 } from "./page-sections";
 
@@ -102,6 +109,9 @@ function renderSection(section: ValidSection) {
     case "stay_intro":
       return <StayIntro {...section.props} />;
 
+    case "split_intro":
+      return <SplitIntro {...section.props} />;
+
     case "stats_band":
       return <StatsBand {...section.props} />;
 
@@ -160,6 +170,9 @@ function renderSection(section: ValidSection) {
 
     case "sirvoy_booking":
       return <SirvoyBookingSection />;
+
+    case "corporate_enquiry_form":
+      return <CorporateEnquiryForm {...section.props} />;
 
     case "welcoming_locations":
       return <WelcomingLocations {...section.props} showViewAll={section.props.showViewAll ?? true} />;
@@ -251,8 +264,20 @@ function renderSection(section: ValidSection) {
     case "editorial_split":
       return <EditorialSplit {...section.props} />;
 
+    case "editorial_pillars":
+      // The section id ties the list to its heading; the anchor stays on the wrapper.
+      return <EditorialPillars id={`${section.id}-heading`} {...section.props} />;
+
+    case "location_facts": {
+      const { cards, ...rest } = section.props;
+      return <LocationFacts id={section.id} {...rest} cards={cards} />;
+    }
+
     case "careers_callout":
       return <CareersCallout {...section.props} />;
+
+    case "guest_contact":
+      return <GuestContact {...section.props} />;
 
     case "contact_details":
       return <ContactDetails {...section.props} />;
@@ -276,7 +301,35 @@ function renderSection(section: ValidSection) {
       return <StatementBand {...section.props} />;
 
     case "getting_around":
-      return <GettingAround {...section.props} />;
+      return <GettingAround headingId={`${section.id}-heading`} {...section.props} />;
+
+    // Things to do editorial set. Each heading gets a stable id for aria-labelledby.
+    case "editorial_discovery":
+      return <EditorialDiscovery id={`${section.id}-heading`} {...section.props} />;
+
+    case "city_guide":
+      return <EditorialCityGuide id={`${section.id}-heading`} {...section.props} />;
+
+    case "editorial_map":
+      return <EditorialMap id={`${section.id}-heading`} {...section.props} />;
+
+    case "seasonal_notes":
+      return <SeasonalNotes id={`${section.id}-heading`} {...section.props} />;
+
+    case "stay_pathways":
+      return <StayPathways {...section.props} />;
+
+    case "offer_listing": {
+      // One group of offer cards; with a single group the explorer shows no tabs or panel heading.
+      const { offers, ...rest } = section.props;
+      return (
+        <NeighbourhoodExplorer
+          {...rest}
+          idPrefix={`${section.id}-`}
+          neighbourhoods={[{ name: rest.title, heading: "", intro: "", places: offers }]}
+        />
+      );
+    }
 
     default: {
       // Exhaustiveness guard: adding a layout to the CMS without a branch here
@@ -293,7 +346,7 @@ export function SectionRenderer({ sections }: { sections: Section[] }) {
     <>
       {sections.map((section) =>
         section.valid ? (
-          <div key={section.id} id={section.anchor ?? undefined}>
+          <div key={section.id} id={section.anchor ?? undefined} className={section.anchor ? "scroll-mt-20" : undefined}>
             {renderSection(section)}
           </div>
         ) : (

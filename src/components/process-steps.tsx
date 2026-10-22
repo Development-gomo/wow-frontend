@@ -39,7 +39,7 @@ export function ProcessSteps({ steps, variant = "hero", className }: ProcessStep
                 "flex h-9 w-9 items-center justify-center rounded-full border md:h-11 md:w-11",
                 isHero
                   ? "border-linen/45 bg-umber/45 text-linen backdrop-blur-[3px]"
-                  : "border-clay/30 bg-white text-taupe shadow-[0_1px_10px_rgba(38,30,24,0.06)]",
+                  : "border-clay/30 bg-white text-taupe",
               )}
             >
               <step.icon
@@ -53,7 +53,7 @@ export function ProcessSteps({ steps, variant = "hero", className }: ProcessStep
                 className={cn(
                   "text-[10px] font-medium uppercase tracking-[0.16em] md:text-[12px] md:tracking-[0.2em]",
                   isHero
-                    ? "text-linen [text-shadow:0_1px_2px_rgba(38,30,24,0.9),0_0_12px_rgba(38,30,24,0.8)]"
+                    ? "text-linen"
                     : "text-taupe",
                 )}
               >
@@ -62,9 +62,12 @@ export function ProcessSteps({ steps, variant = "hero", className }: ProcessStep
               {step.text ? (
                 <span
                   className={cn(
-                    "hidden max-w-[250px] text-[13px] leading-snug text-balance md:block",
+                    // Heroes keep the row label-only on phones; content sections always
+                    // show the one-line explanation under each step name.
+                    "wow-process-step max-w-[250px] text-balance",
+                    isHero ? "hidden md:block" : "block",
                     isHero
-                      ? "text-linen [text-shadow:0_1px_2px_rgba(38,30,24,0.95),0_0_14px_rgba(38,30,24,0.85)]"
+                      ? "text-linen"
                       : "text-taupe/75",
                   )}
                 >
