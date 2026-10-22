@@ -227,7 +227,7 @@ export function SplitIntro({ eyebrow, heading, lead, paragraphs, className }: {
           {heading && <h2 className="mt-6 font-serif text-heading-two font-light">{heading}</h2>}
         </div>
         <div className="space-y-5 font-sans font-light">
-          {lead && <p className="title-subtext text-taupe">{lead}</p>}
+          {lead && <p className="text-body">{lead}</p>}
           {paragraphs.map((paragraph, i) => <p key={i} className="text-body-copy">{paragraph}</p>)}
         </div>
       </div>
