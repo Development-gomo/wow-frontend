@@ -143,10 +143,10 @@ export function SiteNavbar() {
             </div>
             <div className="mt-auto pt-4 [@media(max-height:604px)]:pt-3 [@media(min-height:800px)]:pt-5">
               <div className="flex flex-col gap-1.5">
-                <Button asChild className="h-10 border border-linen/25 rounded-cta bg-umber/25 px-2 text-[9px] font-medium uppercase tracking-[0.04em] text-ivory shadow-none transition-colors duration-200 hover:bg-taupe sm:h-11 sm:px-5 sm:text-[11px] sm:tracking-[0.24em] xl:px-7">
+                <Button asChild className="h-12 border border-linen/25 rounded-cta bg-umber/25 px-2 text-[9px] font-medium uppercase tracking-[0.04em] text-ivory shadow-none transition-colors duration-200 hover:bg-taupe sm:h-12 sm:px-5 sm:text-[11px] sm:tracking-[0.24em] xl:px-7">
                   <Link to={booking.roomTo} onClick={closeMenu}>{booking.roomLabel}</Link>
                 </Button>
-                <Button asChild className="h-10 w-full rounded-cta border border-linen/25 bg-taupe/65 px-5 text-[10px] font-medium uppercase tracking-[0.24em] text-ivory shadow-none transition-colors duration-200 hover:bg-umber/25">
+                <Button asChild className="h-12 w-full rounded-cta border border-linen/25 bg-taupe/65 px-5 text-[10px] font-medium uppercase tracking-[0.24em] text-ivory shadow-none transition-colors duration-200 hover:bg-umber/25">
                   <Link to={booking.apartmentTo} onClick={closeMenu}>{booking.apartmentLabel}</Link>
                 </Button>
               </div>

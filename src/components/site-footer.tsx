@@ -52,11 +52,15 @@ export function SiteFooter() {
             <li className="font-light leading-[1.75] text-linen/80">
               <span className="mb-3 block pl-[0.32em] text-[10px] font-normal uppercase tracking-[0.32em] text-linen/55">{footer.officeLabel}</span>
               <address className="not-italic">
-                {[contact.companyName, ...contact.address].filter(Boolean).map((line) => (
-                  <Fragment key={line}>{line}<br /></Fragment>
-                ))}
+                {/* "Company, street" on the first line; postcode and phone on the second. */}
+                {[contact.companyName, contact.address[0]].filter(Boolean).join(", ")}
+                {(contact.address.length > 0 || contact.companyName) && <br />}
+                {contact.address.slice(1).join(", ")}
                 {contact.phoneDisplay && (
-                  <a href={`tel:${contact.phoneLink}`} className="transition-colors duration-200 hover:text-linen">{contact.phoneDisplay}</a>
+                  <>
+                    {contact.address.length > 1 ? " ·" : null}
+                    <a href={`tel:${contact.phoneLink}`} className="transition-colors duration-200 hover:text-linen">{contact.phoneDisplay}</a>
+                  </>
                 )}
               </address>
             </li>
@@ -136,7 +140,7 @@ function FCol({ title, children }: { title: string; children: React.ReactNode })
   );
 }
 
-const footerGridClass = "grid grid-cols-2 items-start gap-x-8 gap-y-12 md:grid-cols-3 lg:grid-cols-[1fr_1fr_1fr_1fr_1.2fr] lg:gap-x-12";
+const footerGridClass = "grid grid-cols-2 items-start gap-x-8 gap-y-12 md:grid-cols-3 lg:grid-cols-[1fr_1fr_1fr_1fr_1.6fr] lg:gap-x-12";
 
 /** Icon artwork per network; which networks appear, and their links, come from the CMS. */
 const SOCIAL_ICONS: Record<string, React.ReactNode> = {

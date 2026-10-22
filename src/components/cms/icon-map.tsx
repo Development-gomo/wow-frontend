@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  Archive, BedDouble, BedSingle, Building2, Calendar, CalendarDays, Car, CigaretteOff, Coffee,
+  Archive, BedDouble, BedSingle, Building2, Calendar, CalendarDays, Car, CigaretteOff, ClipboardList, Coffee,
   CookingPot, Droplet, Fence, Gift, Home, IdCard, Key, Lamp, Laptop, Layers, Lock, LogIn, LogOut,
-  Mail, MailCheck, MapPin, MessageSquare, Moon, Mountain, ParkingCircle, PartyPopper, PawPrint,
-  Phone, Plane, ShowerHead, Snowflake, Sofa, Sparkles, SquareParking, Thermometer, TrainFront,
+  Mail, MailCheck, MapPin, MessageCircle, MessageSquare, Moon, Mountain, ParkingCircle, PartyPopper, PawPrint,
+  Phone, Plane, Search, Send, ShowerHead, Snowflake, Sofa, Sparkles, SquareParking, Thermometer, TrainFront,
   TramFront, Tv, User, UserRound, Users, Wifi, Zap,
   type LucideIcon,
 } from "lucide-react";
@@ -23,10 +23,10 @@ import { WhyWowIcons } from "@/components/why-wow";
 
 /** lucide icons, keyed exactly as the CMS stores them. */
 const LUCIDE: Record<string, LucideIcon> = {
-  Archive, BedDouble, BedSingle, Building2, Calendar, CalendarDays, Car, CigaretteOff, Coffee,
+  Archive, BedDouble, BedSingle, Building2, Calendar, CalendarDays, Car, CigaretteOff, ClipboardList, Coffee,
   CookingPot, Droplet, Fence, Gift, Home, IdCard, Key, Lamp, Laptop, Layers, Lock, LogIn, LogOut,
-  Mail, MailCheck, MapPin, MessageSquare, Moon, Mountain, ParkingCircle, PartyPopper, PawPrint,
-  Phone, Plane, ShowerHead, Snowflake, Sofa, Sparkles, SquareParking, Thermometer, TrainFront,
+  Mail, MailCheck, MapPin, MessageCircle, MessageSquare, Moon, Mountain, ParkingCircle, PartyPopper, PawPrint,
+  Phone, Plane, Search, Send, ShowerHead, Snowflake, Sofa, Sparkles, SquareParking, Thermometer, TrainFront,
   TramFront, Tv, User, UserRound, Users, Wifi, Zap,
 };
 

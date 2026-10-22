@@ -4,10 +4,15 @@ import { Fragment, useEffect, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Gift, Mail, Phone } from "lucide-react";
 
+import { AboutStory as StorySection } from "@/components/about-story";
+import { InfoColumns } from "@/components/info-columns";
+import { ResponsibleHosting } from "@/components/responsible-hosting";
 import { BookActions } from "@/components/book-actions";
 import { ContactForm } from "@/components/contact-form";
 import { useSite } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
+import { WorkWithUs } from "@/components/work-with-us";
+import { cn } from "@/lib/utils";
 
 import { withLineBreaks } from "./icon-map";
 
@@ -36,7 +41,7 @@ const ArrowRight = () => (
 /* About us                                                                   */
 /* -------------------------------------------------------------------------- */
 
-export function AboutStory({ imageUrl, imageAlt, captionName, captionRole, eyebrow, lead, paragraphs }: {
+export function AboutStory({ imageUrl, imageAlt, captionName, captionRole, eyebrow, lead, paragraphs, className }: {
   imageUrl: string;
   imageAlt: string;
   captionName: string;
@@ -44,37 +49,18 @@ export function AboutStory({ imageUrl, imageAlt, captionName, captionRole, eyebr
   eyebrow: string;
   lead: string;
   paragraphs: string[];
+  className?: string;
 }) {
   return (
-    <section className="px-6 py-16 sm:px-10 sm:py-20 lg:px-20 lg:py-32">
-      <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-24">
-        <div className="flex min-w-0 flex-col gap-6">
-          <div className="aspect-[1/1.08] w-full overflow-hidden lg:h-[480px] lg:aspect-auto">
-            {imageUrl && (
-              <img src={imageUrl} alt={imageAlt} loading="lazy" className="h-full w-full object-cover object-center" />
-            )}
-          </div>
-          <div className="flex items-center gap-[18px] px-1">
-            <span className="shrink-0 pl-[0.4em] text-[10px] uppercase tracking-[0.4em] text-clay">{captionName}</span>
-            <span className="h-px flex-1 bg-clay/50" />
-            <span className="shrink-0 pl-[0.4em] text-[10px] uppercase tracking-[0.4em] text-clay">{captionRole}</span>
-          </div>
-        </div>
-
-        <div className="min-w-0">
-          {eyebrow && (
-            <span className="block pl-[0.45em] text-[10px] uppercase tracking-[0.45em] text-clay">{eyebrow}</span>
-          )}
-          {lead && (
-            <p className="mt-6 max-w-[560px] font-serif text-[28px] italic font-normal leading-[1.3] text-taupe sm:text-[32px]">{lead}</p>
-          )}
-          <div className="mt-8 h-px w-11 bg-clay" />
-          <div className="mt-8 flex max-w-[520px] flex-col gap-3 text-[15px] font-light leading-[1.8] text-taupe/90">
-            {paragraphs.map((paragraph, i) => <p key={i}>{paragraph}</p>)}
-          </div>
-        </div>
-      </div>
-    </section>
+    <StorySection
+      image={imageUrl}
+      imageAlt={imageAlt}
+      eyebrow={eyebrow}
+      lead={lead}
+      paragraphs={paragraphs}
+      caption={captionName || captionRole ? { left: captionName, right: captionRole } : undefined}
+      className={className}
+    />
   );
 }
 
@@ -111,20 +97,23 @@ export function QuoteBand({ eyebrow, paragraphs, quote, attribution }: {
   );
 }
 
-export function LocationCards({ eyebrow, heading, linkLabel, linkTo, cards }: {
+export function LocationCards({ eyebrow, heading, description, linkLabel, linkTo, cards, className }: {
   eyebrow: string;
   heading: string;
+  description?: string;
   linkLabel?: string;
   linkTo?: string;
   cards: { area: string; name: string; image: string; imageAlt: string; description: string }[];
+  className?: string;
 }) {
   return (
-    <section className="bg-background px-6 pt-20 sm:px-10 sm:pt-24 lg:px-20 lg:pt-32">
+    <section className={cn("bg-background px-6 pt-20 sm:px-10 sm:pt-24 lg:px-20 lg:pt-32", className)}>
       <div className="flex flex-col items-center text-center">
         {eyebrow && <span className="block pl-[0.45em] text-[10px] uppercase tracking-[0.45em] text-clay">{eyebrow}</span>}
         {heading && (
           <h2 className="mt-6 font-serif text-[34px] font-normal leading-[1.15] text-taupe sm:text-[clamp(34px,3.75vw,48px)]">{heading}</h2>
         )}
+        {description ? <p className="mt-4 max-w-[640px] text-title-subtext text-taupe/85">{description}</p> : null}
         {linkLabel && linkTo && (
           <SmartLink
             to={linkTo}
@@ -159,7 +148,8 @@ export function LocationCards({ eyebrow, heading, linkLabel, linkTo, cards }: {
   );
 }
 
-export function EditorialSplit({ eyebrow, lead, text, linkLabel, linkTo, imageUrl, imageAlt }: {
+/** Text left, photo right (About "Responsible hosting", Sustainability "Thoughtful living"). */
+export function EditorialSplit({ eyebrow, lead, text, linkLabel, linkTo, imageUrl, imageAlt, className }: {
   eyebrow: string;
   lead: string;
   text: string;
@@ -167,34 +157,19 @@ export function EditorialSplit({ eyebrow, lead, text, linkLabel, linkTo, imageUr
   linkTo?: string;
   imageUrl: string;
   imageAlt: string;
+  className?: string;
 }) {
   return (
-    <section className="bg-background px-6 pt-[128px] sm:px-10 lg:px-20">
-      <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-start gap-12 lg:grid-cols-2 lg:gap-24">
-        <div className="flex min-w-0 flex-col">
-          {eyebrow && <span className="block pl-[0.45em] text-[10px] uppercase tracking-[0.45em] text-clay">{eyebrow}</span>}
-          {lead && (
-            <p className="mt-6 max-w-[520px] font-serif text-[28px] font-normal leading-[1.3] text-taupe sm:text-[32px]">{lead}</p>
-          )}
-          {text && <p className="mt-4 max-w-[460px] text-[14px] font-light leading-[1.75] text-taupe/80">{text}</p>}
-          {linkLabel && linkTo && (
-            <SmartLink
-              to={linkTo}
-              className="mt-12 inline-flex items-center gap-[14px] self-start border-b border-clay/55 pb-[6px] pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] text-taupe transition-colors duration-200 hover:border-clay hover:text-taupe/70"
-            >
-              <span>{linkLabel}</span>
-              <ArrowRight />
-            </SmartLink>
-          )}
-        </div>
-
-        <div className="aspect-[1/0.88] w-full overflow-hidden lg:self-center">
-          {imageUrl && (
-            <img src={imageUrl} alt={imageAlt} loading="lazy" className="h-full w-full object-cover object-center" />
-          )}
-        </div>
-      </div>
-    </section>
+    <ResponsibleHosting
+      eyebrow={eyebrow}
+      lead={lead}
+      description={text}
+      ctaLabel={linkLabel}
+      ctaTo={linkTo}
+      image={imageUrl}
+      imageAlt={imageAlt}
+      className={className}
+    />
   );
 }
 
@@ -219,44 +194,70 @@ export function CareersCallout({ imageUrl, imageAlt, eyebrow, heading, text, ema
   linkLabel?: string;
   linkTo?: string;
 }) {
-  const linkClass =
-    "mt-[48px] inline-flex items-center gap-[14px] self-start border-b border-clay/55 pb-[6px] pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] text-taupe transition-colors duration-200 hover:border-clay hover:text-taupe/70";
-
+  const internal = Boolean(linkTo && linkTo.startsWith("/"));
   return (
-    <section className="bg-background px-6 pb-[128px] pt-[128px] sm:px-10 lg:px-20">
-      <div className="mx-auto flex max-w-[1200px] flex-col gap-12 md:flex-row md:gap-[96px]">
-        <div className="aspect-[4/5] w-full min-w-0 flex-1 overflow-hidden md:aspect-auto md:h-auto">
-          {imageUrl && (
-            <img src={imageUrl} alt={imageAlt} loading="lazy" width={1024} height={1280} className="h-full w-full object-cover object-center" />
-          )}
-        </div>
+    <WorkWithUs
+      image={imageUrl}
+      imageAlt={imageAlt}
+      eyebrow={eyebrow}
+      title={responsiveLines(heading)}
+      description={text}
+      contactLabel={emailLabel}
+      email={email}
+      ctaLabel={linkLabel && linkTo ? linkLabel : undefined}
+      ctaTo={internal ? linkTo : undefined}
+      ctaHref={internal ? undefined : linkTo}
+    />
+  );
+}
 
-        <div className="flex max-w-[620px] min-w-0 flex-[1.4] flex-col">
-          {eyebrow && <span className="block pl-[0.45em] text-[10px] uppercase tracking-[0.45em] text-clay">{eyebrow}</span>}
-          {heading && (
-            <h2 className="mt-6 font-serif text-[36px] font-normal leading-[1.15] text-taupe sm:text-[clamp(36px,4.1vw,52px)]">
-              {responsiveLines(heading)}
-            </h2>
-          )}
-          {text && <p className="mt-4 max-w-[500px] text-[15px] font-light leading-[1.75] text-taupe/85">{text}</p>}
-          {emailLabel && <div className="mt-12 text-[14px] font-light leading-[1.6] text-taupe/80">{emailLabel}</div>}
-          {email && (
-            <a
-              href={`mailto:${email}`}
-              className="mt-2 self-start border-b border-clay/60 pb-[4px] font-serif text-[22px] font-normal leading-[1.2] text-taupe transition-colors duration-200 hover:border-clay hover:text-taupe/70 sm:text-[26px]"
-            >
-              {email}
-            </a>
-          )}
-          {linkLabel && linkTo && (
-            <SmartLink to={linkTo} className={linkClass}>
-              <span>{linkLabel}</span>
-              <ArrowRight />
-            </SmartLink>
-          )}
+/** Eyebrow and heading on the left, a lead and body paragraphs on the right. */
+export function SplitIntro({ eyebrow, heading, lead, paragraphs, className }: {
+  eyebrow: string;
+  heading: string;
+  lead?: string;
+  paragraphs: string[];
+  className?: string;
+}) {
+  return (
+    <section className={cn("px-6 py-32 text-taupe md:px-10 lg:px-20", className)} aria-label={heading || undefined}>
+      <div className="mx-auto grid max-w-[1200px] gap-10 lg:grid-cols-2 lg:gap-24">
+        <div>
+          {eyebrow && <p className="text-eyebrow font-light uppercase text-clay tracking-[0.3em]">{eyebrow}</p>}
+          {heading && <h2 className="mt-6 font-serif text-heading-two font-light">{heading}</h2>}
+        </div>
+        <div className="space-y-5 font-sans font-light">
+          {lead && <p className="title-subtext text-taupe">{lead}</p>}
+          {paragraphs.map((paragraph, i) => <p key={i} className="text-body-copy">{paragraph}</p>)}
         </div>
       </div>
     </section>
+  );
+}
+
+/** The shared "Meet Anna" section; its content is edited once in Site settings › Guest contact. */
+export function GuestContact({ className }: { className?: string }) {
+  const { guestContact: g } = useSite();
+  const value = (key: string) => (typeof g[key] === "string" ? (g[key] as string) : "");
+
+  if (!value("imageUrl") && !value("title")) return null;
+
+  return (
+    <WorkWithUs
+      image={value("imageUrl")}
+      imageAlt={value("imageAlt")}
+      imageClassName={value("imageClassName") || undefined}
+      eyebrow={value("eyebrow")}
+      title={value("title")}
+      quote={value("quote") || undefined}
+      description={value("description")}
+      contactLabel={value("emailLabel") || undefined}
+      email={value("email") || undefined}
+      phoneLabel={value("phoneLabel") || undefined}
+      phone={value("phone") || undefined}
+      phoneHref={value("phoneLink") ? `tel:${value("phoneLink")}` : undefined}
+      className={className}
+    />
   );
 }
 
@@ -264,18 +265,19 @@ export function CareersCallout({ imageUrl, imageAlt, eyebrow, heading, text, ema
 /* Contact and gift card                                                      */
 /* -------------------------------------------------------------------------- */
 
-export function ContactDetails({ eyebrow, heading, text, contactHeading, formEyebrow, formHeading }: {
+export function ContactDetails({ eyebrow, heading, text, contactHeading, contacts, formEyebrow, formHeading }: {
   eyebrow: string;
   heading: string;
   text: string;
   contactHeading: string;
+  contacts?: { heading: string; name: string; email: string }[];
   formEyebrow: string;
   formHeading: string;
 }) {
   const { contact } = useSite();
 
   return (
-    <section className="px-6 py-20 text-taupe sm:px-10 sm:py-24 lg:px-20 lg:py-32">
+    <section className="px-6 pb-0 pt-20 text-taupe sm:px-10 sm:pt-24 lg:px-20 lg:pt-32">
       <div className="mx-auto grid max-w-[1200px] grid-cols-1 gap-16 lg:grid-cols-[0.85fr_1.15fr] lg:gap-24">
         <div className="order-2 lg:order-1">
           {eyebrow && <p className="pl-[0.45em] text-[10px] uppercase tracking-[0.45em] text-clay">{eyebrow}</p>}
@@ -283,23 +285,39 @@ export function ContactDetails({ eyebrow, heading, text, contactHeading, formEye
           {text && <p className="mt-5 max-w-[430px] text-[15px] font-light leading-[1.75] text-taupe/85">{text}</p>}
 
           <div className="mt-12 grid gap-9">
-            <div>
-              {contactHeading && (
-                <h3 className="pl-[0.32em] text-[10px] font-medium uppercase tracking-[0.32em] text-clay">{contactHeading}</h3>
-              )}
-              <div className="mt-4 flex flex-col items-start gap-2 text-[15px] font-light leading-[1.75]">
-                {contact.email && (
-                  <a href={`mailto:${contact.email}`} className="border-b border-clay/55 pb-0.5 transition-colors hover:border-taupe">
-                    {contact.email}
-                  </a>
+            {contacts && contacts.length > 0 ? (
+              contacts.map((c) => (
+                <div key={c.heading || c.email}>
+                  {c.heading && <h3 className="pl-[0.32em] text-[12px] font-medium uppercase tracking-[0.32em] text-clay">{c.heading}</h3>}
+                  <div className="mt-4 flex flex-col items-start gap-2 text-[15px] font-light leading-[1.75]">
+                    {c.name && <span>{c.name}</span>}
+                    {c.email && (
+                      <a href={`mailto:${c.email}`} className="border-b border-clay/55 pb-0.5 transition-colors hover:border-taupe">
+                        {c.email}
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div>
+                {contactHeading && (
+                  <h3 className="pl-[0.32em] text-[12px] font-medium uppercase tracking-[0.32em] text-clay">{contactHeading}</h3>
                 )}
-                {contact.phoneDisplay && (
-                  <a href={`tel:${contact.phoneLink}`} className="transition-colors hover:text-umber">
-                    {contact.phoneDisplay}
-                  </a>
-                )}
+                <div className="mt-4 flex flex-col items-start gap-2 text-[15px] font-light leading-[1.75]">
+                  {contact.email && (
+                    <a href={`mailto:${contact.email}`} className="border-b border-clay/55 pb-0.5 transition-colors hover:border-taupe">
+                      {contact.email}
+                    </a>
+                  )}
+                  {contact.phoneDisplay && (
+                    <a href={`tel:${contact.phoneLink}`} className="transition-colors hover:text-umber">
+                      {contact.phoneDisplay}
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -398,11 +416,11 @@ export function GiftCardSection({ eyebrow, heading, paragraphs, panelEyebrow, pa
 export function PageIntro({ eyebrow, title, subtitle, text }: { eyebrow: string; title: string; subtitle: string; text: string }) {
   return (
     <div className="bg-linen pt-16 text-taupe sm:pt-20">
-      <header className="mx-auto max-w-[780px] px-6 pb-12 pt-16 text-center sm:pb-16 sm:pt-24">
-        {eyebrow && <p className="text-[11px] font-medium uppercase tracking-[0.32em] text-clay">{eyebrow}</p>}
-        {title && <h1 className="mt-5 font-serif text-[48px] font-normal leading-none sm:text-[70px]">{title}</h1>}
+      <header className="mx-auto max-w-[780px] px-6 pt-16 text-center sm:pt-24">
+        {eyebrow && <p className="font-medium uppercase tracking-[0.32em] text-clay" style={{ fontSize: 12 }}>{eyebrow}</p>}
+        {title && <h1 className="mt-6 font-serif text-[48px] font-normal leading-none sm:text-[70px]">{title}</h1>}
         {subtitle && (
-          <p className="mx-auto mt-5 max-w-[540px] text-[17px] font-light leading-relaxed text-muted-taupe sm:text-[19px]">{subtitle}</p>
+          <p className="mx-auto mt-4 max-w-[540px] text-[17px] font-light leading-relaxed text-muted-taupe sm:text-[19px]">{subtitle}</p>
         )}
         {text && <p className="mx-auto mt-5 max-w-[600px] text-[15px] font-light leading-[1.8] text-muted-taupe">{text}</p>}
       </header>
@@ -446,7 +464,7 @@ export function GalleryGrid({ ariaLabel, photos }: { ariaLabel: string; photos: 
 
   return (
     <div className="bg-linen text-taupe">
-      <section aria-label={ariaLabel} className="mx-auto max-w-[1400px] px-4 pb-16 sm:px-8 sm:pb-20 lg:pb-24 xl:px-10">
+      <section aria-label={ariaLabel} className="mx-auto max-w-[1400px] px-6 py-[128px] sm:px-10 lg:px-20">
         <div className="grid grid-flow-row-dense grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4 md:auto-rows-[190px] lg:auto-rows-[235px]">
           {photos.map((photo, index) => (
             <Button
@@ -455,7 +473,7 @@ export function GalleryGrid({ ariaLabel, photos }: { ariaLabel: string; photos: 
               variant="ghost"
               onClick={() => setActive(index)}
               aria-label={`${index + 1} / ${count}: ${photo.alt}`}
-              className={`group relative block h-auto min-w-0 overflow-hidden rounded-[4px] bg-sand p-0 shadow-none hover:bg-sand focus-visible:ring-2 focus-visible:ring-clay ${SHAPE_CLASS[photo.shape]}`}
+              className={`group relative block h-auto min-w-0 overflow-hidden rounded-none bg-sand p-0 shadow-none hover:bg-sand focus-visible:ring-2 focus-visible:ring-clay ${SHAPE_CLASS[photo.shape]}`}
             >
               <img src={photo.src} alt={photo.alt} loading={index < 5 ? "eager" : "lazy"} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.035] motion-reduce:transition-none" />
               <span className="sr-only">{photo.alt}</span>
@@ -599,7 +617,7 @@ export function LocationsMap({ eyebrow, heading, mapLabel, itemLabel, locations,
   const [active, setActive] = useState<number | null>(null);
 
   return (
-    <section aria-labelledby="locations-overview-heading" className="bg-sand px-6 pb-16 pt-24 sm:px-14 md:px-20 md:pt-32">
+    <section aria-labelledby="locations-overview-heading" className="bg-sand px-6 pb-0 pt-24 sm:px-14 md:px-20 md:pt-32">
       <div className="flex flex-col items-center text-center">
         {eyebrow && <p className="pl-[0.45em] text-[10px] font-normal uppercase tracking-[0.45em] text-clay">{eyebrow}</p>}
         {heading && (
@@ -674,46 +692,25 @@ export function StatementBand({ lead, statement }: { lead: string; statement: st
   );
 }
 
-const GETTING_AROUND_BORDERS = [
-  "",
-  "border-t sm:border-t-0 sm:border-l",
-  "border-t md:border-t-0 md:border-l",
-  "border-t md:border-t-0 sm:border-l",
-];
-
-export function GettingAround({ eyebrow, heading, text, columns }: {
+/** Centred intro with up to four divided figure columns (Locations "Getting around", Offers "How to claim"). */
+export function GettingAround({ headingId, eyebrow, heading, text, columns, listLabel, className }: {
+  headingId: string;
   eyebrow: string;
   heading: string;
   text: string;
   columns: { value: string; title: string; body: string }[];
+  listLabel?: string;
+  className?: string;
 }) {
   return (
-    <section aria-labelledby="getting-around-heading" className="bg-sand px-6 py-20 sm:px-14 md:px-20 md:py-32">
-      <div className="flex flex-col items-center text-center">
-        {eyebrow && <p className="pl-[0.45em] text-[10px] font-normal uppercase tracking-[0.45em] text-clay">{eyebrow}</p>}
-        {heading && (
-          <h2 id="getting-around-heading" className="mt-6 font-serif text-[34px] font-normal leading-[1.15] text-taupe sm:text-[44px] lg:text-[52px]">
-            {heading}
-          </h2>
-        )}
-        {text && <p className="mt-4 max-w-[820px] text-[15px] font-light leading-[1.75] text-taupe/85">{text}</p>}
-      </div>
-
-      <ul
-        aria-label={heading}
-        className="mx-auto mt-12 grid w-full max-w-[1200px] list-none grid-cols-1 p-0 sm:mt-16 sm:grid-cols-2 md:mt-16 md:grid-cols-4"
-      >
-        {columns.map((col, index) => (
-          <li
-            key={index}
-            className={`wow-ga-col flex flex-col items-center border-clay/[0.22] px-7 py-10 text-center sm:py-12 md:py-0 ${GETTING_AROUND_BORDERS[index] ?? GETTING_AROUND_BORDERS[3]}`}
-          >
-            <div className="font-serif text-[36px] font-normal leading-[1.1] text-taupe sm:text-[40px]">{col.value}</div>
-            <h3 className="mt-6 font-serif text-[22px] font-normal leading-[1.2] text-taupe">{col.title}</h3>
-            <p className="mt-2 max-w-[240px] text-[14px] font-light leading-[1.65] text-taupe/85">{col.body}</p>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <InfoColumns
+      id={headingId}
+      eyebrow={eyebrow}
+      title={heading}
+      description={text}
+      items={columns}
+      listLabel={listLabel || heading}
+      className={className || undefined}
+    />
   );
 }

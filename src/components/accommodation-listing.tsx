@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { useUi } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
+import { PhotoCarousel } from "@/components/photo-carousel";
 import { cn } from "@/lib/utils";
 
 export type Accommodation = {
@@ -45,61 +46,34 @@ type AccommodationListingProps = {
 const readMoreCls =
   "border-b border-clay/50 pb-[3px] text-[11px] font-medium uppercase tracking-[0.24em] text-taupe transition-colors duration-150 hover:text-umber";
 
-function CardCarousel({ images, title, heightClass = "h-[240px]" }: { images: string[]; title: string; heightClass?: string }) {
-  const [index, setIndex] = useState(0);
-  const count = images.length;
-  const go = (step: number) => setIndex((i) => (i + step + count) % count);
+export type Price = { prefix: string; amount: string; unit: string };
 
-
+/** Card price line ("From 1 290 kr / night"), shared by accommodation and offer cards. */
+export function PriceTag({ price, className, compact = false }: { price: Price; className?: string; compact?: boolean }) {
+  if (compact) {
+    return (
+      <p className={cn("m-0 flex shrink-0 flex-nowrap items-baseline whitespace-nowrap font-serif text-umber", className)}>
+        <span className="font-serif text-[13px] font-normal">{price.prefix}</span>
+        <span className="ml-1 font-serif text-[16px] font-normal">{price.amount}</span>
+        <span className="ml-0.5 font-serif text-[11px] font-light text-clay">{price.unit}</span>
+      </p>
+    );
+  }
   return (
-    <div className={`group/img relative w-full overflow-hidden ${heightClass}`}>
-      <div
-        className="flex h-full transition-transform duration-700 ease-out motion-reduce:transition-none"
-        style={{ transform: `translateX(-${index * 100}%)` }}
-      >
-        {images.map((src, i) => (
-          <img
-            key={`${src}-${i}`}
-            src={src}
-            alt={`${title} photo ${i + 1} of ${count}`}
-            loading="lazy"
-            aria-hidden={i !== index}
-            className="h-full w-full flex-none object-cover"
-          />
-        ))}
-      </div>
-      {count > 1 && (
-        <div className="group/dots absolute bottom-9 left-1/2 z-20 flex -translate-x-1/2 items-center rounded-full border border-transparent py-1.5 pl-1.5 pr-1.5 transition-[background-color,backdrop-filter,border-color] duration-300 hover:border-pearl/20 hover:bg-pearl/10 hover:backdrop-blur-[5px] group-hover/img:border-pearl/20 group-hover/img:bg-pearl/10 group-hover/img:backdrop-blur-[5px] has-[:focus-visible]:border-pearl/20 has-[:focus-visible]:bg-pearl/10 has-[:focus-visible]:backdrop-blur-[5px] motion-reduce:transition-none">
-          <button
-            type="button"
-            aria-label={`Previous ${title} photo`}
-            onClick={() => go(-1)}
-            className="flex h-4 w-4 items-center justify-center text-pearl opacity-0 [filter:drop-shadow(0_1px_3px_rgba(0,0,0,0.45))] transition-opacity duration-200 hover:text-white focus-visible:opacity-100 group-hover/dots:opacity-100 group-hover/img:opacity-100 group-has-[:focus-visible]/dots:opacity-100 motion-reduce:transition-none"
-          >
-            <ChevronLeft className="h-3.5 w-3.5" strokeWidth={2.25} />
-          </button>
-          <div className="flex items-center gap-2 px-2 [filter:drop-shadow(0_1px_3px_rgba(0,0,0,0.45))]">
-            {images.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                aria-label={`Show ${title} photo ${i + 1}`}
-                onClick={() => setIndex(i)}
-                className={`rounded-full bg-pearl transition-all duration-200 motion-reduce:transition-none ${i === index ? "h-2 w-2 opacity-100" : "h-1 w-1 opacity-100"}`}
-              />
-            ))}
-          </div>
-          <button
-            type="button"
-            aria-label={`Next ${title} photo`}
-            onClick={() => go(1)}
-            className="flex h-4 w-4 items-center justify-center text-pearl opacity-0 [filter:drop-shadow(0_1px_3px_rgba(0,0,0,0.45))] transition-opacity duration-200 hover:text-white focus-visible:opacity-100 group-hover/dots:opacity-100 group-hover/img:opacity-100 group-has-[:focus-visible]/dots:opacity-100 motion-reduce:transition-none"
-          >
-            <ChevronRight className="h-3.5 w-3.5" strokeWidth={2.25} />
-          </button>
-        </div>
-      )}
-    </div>
+    <p className={cn("m-0 flex flex-wrap items-baseline whitespace-nowrap font-serif text-umber", className)}>
+      <span className="mr-2.5 font-serif text-[16px] font-normal">{price.prefix}</span>
+      <span className="font-serif text-[22px] font-normal">{price.amount}</span>
+      <span className="ml-4 font-serif text-[13px] font-light text-clay">{price.unit}</span>
+    </p>
+  );
+}
+
+/** Card action button ("Book" / "See Availability"), shared by accommodation and offer cards. */
+export function CardActionButton({ label, to, className }: { label: string; to?: string; className?: string }) {
+  return (
+    <Button asChild className={cn("h-9 rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.24em] text-pearl hover:bg-umber", className)}>
+      {to ? <Link to={to}>{label}</Link> : <a href="#">{label}</a>}
+    </Button>
   );
 }
 
@@ -108,13 +82,13 @@ export function AccommodationCard({ accommodation, actionLabel, actionTo, hideDi
   const wide = Boolean(accommodation.wide);
   const photos = [accommodation.image, ...(accommodation.images ?? [])];
   return (
-    <article className={`group flex w-full flex-col ${wide ? "md:col-span-2 md:flex-row lg:col-span-3" : ""}`}>
+    <article className={`group flex w-full flex-col transition-transform duration-300 motion-safe:hover:-translate-y-0.5 motion-reduce:transition-none ${wide ? "md:col-span-2 md:flex-row lg:col-span-3" : ""}`}>
       {wide ? (
         <div className="md:w-[52%] md:shrink-0">
-          <CardCarousel images={photos} title={accommodation.title} heightClass="h-[240px] md:h-full" />
+          <PhotoCarousel images={photos} title={accommodation.title} heightClass="h-[240px] md:h-full" />
         </div>
       ) : (
-        <CardCarousel images={photos} title={accommodation.title} />
+        <PhotoCarousel images={photos} title={accommodation.title} />
       )}
 
       <div className={`relative z-10 flex flex-grow flex-col bg-pearl px-7 pb-6 pt-7 shadow-accommodation ${wide ? "md:-ml-6 md:min-h-[420px]" : "mx-auto -mt-5 w-[calc(100%-24px)]"}`}>
@@ -135,13 +109,7 @@ export function AccommodationCard({ accommodation, actionLabel, actionTo, hideDi
           </p>
         )}
 
-        {accommodation.price && (
-          <p className="mt-4 flex flex-wrap items-baseline whitespace-nowrap font-serif text-umber">
-            <span className="mr-2.5 font-serif text-[16px] font-normal">{accommodation.price.prefix}</span>
-            <span className="font-serif text-[22px] font-normal">{accommodation.price.amount}</span>
-            <span className="ml-4 font-serif text-[13px] font-light text-clay">{accommodation.price.unit}</span>
-          </p>
-        )}
+        {accommodation.price && <PriceTag price={accommodation.price} className="mt-4" />}
         {accommodation.note && (
           <p className="mt-2 text-[12px] font-light tracking-[0.01em] text-clay">
             {accommodation.note}
@@ -191,13 +159,7 @@ export function AccommodationCard({ accommodation, actionLabel, actionTo, hideDi
               {ui.readMore}
             </a>
           )}
-          <Button asChild className="h-9 rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.24em] text-pearl hover:bg-umber">
-            {actionTo ? (
-              <Link to={actionTo}>{actionLabel}</Link>
-            ) : (
-              <a href="#">{actionLabel}</a>
-            )}
-          </Button>
+          <CardActionButton label={actionLabel} to={actionTo} />
         </div>
       </div>
     </article>

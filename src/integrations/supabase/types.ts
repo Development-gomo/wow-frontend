@@ -14,6 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      corporate_enquiries: {
+        Row: {
+          company: string
+          contact_name: string
+          created_at: string
+          email: string
+          employees: number | null
+          id: string
+          length_of_stay: string | null
+          move_in: string | null
+          pdf_path: string | null
+          phone: string | null
+          requirements: string | null
+        }
+        Insert: {
+          company: string
+          contact_name: string
+          created_at?: string
+          email: string
+          employees?: number | null
+          id?: string
+          length_of_stay?: string | null
+          move_in?: string | null
+          pdf_path?: string | null
+          phone?: string | null
+          requirements?: string | null
+        }
+        Update: {
+          company?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          employees?: number | null
+          id?: string
+          length_of_stay?: string | null
+          move_in?: string | null
+          pdf_path?: string | null
+          phone?: string | null
+          requirements?: string | null
+        }
+        Relationships: []
+      }
+      gift_card_enquiries: {
+        Row: {
+          created_at: string
+          email: string
+          extras: string[]
+          first_name: string
+          gift_for: string | null
+          id: string
+          notes: string | null
+          phone: string
+          surname: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          extras?: string[]
+          first_name: string
+          gift_for?: string | null
+          id?: string
+          notes?: string | null
+          phone: string
+          surname: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          extras?: string[]
+          first_name?: string
+          gift_for?: string | null
+          id?: string
+          notes?: string | null
+          phone?: string
+          surname?: string
+        }
+        Relationships: []
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string

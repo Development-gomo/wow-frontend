@@ -78,7 +78,7 @@ export function RoomInformation(props: RoomInformationProps) {
   ];
 
   return (
-    <section className="flex flex-col items-center bg-sand px-5 py-16 text-taupe md:px-10 lg:px-20">
+    <section className="flex flex-col items-center bg-sand px-5 py-32 text-taupe md:px-10 lg:px-20">
       <div className="flex flex-col items-center text-center">
         {kicker && <div className={eyebrow}>{kicker}</div>}
         {heading && <h2 className="mt-6 font-serif text-[34px] font-normal leading-[1.15] text-taupe md:text-[48px]">{heading}</h2>}

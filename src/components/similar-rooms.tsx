@@ -2,6 +2,8 @@ import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useUi } from "@/components/cms/site-context";
+import { Button } from "@/components/ui/button";
+import { PhotoCarousel } from "@/components/photo-carousel";
 
 export type SimilarRoom = {
   title: string;
@@ -10,6 +12,8 @@ export type SimilarRoom = {
   chips: string[];
   image: string;
   imageAlt: string;
+  /** More photos for the card's carousel; without any, the card shows just `image`. */
+  images?: string[];
   href?: string;
 };
 
@@ -19,12 +23,15 @@ type SimilarRoomsProps = {
   heading: string;
   subheading: string;
   carouselLabel: string;
+  /** Booking button on each card, e.g. "Book" for rooms or "See Availability" for apartments. */
+  actionLabel?: string;
+  actionTo?: string;
 };
 
 const arrowCls =
   "flex h-11 w-11 items-center justify-center rounded-full border border-taupe bg-taupe text-pearl transition-colors duration-150 hover:border-umber hover:bg-umber";
 
-export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabel }: SimilarRoomsProps) {
+export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabel, actionLabel, actionTo }: SimilarRoomsProps) {
   const ui = useUi();
   const viewport = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
@@ -83,9 +90,13 @@ export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabe
           {rooms.map((room, cardIndex) => (
             <div key={`${room.title}-${cardIndex}`} data-similar-card className="flex w-full flex-none snap-start md:w-[calc((100%-32px)/2)] lg:w-[calc((100%-64px)/3)]">
               <article className="group flex w-full flex-col transition-transform duration-300 motion-safe:hover:-translate-y-0.5 motion-reduce:transition-none">
-                <div className="aspect-[3/2] overflow-hidden">
-                  <img src={room.image} alt={room.imageAlt} loading="lazy" className="h-full w-full object-cover" />
-                </div>
+                {room.images && room.images.length > 0 ? (
+                  <PhotoCarousel images={[room.image, ...room.images]} title={room.title} heightClass="aspect-[3/2]" />
+                ) : (
+                  <div className="aspect-[3/2] overflow-hidden">
+                    <img src={room.image} alt={room.imageAlt} loading="lazy" className="h-full w-full object-cover" />
+                  </div>
+                )}
                 <div className="relative z-10 mx-auto -mt-5 flex w-[calc(100%-24px)] flex-1 flex-col bg-pearl px-6 py-6 shadow-accommodation">
                   <div>
                     <p className="wow-card-meta m-0 pl-[0.32em] text-[10px] font-normal uppercase tracking-[0.32em] text-clay">{room.meta}</p>
@@ -95,7 +106,18 @@ export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabe
                   <ul className="m-0 mt-4 flex list-none flex-wrap gap-2 p-0">
                     {room.chips.map((chip) => <li key={chip} className="wow-chip rounded-full bg-ivory px-3.5 py-2 text-xs font-normal">{chip}</li>)}
                   </ul>
-                  {room.href ? (
+                  {actionLabel && actionTo ? (
+                    <div className="mt-auto flex items-center justify-between gap-3 pt-8">
+                      {room.href ? (
+                        <Link to={room.href} className="inline-flex border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">{ui.readMore}</Link>
+                      ) : (
+                        <a href="#" className="inline-flex border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">{ui.readMore}</a>
+                      )}
+                      <Button asChild className="h-9 rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.24em] text-pearl hover:bg-umber">
+                        <Link to={actionTo}>{actionLabel}</Link>
+                      </Button>
+                    </div>
+                  ) : room.href ? (
                     <Link to={room.href} className="mt-auto inline-flex self-start pt-8 border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">{ui.readMore}</Link>
                   ) : (
                     <a href="#" className="mt-auto inline-flex self-start pt-8 border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">{ui.readMore}</a>

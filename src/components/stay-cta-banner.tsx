@@ -16,6 +16,8 @@ type StayCtaBannerProps = {
   imageUrl?: string;
   /** Screen-reader description of the photo. */
   imageAlt?: string;
+  /** Extra classes for this banner's band, e.g. to change its vertical padding. */
+  className?: string;
 };
 
 export function StayCtaBanner({
@@ -29,11 +31,12 @@ export function StayCtaBanner({
   secondaryTo,
   imageUrl,
   imageAlt = "",
+  className,
 }: StayCtaBannerProps) {
   return (
     <section
       aria-labelledby="stay-cta-heading"
-      className="relative overflow-hidden px-6 py-[88px] sm:px-20"
+      className={cn("relative overflow-hidden px-6 py-[88px] sm:px-20", className)}
     >
       {imageUrl && (
         <img

@@ -82,6 +82,8 @@ html {
   --text-cta-label: 13px;
   --text-card-meta: 14px;
   --text-chip-label: 14px;
+  --text-process-step: 12px;
+  --text-process-step--line-height: 18px;
   --text-intro-eyebrow: 18px;
   --text-intro-eyebrow--line-height: 30px;
 }
@@ -355,6 +357,21 @@ header nav a, #wow-full-menu nav a:not(.rounded-cta) {
 /* Accommodation size and guest labels only, not card titles or body copy. */
 .wow-card-meta[class] {
   font-size: var(--text-card-meta);
+}
+
+/* One-line explanation under each step of the connected process row. The three
+   columns are tight on phones, so it reads smaller there and keeps the usual
+   body size from the tablet width up. */
+.wow-process-step[class] {
+  font-size: var(--text-process-step);
+  line-height: var(--text-process-step--line-height);
+}
+
+@media (min-width: 768px) {
+  .wow-process-step[class] {
+    font-size: var(--text-body-copy);
+    line-height: var(--text-body-copy--line-height);
+  }
 }
 
 /* Hero scrim for bright, sunlit photography: a sheer white band at the very

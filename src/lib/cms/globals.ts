@@ -59,6 +59,8 @@ export const globalsSchema = z.object({
     .optional()
     .default({}),
   enquiryForm: z.record(z.string(), z.string()).optional().default({}),
+  /** Site settings › Guest contact: the shared "Meet Anna" section. */
+  guestContact: z.record(z.string(), z.string().nullable()).optional().default({}),
   notFound: z.record(z.string(), z.string()).optional().default({}),
   menus: z
     .object({

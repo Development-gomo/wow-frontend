@@ -95,7 +95,7 @@ export function WelcomingLocations({ eyebrow, heading, showViewAll = true, viewA
                     </span>
                   </div>
                   <p className="mb-5 text-[15px] font-light leading-[1.8] text-taupe/80">{l.desc}</p>
-                  <p className="font-serif text-[13px] italic leading-[1.7] text-taupe/60">{l.detail}</p>
+                  <p className="font-serif text-[16px] italic leading-[1.7] text-taupe/60">{l.detail}</p>
                 </div>
               </div>
 
