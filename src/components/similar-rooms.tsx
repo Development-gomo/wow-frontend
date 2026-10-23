@@ -15,6 +15,8 @@ export type SimilarRoom = {
   /** More photos for the card's carousel; without any, the card shows just `image`. */
   images?: string[];
   href?: string;
+  /** The room's own booking page; its button goes there instead of the section's link. */
+  bookingPath?: string;
 };
 
 type SimilarRoomsProps = {
@@ -114,7 +116,7 @@ export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabe
                         <a href="#" className="inline-flex border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">{ui.readMore}</a>
                       )}
                       <Button asChild className="h-9 rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.24em] text-pearl hover:bg-umber">
-                        <Link to={actionTo}>{actionLabel}</Link>
+                        <Link to={room.bookingPath ?? actionTo}>{actionLabel}</Link>
                       </Button>
                     </div>
                   ) : room.href ? (

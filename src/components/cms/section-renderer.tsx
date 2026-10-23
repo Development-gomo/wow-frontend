@@ -169,7 +169,7 @@ function renderSection(section: ValidSection) {
       return <EnquiryForm {...section.props} />;
 
     case "sirvoy_booking":
-      return <SirvoyBookingSection />;
+      return <SirvoyBookingSection formId={section.props.formId} lang={section.props.lang} />;
 
     case "corporate_enquiry_form":
       return <CorporateEnquiryForm {...section.props} />;

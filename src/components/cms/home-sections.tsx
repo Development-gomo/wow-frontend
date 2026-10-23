@@ -280,11 +280,13 @@ export function HomeAccommodationTabs({
  * page wrapper is bg-background (sand), so the gap needs its own linen backing.
  * flow-root keeps the margin inside this box so the backing covers it.
  */
-export function SirvoyBookingSection() {
+/** The booking widget band; the form comes from the page's Sirvoy section in WordPress. */
+export function SirvoyBookingSection({ formId, lang }: { formId: string; lang?: string }) {
   return (
     <div className="flow-root bg-linen">
       <section aria-label="Room booking" /* content-exempt: landmark label for the booking widget region */ className="relative z-10 mx-5 -mt-16 mb-[128px] bg-white md:mx-20 md:-mt-24">
-        <SirvoyBooking />
+        {/* Keyed by form so switching rooms mounts a fresh widget host. */}
+        <SirvoyBooking key={formId} formId={formId} lang={lang} />
       </section>
     </div>
   );
