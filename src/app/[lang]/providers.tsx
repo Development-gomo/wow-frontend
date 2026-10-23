@@ -6,6 +6,7 @@ import { useState, type ReactNode } from "react";
 import { SiteProvider } from "@/components/cms/site-context";
 import { SiteNavbar } from "@/components/site-navbar";
 import type { Globals } from "@/lib/cms/globals";
+import type { Lang } from "@/lib/i18n";
 import { SiteFooter } from "@/components/site-footer";
 
 /**
@@ -16,12 +17,12 @@ import { SiteFooter } from "@/components/site-footer";
  * beneath them) keep their original hooks and event handlers without needing a
  * "use client" directive added to any migrated component file.
  */
-export function Providers({ children, globals }: { children: ReactNode; globals: Globals }) {
+export function Providers({ children, globals, lang }: { children: ReactNode; globals: Globals; lang: Lang }) {
   const [queryClient] = useState(() => new QueryClient());
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SiteProvider value={globals}>
+      <SiteProvider value={globals} lang={lang}>
         <SiteNavbar />
         {children}
         <SiteFooter />

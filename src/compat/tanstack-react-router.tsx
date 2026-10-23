@@ -11,11 +11,14 @@
  * Translations needed:
  *   - TanStack's `to` prop        -> Next's `href`
  *   - TanStack's `activeProps`    -> merged in when `usePathname()` matches `to`
+ *   - internal paths               -> prefixed with the page language (/en/...)
  */
 
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { forwardRef, type ComponentPropsWithoutRef } from "react";
+
+import { useLocalizeHref } from "@/components/cms/site-context";
 
 type AnchorProps = Omit<ComponentPropsWithoutRef<"a">, "href">;
 
@@ -65,7 +68,8 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
   ref,
 ) {
   const pathname = usePathname();
-  const base = href ?? to ?? "#";
+  const localize = useLocalizeHref();
+  const base = localize(href ?? to ?? "#");
   const target = hash ? `${base}#${hash.replace(/^#/, "")}` : base;
 
   const state = isActive(pathname, target, activeOptions?.exact)

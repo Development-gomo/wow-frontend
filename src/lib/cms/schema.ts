@@ -758,6 +758,9 @@ export const pageSchema = z.object({
   id: z.number(),
   slug: z.string(),
   title: z.string(),
+  lang: z.string().optional(),
+  /** Slug per language code (WPML translations), e.g. { sv: "rooms", en: "rooms" }. */
+  translations: z.record(z.string(), z.string()).optional(),
   status: z.string().optional(),
   modified: z.string().optional(),
   seo: z

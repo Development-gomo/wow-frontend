@@ -1,7 +1,7 @@
 import { Fragment, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { useSite } from "@/components/cms/site-context";
+import { useSite, useLocalizeHref } from "@/components/cms/site-context";
 import { text, type MenuItem } from "@/lib/cms/globals";
 import { subscribeNewsletter, type NewsletterStatus } from "@/lib/newsletter.functions";
 
@@ -153,10 +153,11 @@ const footerLinkClass = "font-light text-linen/80 transition-colors duration-200
 
 /** In-page anchors and placeholders render as plain links; routes use the router. */
 function FooterLink({ item }: { item: MenuItem }) {
+  const localize = useLocalizeHref();
   return (
     <li>
       {item.href.includes("#") ? (
-        <a href={item.href} className={footerLinkClass}>{item.label}</a>
+        <a href={localize(item.href)} className={footerLinkClass}>{item.label}</a>
       ) : (
         <Link to={item.href} className={footerLinkClass}>{item.label}</Link>
       )}

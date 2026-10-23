@@ -9,7 +9,7 @@ import { InfoColumns } from "@/components/info-columns";
 import { ResponsibleHosting } from "@/components/responsible-hosting";
 import { BookActions } from "@/components/book-actions";
 import { ContactForm } from "@/components/contact-form";
-import { useSite } from "@/components/cms/site-context";
+import { useSite, useA11y } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
 import { WorkWithUs } from "@/components/work-with-us";
 import { cn } from "@/lib/utils";
@@ -442,6 +442,7 @@ function Arrow({ direction }: { direction: "left" | "right" }) {
 }
 
 export function GalleryGrid({ ariaLabel, photos }: { ariaLabel: string; photos: GalleryPhoto[] }) {
+  const a11y = useA11y();
   const [active, setActive] = useState<number | null>(null);
   const selected = active === null ? null : photos[active];
   const count = photos.length;
@@ -486,14 +487,14 @@ export function GalleryGrid({ ariaLabel, photos }: { ariaLabel: string; photos: 
         <div role="dialog" aria-modal="true" aria-label={ariaLabel} className="fixed inset-0 z-[60] flex flex-col bg-umber text-linen">
           <div className="flex h-16 shrink-0 items-center justify-between px-5 sm:px-8">
             <span className="text-[12px] uppercase tracking-[0.24em]">{active + 1} / {count}</span>
-            <Button type="button" variant="ghost" size="icon" autoFocus aria-label="Close" /* content-exempt: control label */ onClick={() => setActive(null)} className="h-11 w-11 rounded-none text-linen hover:bg-linen/10 hover:text-linen">
+            <Button type="button" variant="ghost" size="icon" autoFocus aria-label={a11y.close} onClick={() => setActive(null)} className="h-11 w-11 rounded-none text-linen hover:bg-linen/10 hover:text-linen">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="h-6 w-6"><path d="M5 5l14 14M19 5 5 19" /></svg>
             </Button>
           </div>
           <div className="relative flex min-h-0 flex-1 items-center justify-center px-14 sm:px-24">
-            <Button type="button" variant="ghost" size="icon" aria-label="Previous" /* content-exempt: control label */ onClick={() => setActive((active - 1 + count) % count)} className="absolute left-2 z-10 h-11 w-11 rounded-none text-linen hover:bg-linen/10 hover:text-linen sm:left-7"><Arrow direction="left" /></Button>
+            <Button type="button" variant="ghost" size="icon" aria-label={a11y.previous} onClick={() => setActive((active - 1 + count) % count)} className="absolute left-2 z-10 h-11 w-11 rounded-none text-linen hover:bg-linen/10 hover:text-linen sm:left-7"><Arrow direction="left" /></Button>
             <img key={active} src={selected.src} alt={selected.alt} className="max-h-full max-w-full object-contain" />
-            <Button type="button" variant="ghost" size="icon" aria-label="Next" /* content-exempt: control label */ onClick={() => setActive((active + 1) % count)} className="absolute right-2 z-10 h-11 w-11 rounded-none text-linen hover:bg-linen/10 hover:text-linen sm:right-7"><Arrow direction="right" /></Button>
+            <Button type="button" variant="ghost" size="icon" aria-label={a11y.next} onClick={() => setActive((active + 1) % count)} className="absolute right-2 z-10 h-11 w-11 rounded-none text-linen hover:bg-linen/10 hover:text-linen sm:right-7"><Arrow direction="right" /></Button>
           </div>
           <p className="shrink-0 px-4 py-5 text-center text-[13px] font-light tracking-[0.03em] text-linen/80">{selected.alt}</p>
         </div>

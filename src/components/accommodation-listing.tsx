@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
-import { useUi } from "@/components/cms/site-context";
+import { useUi, useA11y } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
 import { PhotoCarousel } from "@/components/photo-carousel";
 import { cn } from "@/lib/utils";
@@ -191,6 +191,7 @@ export function AccommodationListing({ eyebrow, heading, description, accommodat
 /** The card grid on its own, for sections (like the homepage tabs) that supply their own heading.
  * With more than three cards it becomes a sliding carousel whose cards keep the exact grid column width. */
 export function AccommodationGrid({ accommodations, actionLabel, actionTo, hideDivider, className }: Pick<AccommodationListingProps, "accommodations" | "actionLabel" | "actionTo" | "hideDivider" | "className">) {
+  const a11y = useA11y();
   const trackRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
   // Bumped on every arrow click so the auto-advance timer restarts from zero.
@@ -258,7 +259,7 @@ export function AccommodationGrid({ accommodations, actionLabel, actionTo, hideD
       {/* Desktop/tablet: arrows overlay the outer edges of the first and last visible cards. */}
       <button
         type="button"
-        aria-label="Previous cards"
+        aria-label={a11y.previousCards}
         onClick={() => scrollByArrow(-1)}
         className={`${arrowCls} absolute left-0 top-1/2 z-20 hidden -translate-x-1/2 -translate-y-1/2 md:flex`}
       >
@@ -266,7 +267,7 @@ export function AccommodationGrid({ accommodations, actionLabel, actionTo, hideD
       </button>
       <button
         type="button"
-        aria-label="Next cards"
+        aria-label={a11y.nextCards}
         onClick={() => scrollByArrow(1)}
         className={`${arrowCls} absolute right-0 top-1/2 z-20 hidden -translate-y-1/2 translate-x-1/2 md:flex`}
       >
@@ -274,10 +275,10 @@ export function AccommodationGrid({ accommodations, actionLabel, actionTo, hideD
       </button>
       {/* Phone: arrows stay below the cards, where nothing is cut off. */}
       <div className="mt-10 flex justify-center gap-4 md:hidden">
-        <button type="button" aria-label="Previous cards" onClick={() => scrollByArrow(-1)} className={arrowCls}>
+        <button type="button" aria-label={a11y.previousCards} onClick={() => scrollByArrow(-1)} className={arrowCls}>
           <ChevronLeft className="h-5 w-5" />
         </button>
-        <button type="button" aria-label="Next cards" onClick={() => scrollByArrow(1)} className={arrowCls}>
+        <button type="button" aria-label={a11y.nextCards} onClick={() => scrollByArrow(1)} className={arrowCls}>
           <ChevronRight className="h-5 w-5" />
         </button>
       </div>

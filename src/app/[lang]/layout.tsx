@@ -1,13 +1,33 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
-import "../styles.css";
+import "../../styles.css";
 import { getGlobals } from "@/lib/cms/client";
+import { isLang, LANGS, ogLocale, type Lang } from "@/lib/i18n";
 import { Providers } from "./providers";
 
+/**
+ * Root layout, one per language. Swedish is served at the root and English
+ * under /en; the middleware maps the root URLs onto the "sv" segment.
+ */
+
+type Params = { lang: string };
+
+// No dynamicParams = false here: it would also apply to the pages below and
+// turn every unknown page into the bare framework 404. The middleware only
+// ever routes "sv" and "en" here, and the layout rejects anything else.
+
+export function generateStaticParams(): Params[] {
+  return LANGS.map((lang) => ({ lang }));
+}
+
 /** Site-wide defaults, from WordPress › Site settings › Brand. Pages override them. */
-export async function generateMetadata(): Promise<Metadata> {
-  const { seo } = await getGlobals();
+export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
+  const { lang } = await params;
+  if (!isLang(lang)) return {};
+
+  const { seo } = await getGlobals(lang);
 
   return {
     // Next resolves relative og:image/twitter:image paths against this base.
@@ -18,6 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: seo.title || undefined,
       description: seo.description || undefined,
       type: "website",
+      locale: ogLocale(lang),
     },
     twitter: { card: "summary" },
   };
@@ -25,11 +46,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport = { width: "device-width", initialScale: 1 };
 
-export default async function RootLayout({ children }: { children: ReactNode }) {
-  const globals = await getGlobals();
+export default async function RootLayout({ children, params }: { children: ReactNode; params: Promise<Params> }) {
+  const { lang } = await params;
+  if (!isLang(lang)) notFound();
+
+  const globals = await getGlobals(lang as Lang);
 
   return (
-    <html lang="en">
+    <html lang={lang}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -39,7 +63,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         />
       </head>
       <body>
-        <Providers globals={globals}>{children}</Providers>
+        <Providers globals={globals} lang={lang}>{children}</Providers>
       </body>
     </html>
   );

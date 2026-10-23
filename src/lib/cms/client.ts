@@ -1,5 +1,7 @@
 import "server-only";
 
+import { DEFAULT_LANG, isLang, type Lang } from "@/lib/i18n";
+
 import { globalsSchema, type Globals } from "./globals";
 import { pageIndexSchema, pageSchema, parseSection, type Section } from "./schema";
 
@@ -32,6 +34,9 @@ export type CmsPage = {
   id: number;
   slug: string;
   title: string;
+  lang: Lang;
+  /** Slug of this page in each language that has it (WPML translations). */
+  translations: Partial<Record<Lang, string>>;
   seo?: {
     title?: string;
     description?: string;
@@ -56,8 +61,9 @@ type FetchOptions = {
  * and cached: throwing makes the build fail, and during background
  * revalidation Next keeps serving the last good page instead.
  */
-async function cmsFetch(path: string, { tags = [], noStore = false }: FetchOptions = {}) {
-  const url = `${BASE}/wp-json/${NAMESPACE}${path}`;
+async function cmsFetch(path: string, lang: Lang, { tags = [], noStore = false }: FetchOptions = {}) {
+  // Always name the language: WordPress answers in its own default otherwise.
+  const url = `${BASE}/wp-json/${NAMESPACE}${path}${path.includes("?") ? "&" : "?"}lang=${lang}`;
 
   const response = await fetch(url, {
     headers: { Accept: "application/json" },
@@ -86,9 +92,9 @@ async function cmsFetch(path: string, { tags = [], noStore = false }: FetchOptio
  * A page published in WordPress is picked up on the next revalidation without
  * any code change, which is the point of the whole exercise.
  */
-export async function getPageIndex(): Promise<Array<{ slug: string; title: string }>> {
+export async function getPageIndex(lang: Lang = DEFAULT_LANG): Promise<Array<{ slug: string; title: string; modified?: string | null }>> {
   try {
-    const raw = await cmsFetch("/pages", { tags: [CACHE_TAGS.pages] });
+    const raw = await cmsFetch("/pages", lang, { tags: [CACHE_TAGS.pages] });
 
     if (!raw) return [];
 
@@ -99,7 +105,7 @@ export async function getPageIndex(): Promise<Array<{ slug: string; title: strin
       return [];
     }
 
-    return parsed.data.items.map((item) => ({ slug: item.slug, title: item.title }));
+    return parsed.data.items.map((item) => ({ slug: item.slug, title: item.title, modified: item.modified }));
   } catch (error) {
     // A build must not fail because the CMS is briefly unreachable; the
     // statically known routes still render.
@@ -113,10 +119,13 @@ export async function getPageIndex(): Promise<Array<{ slug: string; title: strin
  *
  * Returns null when the page does not exist, so the caller can call notFound().
  */
-export async function getPage(slug: string, { preview = false } = {}): Promise<CmsPage | null> {
+export async function getPage(
+  slug: string,
+  { preview = false, lang = DEFAULT_LANG }: { preview?: boolean; lang?: Lang } = {},
+): Promise<CmsPage | null> {
   const path = `/page/${slug || "home"}${preview ? "?preview=true" : ""}`;
 
-  const raw = await cmsFetch(path, {
+  const raw = await cmsFetch(path, lang, {
     tags: [CACHE_TAGS.page(slug)],
     noStore: preview,
   });
@@ -143,6 +152,8 @@ export async function getPage(slug: string, { preview = false } = {}): Promise<C
     id: parsed.data.id,
     slug: parsed.data.slug,
     title: parsed.data.title,
+    lang: isLang(parsed.data.lang) ? parsed.data.lang : lang,
+    translations: parsed.data.translations ?? {},
     seo: parsed.data.seo,
     sections,
   };
@@ -158,8 +169,8 @@ export async function getPage(slug: string, { preview = false } = {}): Promise<C
  * a site without its navigation and footer must never be rendered and cached.
  * During revalidation Next then keeps serving the last good version.
  */
-export async function getGlobals(): Promise<Globals> {
-  const raw = await cmsFetch("/globals", { tags: [CACHE_TAGS.globals] });
+export async function getGlobals(lang: Lang = DEFAULT_LANG): Promise<Globals> {
+  const raw = await cmsFetch("/globals", lang, { tags: [CACHE_TAGS.globals] });
 
   // The endpoint always exists; a 404 means the plugin is missing.
   if (!raw) throw new Error("CMS /globals not found");

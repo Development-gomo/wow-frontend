@@ -1,6 +1,7 @@
 import type { CSSProperties, MouseEvent } from "react";
 import { cn } from "@/lib/utils";
 
+import { useLocalizeHref } from "@/components/cms/site-context";
 type Props = {
   eyebrow: string;
   /** Section heading; "\n" starts a new line. */
@@ -37,6 +38,7 @@ const openSection = (e: MouseEvent<HTMLAnchorElement>, id: string) => {
 };
 
 export function ExternalGuideCallout({ eyebrow, title, description, ctaLabel, ctaHref, image, imageAlt, imageClassName, titleClassName, titleStyle, descriptionClassName, descriptionStyle, ctaClassName, contentClassName, className }: Props) {
+  const localize = useLocalizeHref();
   const paragraphs = Array.isArray(description) ? description : [description];
   const isExternal = ctaHref ? /^https?:/.test(ctaHref) : false;
   const sectionId = ctaHref?.startsWith("#") ? ctaHref.slice(1) : null;
@@ -57,7 +59,7 @@ export function ExternalGuideCallout({ eyebrow, title, description, ctaLabel, ct
             ))}
           </div>
           {ctaLabel && ctaHref ? <a
-            href={ctaHref}
+            href={localize(ctaHref)}
             {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
             onClick={sectionId ? (e) => openSection(e, sectionId) : undefined}
             className={cn("group/link mt-12 inline-flex items-center gap-3.5 self-start border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors duration-[180ms] hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay", ctaClassName)}

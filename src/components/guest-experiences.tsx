@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useId, useState } from "react";
-import { useUi } from "@/components/cms/site-context";
+import { useUi, useA11y } from "@/components/cms/site-context";
+import { fill } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +35,7 @@ export function GuestExperiences({
   reviews,
   className,
 }: GuestExperiencesProps) {
+  const a11y = useA11y();
   const ui = useUi();
   const headingId = `wow-guest-heading-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   const halfStarId = `wow-half-star-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
@@ -65,7 +67,7 @@ export function GuestExperiences({
     }
   }
 
-  const ratingLabel = `${rating} out of ${outOf}`;
+  const ratingLabel = fill(a11y.ratingOutOf, { rating, outOf });
   const starState = (index: number) => {
     const value = (rating ?? 0) - index;
     if (value >= 1) return "full";
@@ -123,7 +125,7 @@ export function GuestExperiences({
         ) : null}
 
         <div className="mt-12 flex flex-wrap items-center justify-center gap-x-4 gap-y-3 sm:flex-nowrap sm:justify-between sm:gap-4 lg:gap-6">
-          <Button type="button" variant="ghost" size="icon" onClick={() => shift(-1)} aria-label="Previous testimonials" className="order-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-taupe bg-taupe text-pearl transition-colors duration-150 hover:border-umber hover:bg-umber hover:text-pearl focus-visible:ring-clay sm:order-1">
+          <Button type="button" variant="ghost" size="icon" onClick={() => shift(-1)} aria-label={a11y.previousTestimonials} className="order-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-taupe bg-taupe text-pearl transition-colors duration-150 hover:border-umber hover:bg-umber hover:text-pearl focus-visible:ring-clay sm:order-1">
             <ChevronLeft className="!h-5 !w-5" aria-hidden="true" />
           </Button>
 
@@ -147,7 +149,7 @@ export function GuestExperiences({
             </div>
           </div>
 
-          <Button type="button" variant="ghost" size="icon" onClick={() => shift(1)} aria-label="Next testimonials" className="order-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-taupe bg-taupe text-pearl transition-colors duration-150 hover:border-umber hover:bg-umber hover:text-pearl focus-visible:ring-clay sm:order-3">
+          <Button type="button" variant="ghost" size="icon" onClick={() => shift(1)} aria-label={a11y.nextTestimonials} className="order-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-taupe bg-taupe text-pearl transition-colors duration-150 hover:border-umber hover:bg-umber hover:text-pearl focus-visible:ring-clay sm:order-3">
             <ChevronRight className="!h-5 !w-5" aria-hidden="true" />
           </Button>
         </div>
