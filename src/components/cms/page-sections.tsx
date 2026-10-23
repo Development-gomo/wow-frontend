@@ -438,6 +438,14 @@ const SHAPE_CLASS: Record<GalleryPhoto["shape"], string> = {
   small: "aspect-square md:aspect-auto",
 };
 
+/** Rendered width per shape: two columns (of 2, then 4) or one; the grid stops growing at 1400px. */
+const SHAPE_SIZES: Record<GalleryPhoto["shape"], string> = {
+  feature: "(min-width: 1400px) 620px, (min-width: 768px) 50vw, 100vw",
+  portrait: "(min-width: 1400px) 310px, (min-width: 768px) 25vw, 50vw",
+  wide: "(min-width: 1400px) 620px, (min-width: 768px) 50vw, 100vw",
+  small: "(min-width: 1400px) 310px, (min-width: 768px) 25vw, 50vw",
+};
+
 function Arrow({ direction }: { direction: "left" | "right" }) {
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" className="h-6 w-6"><path d={direction === "left" ? "M19 12H5m6-6-6 6 6 6" : "M5 12h14m-6-6 6 6-6 6"} /></svg>;
 }
@@ -477,7 +485,7 @@ export function GalleryGrid({ ariaLabel, photos }: { ariaLabel: string; photos: 
               aria-label={`${index + 1} / ${count}: ${photo.alt}`}
               className={`group relative block h-auto min-w-0 overflow-hidden rounded-none bg-sand p-0 shadow-none hover:bg-sand focus-visible:ring-2 focus-visible:ring-clay ${SHAPE_CLASS[photo.shape]}`}
             >
-              <CmsImage sizes="(min-width: 1024px) 33vw, 50vw" src={photo.src} alt={photo.alt} loading={index < 5 ? "eager" : "lazy"} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.035] motion-reduce:transition-none" />
+              <CmsImage sizes={SHAPE_SIZES[photo.shape]} src={photo.src} alt={photo.alt} loading={index < 5 ? "eager" : "lazy"} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.035] motion-reduce:transition-none" />
               <span className="sr-only">{photo.alt}</span>
             </Button>
           ))}
