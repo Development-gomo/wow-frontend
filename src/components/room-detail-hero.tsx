@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { useUi } from "@/components/cms/site-context";
+import { useUi, useA11y, useLocalizeHref } from "@/components/cms/site-context";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +26,8 @@ const THUMBS_VISIBLE = 4;
 
 /** Detail-page hero: gallery with dark side arrows and a hover-revealed dot cluster, plus room summary. */
 export function RoomDetailHero({ breadcrumbParent, kicker, title, description, location, chips, optionsLabel, note, ctaLabel, ctaHref, images }: RoomDetailHeroProps) {
+  const a11y = useA11y();
+  const localize = useLocalizeHref();
   const ui = useUi();
   const [index, setIndex] = useState(0);
   const [thumbStart, setThumbStart] = useState(0);
@@ -43,7 +45,7 @@ export function RoomDetailHero({ breadcrumbParent, kicker, title, description, l
 
   return (
     <section className="flex flex-col items-center bg-sand px-6 pb-16 pt-28 sm:pt-32 md:px-20">
-      <nav aria-label="Breadcrumb" className="w-full max-w-[1200px] text-[11px] font-normal uppercase tracking-[0.24em] text-clay">
+      <nav aria-label={a11y.breadcrumb} className="w-full max-w-[1200px] text-[11px] font-normal uppercase tracking-[0.24em] text-clay">
         <Link to="/" className="transition-colors duration-200 hover:text-umber">{ui.breadcrumbHome}</Link>
         <span aria-hidden="true" className="px-3">›</span>
         <Link to={breadcrumbParent.to} className="transition-colors duration-200 hover:text-umber">{breadcrumbParent.label}</Link>
@@ -67,17 +69,17 @@ export function RoomDetailHero({ breadcrumbParent, kicker, title, description, l
                 )}
               />
             ))}
-            <button type="button" aria-label="Previous image" onClick={() => go(index - 1)} className={cn(arrowCls, "left-5")}>
+            <button type="button" aria-label={a11y.previousImage} onClick={() => go(index - 1)} className={cn(arrowCls, "left-5")}>
               <ChevronLeft className="h-5 w-5" aria-hidden="true" />
             </button>
-            <button type="button" aria-label="Next image" onClick={() => go(index + 1)} className={cn(arrowCls, "right-5")}>
+            <button type="button" aria-label={a11y.nextImage} onClick={() => go(index + 1)} className={cn(arrowCls, "right-5")}>
               <ChevronRight className="h-5 w-5" aria-hidden="true" />
             </button>
             <p aria-live="polite" className="sr-only">{`Image ${index + 1} of ${total}`}</p>
             <div className="group/dots absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center rounded-full border border-transparent py-1.5 pl-1.5 pr-1.5 transition-[background-color,backdrop-filter,border-color] duration-300 hover:border-pearl/20 hover:bg-pearl/10 hover:backdrop-blur-[5px] group-hover/img:border-pearl/20 group-hover/img:bg-pearl/10 group-hover/img:backdrop-blur-[5px] has-[:focus-visible]:border-pearl/20 has-[:focus-visible]:bg-pearl/10 has-[:focus-visible]:backdrop-blur-[5px] motion-reduce:transition-none">
               <button
                 type="button"
-                aria-label="Previous image"
+                aria-label={a11y.previousImage}
                 onClick={() => go(index - 1)}
                 className="flex h-4 w-4 cursor-pointer items-center justify-center text-pearl opacity-0 [filter:drop-shadow(0_1px_3px_rgba(0,0,0,0.45))] transition-opacity duration-200 hover:text-white focus-visible:opacity-100 group-hover/dots:opacity-100 group-hover/img:opacity-100 group-has-[:focus-visible]/dots:opacity-100 motion-reduce:transition-none"
               >
@@ -99,7 +101,7 @@ export function RoomDetailHero({ breadcrumbParent, kicker, title, description, l
               </div>
               <button
                 type="button"
-                aria-label="Next image"
+                aria-label={a11y.nextImage}
                 onClick={() => go(index + 1)}
                 className="flex h-4 w-4 cursor-pointer items-center justify-center text-pearl opacity-0 [filter:drop-shadow(0_1px_3px_rgba(0,0,0,0.45))] transition-opacity duration-200 hover:text-white focus-visible:opacity-100 group-hover/dots:opacity-100 group-hover/img:opacity-100 group-has-[:focus-visible]/dots:opacity-100 motion-reduce:transition-none"
               >
@@ -108,7 +110,7 @@ export function RoomDetailHero({ breadcrumbParent, kicker, title, description, l
             </div>
           </div>
 
-          <ul aria-label="Thumbnails" className="m-0 mt-4 grid list-none grid-cols-4 gap-3 p-0">
+          <ul aria-label={a11y.thumbnails} className="m-0 mt-4 grid list-none grid-cols-4 gap-3 p-0">
             {visible.map((t) => {
               const active = t.idx === index;
               return (
@@ -158,7 +160,7 @@ export function RoomDetailHero({ breadcrumbParent, kicker, title, description, l
             <div className="mt-8 pl-[0.32em] text-[13px] font-medium uppercase tracking-[0.32em] text-clay">{optionsLabel}</div>
           ) : null}
           <a
-            href={ctaHref}
+            href={localize(ctaHref)}
             className="mt-6 inline-flex cursor-pointer h-12 items-center gap-3.5 self-start rounded-cta bg-taupe px-[30px] text-[11px] font-medium uppercase tracking-[0.28em] text-pearl transition-colors duration-200 hover:bg-umber"
           >
             {ctaLabel}

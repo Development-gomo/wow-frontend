@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useSite } from "@/components/cms/site-context";
+import { useSite, useLocalizeHref, useA11y, useLang, useLanguageHref } from "@/components/cms/site-context";
+import { HREFLANG, LANGS, type Lang } from "@/lib/i18n";
 import type { MenuItem } from "@/lib/cms/globals";
 
 /*
@@ -13,19 +14,47 @@ import type { MenuItem } from "@/lib/cms/globals";
  */
 
 function MenuLink({ item, onNavigate }: { item: MenuItem; onNavigate: () => void }) {
+  const localize = useLocalizeHref();
   const className = "font-medium uppercase tracking-[0.2em] text-linen/80 transition-colors hover:text-linen";
   return item.href.includes("#") ? (
-    <a href={item.href} onClick={onNavigate} className={className}>{item.label}</a>
+    <a href={localize(item.href)} onClick={onNavigate} className={className}>{item.label}</a>
   ) : (
     <Link to={item.href} onClick={onNavigate} className={className}>{item.label}</Link>
   );
 }
 
+/**
+ * SV / EN, left of the booking buttons: the current page in the other
+ * language. A full page load, since each language has its own root layout.
+ */
+function LanguageSwitcher() {
+  const lang = useLang();
+  const a11y = useA11y();
+  const hrefs: Record<Lang, string> = { sv: useLanguageHref("sv"), en: useLanguageHref("en") };
+  const names = a11y.languageNames.split("|");
+
+  return (
+    <nav aria-label={a11y.language} className="mr-1 flex shrink-0 items-center gap-1 text-[10px] font-normal uppercase tracking-[0.14em] text-taupe sm:mr-2 sm:gap-1.5 xl:text-[11px] xl:tracking-[0.18em]">
+      {LANGS.map((code, index) => (
+        <span key={code} className="flex items-center gap-1 sm:gap-1.5">
+          {index > 0 && <span aria-hidden="true" className="text-taupe/45">/</span>}
+          {code === lang ? (
+            <span aria-current="true" title={names[index]} className="text-umber">{code}</span>
+          ) : (
+            <a href={hrefs[code]} hrefLang={HREFLANG[code]} lang={code} title={names[index]} aria-label={names[index]} className="transition-colors duration-200 hover:text-umber">{code}</a>
+          )}
+        </span>
+      ))}
+    </nav>
+  );
+}
+
 export function SiteNavbar() {
+  const a11y = useA11y();
   const { brand, booking, menus } = useSite();
   const desktopLinks = menus.header;
   const menuGroups = menus.menu;
-  const homeLabel = `${[brand.name, brand.tagline].filter(Boolean).join(" ")} — home`; // content-exempt: accessibility label assembled from the CMS brand name
+  const homeLabel = `${[brand.name, brand.tagline].filter(Boolean).join(" ")} — ${a11y.home}`;
 
   const [menuMounted, setMenuMounted] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -65,12 +94,12 @@ export function SiteNavbar() {
             <span className="pl-[0.18em] font-serif tracking-[0.18em]" style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 28, lineHeight: "28px", fontWeight: 500, fontStyle: "normal", color: "lab(28.0658 2.08874 4.94074)" }}>{brand.name}</span>
             <span className="mt-[6px] pl-[0.32em] uppercase tracking-[0.32em]" style={{ fontFamily: '"Barlow Condensed", Inter, sans-serif', fontSize: 8, lineHeight: "8px", fontWeight: 300, fontStyle: "normal", color: "oklab(0.38 0.00591253 0.0126966 / 0.75)" }}>{brand.tagline}</span>
           </Link>
-          <Button type="button" variant="ghost" size="icon" aria-label="Open menu" aria-expanded={menuMounted} aria-controls="wow-full-menu" onClick={openMenu} className="h-11 w-6 shrink-0 rounded-none p-0 text-taupe hover:bg-transparent hover:text-umber">{/* content-exempt: control label for the menu button */}
+          <Button type="button" variant="ghost" size="icon" aria-label={a11y.openMenu} aria-expanded={menuMounted} aria-controls="wow-full-menu" onClick={openMenu} className="h-11 w-6 shrink-0 rounded-none p-0 text-taupe hover:bg-transparent hover:text-umber">
             <svg viewBox="2 0 24 22" width="24" height="22" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="butt" aria-hidden="true" className="!h-[22px] !w-6"><path d="M2 4H26 M2 11H26 M2 18H26" /></svg>
           </Button>
         </div>
 
-        <nav aria-label="Primary navigation" className="hidden items-center gap-5 lg:flex xl:gap-7">{/* content-exempt: landmark label */}
+        <nav aria-label={a11y.primaryNavigation} className="hidden items-center gap-5 lg:flex xl:gap-7">
           {desktopLinks.map((item) => (
             <Link
               key={item.id ?? item.label}
@@ -84,6 +113,7 @@ export function SiteNavbar() {
         </nav>
 
         <div className="ml-auto flex shrink-0 items-center gap-cta">
+          <LanguageSwitcher />
           <Button asChild className="h-9 rounded-cta bg-taupe px-2 text-[9px] font-medium uppercase tracking-[0.04em] text-ivory shadow-none transition-colors duration-200 hover:bg-umber sm:h-11 sm:px-5 sm:text-[11px] sm:tracking-[0.24em] xl:px-7">
             <Link to={booking.roomTo}>{booking.roomLabel}</Link>
           </Button>
@@ -95,7 +125,7 @@ export function SiteNavbar() {
 
     </header>
     {menuMounted && (
-      <div className="fixed inset-0 z-50" id="wow-full-menu" role="dialog" aria-modal="true" aria-label="Full menu" aria-hidden={!menuVisible}>{/* content-exempt: dialog label */}
+      <div className="fixed inset-0 z-50" id="wow-full-menu" role="dialog" aria-modal="true" aria-label={a11y.fullMenu} aria-hidden={!menuVisible}>
         <div className={`absolute inset-0 bg-umber/55 backdrop-blur-sm transition-opacity duration-300 ease-out ${menuVisible ? "opacity-100" : "opacity-0"}`} onClick={closeMenu} aria-hidden="true" />
         <div className={`absolute inset-y-0 left-0 flex w-[min(85vw,340px)] flex-col overflow-y-auto bg-taupe px-7 pb-5 pt-5 text-linen shadow-2xl transition-transform duration-300 ease-out sm:px-9 [@media(max-height:604px)]:pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${menuVisible ? "translate-x-0" : "-translate-x-full"}`}>
           <div className="flex items-start justify-between gap-5">
@@ -103,11 +133,11 @@ export function SiteNavbar() {
               <span className="font-serif text-[28px]">{brand.name}</span>
               <span className="mt-1 text-[8px] uppercase tracking-[0.25em]">{brand.tagline}</span>
             </Link>
-            <Button type="button" variant="ghost" size="icon" aria-label="Close menu" onClick={closeMenu} className="h-10 w-10 shrink-0 text-linen hover:bg-linen/10 hover:text-linen">{/* content-exempt: control label */}
+            <Button type="button" variant="ghost" size="icon" aria-label={a11y.closeMenu} onClick={closeMenu} className="h-10 w-10 shrink-0 text-linen hover:bg-linen/10 hover:text-linen">
               <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" aria-hidden="true"><path d="M4 4L20 20 M20 4L4 20" /></svg>
             </Button>
           </div>
-          <nav aria-label="Menu" className="flex min-h-0 flex-1 flex-col pt-10">{/* content-exempt: landmark label */}
+          <nav aria-label={a11y.menu} className="flex min-h-0 flex-1 flex-col pt-10">
             <div className="flex flex-col">
               {menuGroups.map((group) => {
                 const isOpen = openGroup === group.label;

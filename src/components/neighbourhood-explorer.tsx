@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { useUi } from "@/components/cms/site-context";
+import { useUi, useLocalizeHref } from "@/components/cms/site-context";
 import { cn } from "@/lib/utils";
 import { PhotoCarousel } from "@/components/photo-carousel";
 import { PriceTag, CardActionButton, type Price } from "@/components/accommodation-listing";
@@ -48,6 +48,7 @@ type Props = {
 };
 
 export function NeighbourhoodExplorer({ id, eyebrow, title, description, neighbourhoods, tabsLabel = "Choose a neighbourhood", linkLabel, idPrefix = "", className, cardHoverMotion = true, panelClassName }: Props) {
+  const localize = useLocalizeHref();
   const ui = useUi();
   const placeLinkLabel = linkLabel ?? ui.explorePlace;
   const [active, setActive] = useState(0);
@@ -116,7 +117,7 @@ export function NeighbourhoodExplorer({ id, eyebrow, title, description, neighbo
                       <CardActionButton label={p.action.label} to={p.action.to} className="shrink-0 whitespace-nowrap px-2.5" />
                     </div>
                   ) : p.href && (<a
-                    href={p.href}
+                    href={localize(p.href)}
                     className="mt-4 inline-flex items-center gap-2.5 self-start border-b border-clay/55 pb-1 pt-1 text-[11px] font-medium uppercase tracking-[0.32em] transition-colors duration-[180ms] hover:border-umber/70 hover:text-umber"
                   >
                     <span>{placeLinkLabel}</span>

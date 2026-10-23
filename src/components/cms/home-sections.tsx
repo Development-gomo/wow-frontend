@@ -9,6 +9,7 @@ import { SirvoyBooking } from "@/components/sirvoy-booking";
 import { Button } from "@/components/ui/button";
 import { StatsBand, type StatItem } from "@/components/stats-band";
 
+import { useA11y } from "@/components/cms/site-context";
 /**
  * The homepage's Hero, Intro and Gallery.
  *
@@ -282,9 +283,10 @@ export function HomeAccommodationTabs({
  */
 /** The booking widget band; the form comes from the page's Sirvoy section in WordPress. */
 export function SirvoyBookingSection({ formId, lang }: { formId: string; lang?: string }) {
+  const a11y = useA11y();
   return (
     <div className="flow-root bg-linen">
-      <section aria-label="Room booking" /* content-exempt: landmark label for the booking widget region */ className="relative z-10 mx-5 -mt-16 mb-[128px] bg-white md:mx-20 md:-mt-24">
+      <section aria-label={a11y.roomBooking} className="relative z-10 mx-5 -mt-16 mb-[128px] bg-white md:mx-20 md:-mt-24">
         {/* Keyed by form so switching rooms mounts a fresh widget host. */}
         <SirvoyBooking key={formId} formId={formId} lang={lang} />
       </section>

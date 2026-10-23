@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 
-import { useSite } from "@/components/cms/site-context";
+import { useLocalizeHref, useSite } from "@/components/cms/site-context";
 import { text } from "@/lib/cms/globals";
 
 /** Markup from the original NotFoundComponent; copy from Site settings › Page not found. */
 export default function NotFound() {
   const { notFound } = useSite();
+  const localize = useLocalizeHref();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -18,7 +19,7 @@ export default function NotFound() {
         {text(notFound, "button") && (
           <div className="mt-6">
             <Link
-              href="/"
+              href={localize("/")}
               className="inline-flex items-center justify-center rounded-cta bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               {text(notFound, "button")}

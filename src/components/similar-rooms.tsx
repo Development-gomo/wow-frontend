@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useUi } from "@/components/cms/site-context";
+import { useUi, useA11y } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
 import { PhotoCarousel } from "@/components/photo-carousel";
 
@@ -34,6 +34,7 @@ const arrowCls =
   "flex h-11 w-11 items-center justify-center rounded-full border border-taupe bg-taupe text-pearl transition-colors duration-150 hover:border-umber hover:bg-umber";
 
 export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabel, actionLabel, actionTo }: SimilarRoomsProps) {
+  const a11y = useA11y();
   const ui = useUi();
   const viewport = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
@@ -132,7 +133,7 @@ export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabe
         {/* Desktop/tablet: arrows overlay the outer edges of the first and last visible cards. */}
         <button
           type="button"
-          aria-label="Previous cards"
+          aria-label={a11y.previousCards}
           onClick={() => scroll(-1)}
           className={`${arrowCls} absolute left-0 top-1/2 z-20 hidden -translate-x-1/2 -translate-y-1/2 md:flex`}
         >
@@ -140,7 +141,7 @@ export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabe
         </button>
         <button
           type="button"
-          aria-label="Next cards"
+          aria-label={a11y.nextCards}
           onClick={() => scroll(1)}
           className={`${arrowCls} absolute right-0 top-1/2 z-20 hidden -translate-y-1/2 translate-x-1/2 md:flex`}
         >
@@ -148,10 +149,10 @@ export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabe
         </button>
         {/* Phone: arrows stay below the cards, where nothing is cut off. */}
         <div className="mt-10 flex justify-center gap-4 md:hidden">
-          <button type="button" aria-label="Previous cards" onClick={() => scroll(-1)} className={arrowCls}>
+          <button type="button" aria-label={a11y.previousCards} onClick={() => scroll(-1)} className={arrowCls}>
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <button type="button" aria-label="Next cards" onClick={() => scroll(1)} className={arrowCls}>
+          <button type="button" aria-label={a11y.nextCards} onClick={() => scroll(1)} className={arrowCls}>
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>
