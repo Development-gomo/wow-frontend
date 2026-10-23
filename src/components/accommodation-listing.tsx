@@ -23,6 +23,8 @@ export type Accommodation = {
   variations?: { name: string; detail: string }[];
   /** Detail page for this card; cards without one link to "#" until their page exists. */
   detailPath?: "/rooms/single-room" | "/apartments/penthouse-apartment";
+  /** The room's own booking page (e.g. /single-room); its Book button goes there. */
+  bookingPath?: string;
   /** Stretches the card across the full grid width with photo and details side by side. */
   wide?: boolean;
 };
@@ -159,7 +161,7 @@ export function AccommodationCard({ accommodation, actionLabel, actionTo, hideDi
               {ui.readMore}
             </a>
           )}
-          <CardActionButton label={actionLabel} to={actionTo} />
+          <CardActionButton label={actionLabel} to={accommodation.bookingPath ?? actionTo} />
         </div>
       </div>
     </article>

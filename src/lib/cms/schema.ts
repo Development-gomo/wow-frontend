@@ -60,6 +60,7 @@ const accommodationSchema = z
     note: z.string().optional(),
     variations: z.array(z.object({ name: z.string(), detail: z.string() })).optional(),
     detailPath: z.string().optional(),
+    bookingPath: z.string().optional(),
     wide: z.boolean().optional(),
   })
   .passthrough();
@@ -437,6 +438,7 @@ const sectionProps = {
           imageAlt: z.string().optional().default(""),
           images: z.array(z.string()).optional(),
           href: z.string().optional(),
+          bookingPath: z.string().optional(),
         }),
       )
       .optional()
