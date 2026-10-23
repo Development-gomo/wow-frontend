@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { draftMode } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
 import { PageAlternates, type Alternates } from "@/components/cms/site-context";
 import { SectionRenderer } from "@/components/cms/section-renderer";
-import { getPage, getPageIndex, type CmsPage } from "@/lib/cms/client";
-import { DEFAULT_LANG, hreflang, isLang, LANGS, ogLocale, pagePath, type Lang } from "@/lib/i18n";
+import { getPage, getPageIndex, isRedirect, type CmsPage } from "@/lib/cms/client";
+import { DEFAULT_LANG, hreflang, isLang, LANGS, localizeHref, ogLocale, pagePath, type Lang } from "@/lib/i18n";
 
 /**
  * CMS-driven pages.
@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const lang = toLang(resolved);
   const page = await getPage(toSlug(resolved), { lang });
 
-  if (!page) return {};
+  if (!page || isRedirect(page)) return {};
 
   const seo = page.seo ?? {};
   const title = seo.title || page.title;
@@ -108,6 +108,9 @@ export default async function CmsPage({ params }: { params: Promise<Params> }) {
   const page = await getPage(toSlug(resolved), { lang, preview });
 
   if (!page) notFound();
+
+  // An old address (e.g. the Swedish page once shared the English /rooms).
+  if (isRedirect(page)) permanentRedirect(localizeHref(page.redirect, lang));
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-clay/30">
