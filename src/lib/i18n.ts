@@ -100,6 +100,13 @@ const A11Y = {
     nextImage: "Next image",
     thumbnails: "Thumbnails",
     breadcrumb: "Breadcrumb",
+    imageOf: "Image {n} of {total}",
+    showImageOf: "Show image {n} of {total}",
+    ratingOutOf: "{rating} out of {outOf}",
+    photoOf: "{title} photo {n} of {total}",
+    showPhoto: "Show {title} photo {n}",
+    previousPhoto: "Previous {title} photo",
+    nextPhoto: "Next {title} photo",
   },
   sv: {
     language: "Språk",
@@ -122,10 +129,22 @@ const A11Y = {
     nextImage: "Nästa bild",
     thumbnails: "Miniatyrer",
     breadcrumb: "Brödsmulor",
+    imageOf: "Bild {n} av {total}",
+    showImageOf: "Visa bild {n} av {total}",
+    ratingOutOf: "{rating} av {outOf}",
+    photoOf: "{title}, foto {n} av {total}",
+    showPhoto: "Visa {title}, foto {n}",
+    previousPhoto: "Föregående foto av {title}",
+    nextPhoto: "Nästa foto av {title}",
   },
 } as const satisfies Record<Lang, Record<string, string>>;
 
 export type A11yLabels = (typeof A11Y)[Lang];
+
+/** Fill a label template: fill("Image {n} of {total}", { n: 1, total: 6 }). */
+export function fill(template: string, values: Record<string, string | number | undefined>): string {
+  return template.replace(/{(w+)}/g, (match, key: string) => (key in values ? String(values[key] ?? "") : match));
+}
 
 export function a11yLabels(lang: Lang): A11yLabels {
   return A11Y[lang];

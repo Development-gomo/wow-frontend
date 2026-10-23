@@ -24,24 +24,25 @@ function MenuLink({ item, onNavigate }: { item: MenuItem; onNavigate: () => void
 }
 
 /**
- * SV / EN, left of the booking buttons: the current page in the other
- * language. A full page load, since each language has its own root layout.
+ * SV / EN, left of the booking buttons (from 640px; on phones the header is
+ * full, so it sits in the slide-out menu instead): the current page in the
+ * other language. A full page load, since each language has its own root layout.
  */
-function LanguageSwitcher() {
+function LanguageSwitcher({ className = "", dark = false }: { className?: string; dark?: boolean }) {
   const lang = useLang();
   const a11y = useA11y();
   const hrefs: Record<Lang, string> = { sv: useLanguageHref("sv"), en: useLanguageHref("en") };
   const names = a11y.languageNames.split("|");
 
   return (
-    <nav aria-label={a11y.language} className="mr-1 flex shrink-0 items-center gap-1 text-[10px] font-normal uppercase tracking-[0.14em] text-taupe sm:mr-2 sm:gap-1.5 xl:text-[11px] xl:tracking-[0.18em]">
+    <nav aria-label={a11y.language} className={`shrink-0 items-center gap-1.5 text-[10px] font-normal uppercase tracking-[0.14em] xl:text-[11px] xl:tracking-[0.18em] ${dark ? "text-linen/70" : "text-taupe"} ${className}`}>
       {LANGS.map((code, index) => (
-        <span key={code} className="flex items-center gap-1 sm:gap-1.5">
-          {index > 0 && <span aria-hidden="true" className="text-taupe/45">/</span>}
+        <span key={code} className="flex items-center gap-1.5">
+          {index > 0 && <span aria-hidden="true" className={dark ? "text-linen/40" : "text-taupe/45"}>/</span>}
           {code === lang ? (
-            <span aria-current="true" title={names[index]} className="text-umber">{code}</span>
+            <span aria-current="true" title={names[index]} className={dark ? "text-linen" : "text-umber"}>{code}</span>
           ) : (
-            <a href={hrefs[code]} hrefLang={HREFLANG[code]} lang={code} title={names[index]} aria-label={names[index]} className="transition-colors duration-200 hover:text-umber">{code}</a>
+            <a href={hrefs[code]} hrefLang={HREFLANG[code]} lang={code} title={names[index]} aria-label={names[index]} className={`transition-colors duration-200 ${dark ? "hover:text-linen" : "hover:text-umber"}`}>{code}</a>
           )}
         </span>
       ))}
@@ -113,7 +114,7 @@ export function SiteNavbar() {
         </nav>
 
         <div className="ml-auto flex shrink-0 items-center gap-cta">
-          <LanguageSwitcher />
+          <LanguageSwitcher className="mr-2 hidden sm:flex" />
           <Button asChild className="h-9 rounded-cta bg-taupe px-2 text-[9px] font-medium uppercase tracking-[0.04em] text-ivory shadow-none transition-colors duration-200 hover:bg-umber sm:h-11 sm:px-5 sm:text-[11px] sm:tracking-[0.24em] xl:px-7">
             <Link to={booking.roomTo}>{booking.roomLabel}</Link>
           </Button>
@@ -133,6 +134,7 @@ export function SiteNavbar() {
               <span className="font-serif text-[28px]">{brand.name}</span>
               <span className="mt-1 text-[8px] uppercase tracking-[0.25em]">{brand.tagline}</span>
             </Link>
+            <LanguageSwitcher dark className="ml-auto flex h-10 sm:hidden" />
             <Button type="button" variant="ghost" size="icon" aria-label={a11y.closeMenu} onClick={closeMenu} className="h-10 w-10 shrink-0 text-linen hover:bg-linen/10 hover:text-linen">
               <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" aria-hidden="true"><path d="M4 4L20 20 M20 4L4 20" /></svg>
             </Button>

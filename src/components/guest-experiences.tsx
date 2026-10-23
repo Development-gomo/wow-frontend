@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useId, useState } from "react";
 import { useUi, useA11y } from "@/components/cms/site-context";
+import { fill } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -66,7 +67,7 @@ export function GuestExperiences({
     }
   }
 
-  const ratingLabel = `${rating} out of ${outOf}`;
+  const ratingLabel = fill(a11y.ratingOutOf, { rating, outOf });
   const starState = (index: number) => {
     const value = (rating ?? 0) - index;
     if (value >= 1) return "full";

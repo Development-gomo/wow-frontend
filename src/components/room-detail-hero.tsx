@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useUi, useA11y, useLocalizeHref } from "@/components/cms/site-context";
+import { fill } from "@/lib/i18n";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -75,7 +76,7 @@ export function RoomDetailHero({ breadcrumbParent, kicker, title, description, l
             <button type="button" aria-label={a11y.nextImage} onClick={() => go(index + 1)} className={cn(arrowCls, "right-5")}>
               <ChevronRight className="h-5 w-5" aria-hidden="true" />
             </button>
-            <p aria-live="polite" className="sr-only">{`Image ${index + 1} of ${total}`}</p>
+            <p aria-live="polite" className="sr-only">{fill(a11y.imageOf, { n: index + 1, total })}</p>
             <div className="group/dots absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center rounded-full border border-transparent py-1.5 pl-1.5 pr-1.5 transition-[background-color,backdrop-filter,border-color] duration-300 hover:border-pearl/20 hover:bg-pearl/10 hover:backdrop-blur-[5px] group-hover/img:border-pearl/20 group-hover/img:bg-pearl/10 group-hover/img:backdrop-blur-[5px] has-[:focus-visible]:border-pearl/20 has-[:focus-visible]:bg-pearl/10 has-[:focus-visible]:backdrop-blur-[5px] motion-reduce:transition-none">
               <button
                 type="button"
@@ -91,7 +92,7 @@ export function RoomDetailHero({ breadcrumbParent, kicker, title, description, l
                     key={`dot-${img.url}`}
                     type="button"
                     onClick={() => go(dotIndex)}
-                    aria-label={`Show image ${dotIndex + 1} of ${total}`}
+                    aria-label={fill(a11y.showImageOf, { n: dotIndex + 1, total })}
                     aria-current={index === dotIndex}
                     className="flex h-4 w-4 cursor-pointer items-center justify-center rounded-full focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-white"
                   >
@@ -117,7 +118,7 @@ export function RoomDetailHero({ breadcrumbParent, kicker, title, description, l
                 <li key={t.url}>
                   <button
                     type="button"
-                    aria-label={`Show image ${t.idx + 1} of ${total}: ${t.alt}`}
+                    aria-label={`${fill(a11y.showImageOf, { n: t.idx + 1, total })}: ${t.alt}`}
                     aria-current={active}
                     onClick={() => go(t.idx)}
                     className={cn(
