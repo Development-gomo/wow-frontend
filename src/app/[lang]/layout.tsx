@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 import "../../styles.css";
 import { getGlobals } from "@/lib/cms/client";
-import { isLang, LANGS, OG_LOCALE, type Lang } from "@/lib/i18n";
+import { isLang, LANGS, ogLocale, type Lang } from "@/lib/i18n";
 import { Providers } from "./providers";
 
 /**
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
       title: seo.title || undefined,
       description: seo.description || undefined,
       type: "website",
-      locale: OG_LOCALE[lang],
+      locale: ogLocale(lang),
     },
     twitter: { card: "summary" },
   };

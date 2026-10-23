@@ -1,6 +1,6 @@
 import "server-only";
 
-import { DEFAULT_LANG, type Lang } from "@/lib/i18n";
+import { DEFAULT_LANG, isLang, type Lang } from "@/lib/i18n";
 
 import { globalsSchema, type Globals } from "./globals";
 import { pageIndexSchema, pageSchema, parseSection, type Section } from "./schema";
@@ -152,7 +152,7 @@ export async function getPage(
     id: parsed.data.id,
     slug: parsed.data.slug,
     title: parsed.data.title,
-    lang: parsed.data.lang === "en" ? "en" : parsed.data.lang === "sv" ? "sv" : lang,
+    lang: isLang(parsed.data.lang) ? parsed.data.lang : lang,
     translations: parsed.data.translations ?? {},
     seo: parsed.data.seo,
     sections,

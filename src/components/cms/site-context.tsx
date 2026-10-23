@@ -62,10 +62,10 @@ export function useLocalizeHref(): (href: string) => string {
  * Where the language switcher points: the page's translation from WordPress
  * when known, otherwise the same path in the other language.
  */
-export function useLanguageHref(to: Lang): string {
+export function useLanguageHref(): (to: Lang) => string {
   const { alternates } = useContext(LocaleContext);
   const pathname = usePathname() ?? "/";
-  return alternates?.[to] ?? switchPath(pathname, to);
+  return useCallback((to: Lang) => alternates?.[to] ?? switchPath(pathname, to), [alternates, pathname]);
 }
 
 /** Rendered by a page to tell the switcher where its translations live. */

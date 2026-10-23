@@ -62,6 +62,8 @@ export const globalsSchema = z.object({
   /** Site settings › Guest contact: the shared "Meet Anna" section. */
   guestContact: z.record(z.string(), z.string().nullable()).optional().default({}),
   notFound: z.record(z.string(), z.string()).optional().default({}),
+  /** WPML › Languages: code and the language's own name, in WPML's order. */
+  languages: z.array(z.object({ code: z.string(), name: z.string() })).optional().default([]),
   menus: z
     .object({
       header: z.array(menuItem).optional().default([]),

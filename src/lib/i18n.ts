@@ -1,28 +1,51 @@
 /**
  * Languages of the site.
  *
- * Swedish is the default and lives at the root (/rooms); English lives under
- * /en (/en/rooms). Page content comes from WordPress in the requested
- * language; this file only knows the URL scheme and a handful of
+ * The first language is the default and lives at the root (/rooms); every
+ * other language lives under its code (/en/rooms, /de/rooms). Page content,
+ * and the names shown in the language switcher, come from WordPress (WPML ›
+ * Languages); this file only knows the URL scheme and a handful of
  * accessibility labels that never come from the CMS.
+ *
+ * Adding a language: add it in WPML and translate the content, then add its
+ * two-letter code to NEXT_PUBLIC_SITE_LANGUAGES (e.g. "sv,en,de") and
+ * redeploy. The switcher lists every WPML language the site serves.
  *
  * Kept free of `server-only` so client components can use it.
  */
 
-export const LANGS = ["sv", "en"] as const;
-export type Lang = (typeof LANGS)[number];
+const FALLBACK_LANGS = ["sv", "en"];
 
-export const DEFAULT_LANG: Lang = "sv";
+const configured = (process.env.NEXT_PUBLIC_SITE_LANGUAGES ?? "")
+  .split(",")
+  .map((code) => code.trim().toLowerCase())
+  .filter((code) => /^[a-z]{2}$/.test(code));
 
-/** hreflang / og:locale values per language. */
-export const HREFLANG: Record<Lang, string> = { sv: "sv-SE", en: "en" };
-export const OG_LOCALE: Record<Lang, string> = { sv: "sv_SE", en: "en_GB" };
+/** Languages the frontend serves, default first. */
+export const LANGS: readonly string[] = configured.length > 0 ? configured : FALLBACK_LANGS;
 
-export function isLang(value: unknown): value is Lang {
-  return typeof value === "string" && (LANGS as readonly string[]).includes(value);
+/** A two-letter language code from LANGS. */
+export type Lang = string;
+
+export const DEFAULT_LANG: Lang = LANGS[0];
+
+/** hreflang value: a region where one is meant (Swedish for Sweden), else the plain code. */
+const HREFLANG: Record<string, string> = { sv: "sv-SE" };
+const OG_LOCALE: Record<string, string> = { sv: "sv_SE", en: "en_GB" };
+
+export function hreflang(lang: Lang): string {
+  return HREFLANG[lang] ?? lang;
 }
 
-/** URL prefix of a language: "" for Swedish, "/en" for English. */
+export function ogLocale(lang: Lang): string {
+  return OG_LOCALE[lang] ?? `${lang}_${lang.toUpperCase()}`;
+}
+
+export function isLang(value: unknown): value is Lang {
+  return typeof value === "string" && LANGS.includes(value);
+}
+
+/** URL prefix of a language: "" for the default, "/en" for English. */
 export function langPrefix(lang: Lang): string {
   return lang === DEFAULT_LANG ? "" : `/${lang}`;
 }
@@ -81,7 +104,6 @@ export function switchPath(pathname: string, to: Lang): string {
 const A11Y = {
   en: {
     language: "Language",
-    languageNames: "Svenska|English",
     home: "home",
     openMenu: "Open menu",
     closeMenu: "Close menu",
@@ -110,7 +132,6 @@ const A11Y = {
   },
   sv: {
     language: "Språk",
-    languageNames: "Svenska|English",
     home: "startsida",
     openMenu: "Öppna menyn",
     closeMenu: "Stäng menyn",
@@ -137,15 +158,16 @@ const A11Y = {
     previousPhoto: "Föregående foto av {title}",
     nextPhoto: "Nästa foto av {title}",
   },
-} as const satisfies Record<Lang, Record<string, string>>;
+} satisfies Record<string, Record<string, string>>;
 
-export type A11yLabels = (typeof A11Y)[Lang];
+export type A11yLabels = (typeof A11Y)["en"];
 
 /** Fill a label template: fill("Image {n} of {total}", { n: 1, total: 6 }). */
 export function fill(template: string, values: Record<string, string | number | undefined>): string {
   return template.replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? String(values[key] ?? "") : match));
 }
 
+/** Labels in a language, English for a language without its own set. */
 export function a11yLabels(lang: Lang): A11yLabels {
-  return A11Y[lang];
+  return (A11Y as Record<string, A11yLabels>)[lang] ?? A11Y.en;
 }

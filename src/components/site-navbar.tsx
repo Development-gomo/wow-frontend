@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useSite, useLocalizeHref, useA11y, useLang, useLanguageHref } from "@/components/cms/site-context";
-import { HREFLANG, LANGS, type Lang } from "@/lib/i18n";
+import { useSite, useLocalizeHref, useA11y } from "@/components/cms/site-context";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import type { MenuItem } from "@/lib/cms/globals";
 
 /*
@@ -20,33 +20,6 @@ function MenuLink({ item, onNavigate }: { item: MenuItem; onNavigate: () => void
     <a href={localize(item.href)} onClick={onNavigate} className={className}>{item.label}</a>
   ) : (
     <Link to={item.href} onClick={onNavigate} className={className}>{item.label}</Link>
-  );
-}
-
-/**
- * SV / EN, left of the booking buttons (from 640px; on phones the header is
- * full, so it sits in the slide-out menu instead): the current page in the
- * other language. A full page load, since each language has its own root layout.
- */
-function LanguageSwitcher({ className = "", dark = false }: { className?: string; dark?: boolean }) {
-  const lang = useLang();
-  const a11y = useA11y();
-  const hrefs: Record<Lang, string> = { sv: useLanguageHref("sv"), en: useLanguageHref("en") };
-  const names = a11y.languageNames.split("|");
-
-  return (
-    <nav aria-label={a11y.language} className={`shrink-0 items-center gap-1.5 text-[10px] font-normal uppercase tracking-[0.14em] xl:text-[11px] xl:tracking-[0.18em] ${dark ? "text-linen/70" : "text-taupe"} ${className}`}>
-      {LANGS.map((code, index) => (
-        <span key={code} className="flex items-center gap-1.5">
-          {index > 0 && <span aria-hidden="true" className={dark ? "text-linen/40" : "text-taupe/45"}>/</span>}
-          {code === lang ? (
-            <span aria-current="true" title={names[index]} className={dark ? "text-linen" : "text-umber"}>{code}</span>
-          ) : (
-            <a href={hrefs[code]} hrefLang={HREFLANG[code]} lang={code} title={names[index]} aria-label={names[index]} className={`transition-colors duration-200 ${dark ? "hover:text-linen" : "hover:text-umber"}`}>{code}</a>
-          )}
-        </span>
-      ))}
-    </nav>
   );
 }
 

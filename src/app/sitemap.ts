@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { getPage, getPageIndex } from "@/lib/cms/client";
-import { HREFLANG, LANGS, pagePath, type Lang } from "@/lib/i18n";
+import { hreflang, LANGS, pagePath, type Lang } from "@/lib/i18n";
 
 /**
  * Every published page in every language, each listing its translations, so
@@ -21,8 +21,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
       const languages: Record<string, string> = {};
       for (const code of LANGS) {
-        const slug = page.translations[code as Lang];
-        if (slug !== undefined) languages[HREFLANG[code]] = `${base}${pagePath(slug, code)}`;
+        const slug = page.translations[code];
+        if (slug !== undefined) languages[hreflang(code)] = `${base}${pagePath(slug, code)}`;
       }
 
       entries.push({

@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { PageAlternates, type Alternates } from "@/components/cms/site-context";
 import { SectionRenderer } from "@/components/cms/section-renderer";
 import { getPage, getPageIndex, type CmsPage } from "@/lib/cms/client";
-import { DEFAULT_LANG, HREFLANG, isLang, LANGS, OG_LOCALE, pagePath, type Lang } from "@/lib/i18n";
+import { DEFAULT_LANG, hreflang, isLang, LANGS, ogLocale, pagePath, type Lang } from "@/lib/i18n";
 
 /**
  * CMS-driven pages.
@@ -75,7 +75,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const languages: Record<string, string> = {};
   for (const code of LANGS) {
     const path = paths[code];
-    if (path) languages[HREFLANG[code]] = path;
+    if (path) languages[hreflang(code)] = path;
   }
   const fallback = paths[DEFAULT_LANG];
   if (fallback) languages["x-default"] = fallback;
@@ -92,8 +92,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
       title,
       description: seo.description,
       type: "website",
-      locale: OG_LOCALE[lang],
-      alternateLocale: LANGS.filter((code) => code !== lang && paths[code]).map((code) => OG_LOCALE[code]),
+      locale: ogLocale(lang),
+      alternateLocale: LANGS.filter((code) => code !== lang && paths[code]).map((code) => ogLocale(code)),
       images: seo.image ? [seo.image] : undefined,
     },
     twitter: { card: seo.image ? "summary_large_image" : "summary" },
