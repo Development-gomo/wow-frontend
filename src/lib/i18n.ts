@@ -143,7 +143,7 @@ export type A11yLabels = (typeof A11Y)[Lang];
 
 /** Fill a label template: fill("Image {n} of {total}", { n: 1, total: 6 }). */
 export function fill(template: string, values: Record<string, string | number | undefined>): string {
-  return template.replace(/\{(\w+)\}/g,(match, key: string) => (key in values ? String(values[key] ?? "") : match));
+  return template.replace(/\{(\w+)\}/g, (match, key: string) => (key in values ? String(values[key] ?? "") : match));
 }
 
 export function a11yLabels(lang: Lang): A11yLabels {
