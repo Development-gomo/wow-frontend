@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { CmsImage } from "@/components/cms-image";
 
 type SectionIntroProps = { id: string; eyebrow: string; title: string; description?: string; inverse?: boolean; /** Override for the title→description gap (default mt-6). */ descriptionClassName?: string };
 
@@ -26,7 +27,7 @@ export function EditorialDiscovery({ id, eyebrow, title, description, image, ima
           <div aria-hidden="true" className="mt-8 mb-8 h-px w-9 bg-clay/60" />
           <blockquote className="font-serif text-[22px] italic leading-[1.5]">“{quote}”</blockquote>
         </div>
-        <img src={image} alt={imageAlt} width={1536} height={1024} loading="lazy" className="aspect-[3/2] w-full object-cover" />
+        <CmsImage sizes="(min-width: 1024px) 60vw, 100vw" src={image} alt={imageAlt} width={1536} height={1024} loading="lazy" className="aspect-[3/2] w-full object-cover" />
       </div>
     </section>
   );
@@ -42,7 +43,7 @@ export function EditorialCityGuide({ id, eyebrow, title, entries }: SectionIntro
       <div className="mx-auto mt-16 flex max-w-[1200px] flex-col gap-20 lg:mt-24 lg:gap-32">
         {entries.map((entry, index) => (
           <article key={entry.number} className="grid min-w-0 items-center lg:grid-cols-12">
-            <img src={entry.image} alt={entry.imageAlt} width={1536} height={1024} loading="lazy" className={cn("aspect-[1.12] w-full object-cover lg:row-start-1", index % 2 === 0 ? "lg:col-start-1 lg:col-end-7" : "lg:col-start-7 lg:col-end-13")} />
+            <CmsImage sizes="(min-width: 1024px) 40vw, 100vw" src={entry.image} alt={entry.imageAlt} width={1536} height={1024} loading="lazy" className={cn("aspect-[1.12] w-full object-cover lg:row-start-1", index % 2 === 0 ? "lg:col-start-1 lg:col-end-7" : "lg:col-start-7 lg:col-end-13")} />
             <div className={cn("relative z-10 -mt-8 mx-3 bg-pearl p-7 shadow-accommodation sm:mx-6 sm:p-10 lg:mx-0 lg:mt-0 lg:p-12 lg:row-start-1", index % 2 === 0 ? "lg:col-start-6 lg:col-end-13" : "lg:col-start-1 lg:col-end-8")}>
               <div className="flex items-center gap-4">
                 <span className="font-serif text-[20px] italic text-warm-clay">{entry.number}</span>
@@ -66,7 +67,7 @@ export function EditorialMap({ id, eyebrow, title, description, image, imageAlt 
     <section aria-labelledby={id} className="px-6 pb-20 sm:px-10 lg:px-20 lg:pb-32">
       <EditorialSectionIntro id={id} eyebrow={eyebrow} title={title} description={description} descriptionClassName="mt-4" />
       <div className="mx-auto mt-16 max-w-[1200px]">
-        <img src={image} alt={imageAlt} width={1152} height={768} loading="lazy" className="h-auto w-full shadow-accommodation" />
+        <CmsImage sizes="(min-width: 1024px) 50vw, 100vw" src={image} alt={imageAlt} width={1152} height={768} loading="lazy" className="h-auto w-full shadow-accommodation" />
       </div>
     </section>
   );

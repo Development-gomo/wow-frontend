@@ -15,6 +15,7 @@ import { WorkWithUs } from "@/components/work-with-us";
 import { cn } from "@/lib/utils";
 
 import { withLineBreaks } from "./icon-map";
+import { CmsImage } from "@/components/cms-image";
 
 /*
  * Sections for the pages whose bodies used to be one-off markup: About us,
@@ -130,7 +131,7 @@ export function LocationCards({ eyebrow, heading, description, linkLabel, linkTo
           <article key={i} className="group flex min-w-0 flex-col">
             <div className="aspect-[4/3] w-full overflow-hidden">
               {card.image && (
-                <img
+                <CmsImage sizes="(min-width: 1024px) 33vw, 100vw"
                   src={card.image}
                   alt={card.imageAlt}
                   loading="lazy"
@@ -476,7 +477,7 @@ export function GalleryGrid({ ariaLabel, photos }: { ariaLabel: string; photos: 
               aria-label={`${index + 1} / ${count}: ${photo.alt}`}
               className={`group relative block h-auto min-w-0 overflow-hidden rounded-none bg-sand p-0 shadow-none hover:bg-sand focus-visible:ring-2 focus-visible:ring-clay ${SHAPE_CLASS[photo.shape]}`}
             >
-              <img src={photo.src} alt={photo.alt} loading={index < 5 ? "eager" : "lazy"} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.035] motion-reduce:transition-none" />
+              <CmsImage sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" src={photo.src} alt={photo.alt} loading={index < 5 ? "eager" : "lazy"} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.035] motion-reduce:transition-none" />
               <span className="sr-only">{photo.alt}</span>
             </Button>
           ))}
@@ -493,7 +494,7 @@ export function GalleryGrid({ ariaLabel, photos }: { ariaLabel: string; photos: 
           </div>
           <div className="relative flex min-h-0 flex-1 items-center justify-center px-14 sm:px-24">
             <Button type="button" variant="ghost" size="icon" aria-label={a11y.previous} onClick={() => setActive((active - 1 + count) % count)} className="absolute left-2 z-10 h-11 w-11 rounded-none text-linen hover:bg-linen/10 hover:text-linen sm:left-7"><Arrow direction="left" /></Button>
-            <img key={active} src={selected.src} alt={selected.alt} className="max-h-full max-w-full object-contain" />
+            <CmsImage sizes="100vw" key={active} src={selected.src} alt={selected.alt} className="max-h-full max-w-full object-contain" />
             <Button type="button" variant="ghost" size="icon" aria-label={a11y.next} onClick={() => setActive((active + 1) % count)} className="absolute right-2 z-10 h-11 w-11 rounded-none text-linen hover:bg-linen/10 hover:text-linen sm:right-7"><Arrow direction="right" /></Button>
           </div>
           <p className="shrink-0 px-4 py-5 text-center text-[13px] font-light tracking-[0.03em] text-linen/80">{selected.alt}</p>

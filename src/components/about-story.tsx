@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { CmsImage } from "@/components/cms-image";
 
 type AboutStoryProps = {
   image: string;
@@ -19,7 +20,7 @@ export function AboutStory({ image, imageAlt, eyebrow, lead, paragraphs, caption
       <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-24">
         <div className="flex min-w-0 flex-col gap-6">
           <div className="aspect-[1/1.08] w-full overflow-hidden lg:h-[480px] lg:aspect-auto">
-            <img src={image} alt={imageAlt} loading="lazy" className="h-full w-full object-cover object-center" />
+            <CmsImage sizes="(min-width: 1024px) 50vw, 100vw" src={image} alt={imageAlt} loading="lazy" className="h-full w-full object-cover object-center" />
           </div>
           {caption && (
             <div className="flex items-center gap-[18px] px-1">

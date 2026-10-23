@@ -2,6 +2,7 @@ import type { CSSProperties, MouseEvent } from "react";
 import { cn } from "@/lib/utils";
 
 import { useLocalizeHref } from "@/components/cms/site-context";
+import { CmsImage } from "@/components/cms-image";
 type Props = {
   eyebrow: string;
   /** Section heading; "\n" starts a new line. */
@@ -70,7 +71,7 @@ export function ExternalGuideCallout({ eyebrow, title, description, ctaLabel, ct
             </svg>
           </a> : null}
         </div>
-        <img
+        <CmsImage sizes="(min-width: 1024px) 45vw, 100vw"
           src={image}
           alt={imageAlt}
           loading="lazy"

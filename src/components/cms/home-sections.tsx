@@ -2,6 +2,7 @@
 
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { preload } from "react-dom";
 
 import { AccommodationGrid, type Accommodation } from "@/components/accommodation-listing";
 import { ProcessSteps, type ProcessStep } from "@/components/process-steps";
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { StatsBand, type StatItem } from "@/components/stats-band";
 
 import { useA11y } from "@/components/cms/site-context";
+import { CmsImage, optimizedSrc } from "@/components/cms-image";
 /**
  * The homepage's Hero, Intro and Gallery.
  *
@@ -43,11 +45,15 @@ export function HomeHero({
   // is the configured content, so the key only needs to change if that grows.
   const [idx] = useState(0);
 
+  // The poster is the first thing painted (the page's LCP): fetch it first.
+  const poster = posterUrl ? optimizedSrc(posterUrl, 1920) : undefined;
+  if (poster) preload(poster, { as: "image", fetchPriority: "high" });
+
   return (
     <section id="top" className="relative h-[100svh] min-h-[640px] w-full overflow-hidden">
       <video
         src={videoUrl}
-        poster={posterUrl}
+        poster={poster}
         autoPlay
         muted
         loop
@@ -162,7 +168,7 @@ export function HomeGallery({
           {[0, 1].map((pass) => (
             <div key={pass} className="wow-gallery-set" aria-hidden={pass === 1 ? true : undefined}>
               {photos.map((photo, i) => (
-                <img key={i} src={photo.src} alt={pass === 0 ? photo.alt : ""} loading="lazy" className="w-[220px] md:w-[340px] aspect-[3/4] object-cover shrink-0" />
+                <CmsImage sizes="(min-width: 768px) 340px, 220px" key={i} src={photo.src} alt={pass === 0 ? photo.alt : ""} loading="lazy" className="w-[220px] md:w-[340px] aspect-[3/4] object-cover shrink-0" />
               ))}
             </div>
           ))}

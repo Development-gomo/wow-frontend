@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { useUi, useA11y } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
 import { PhotoCarousel } from "@/components/photo-carousel";
+import { CmsImage } from "@/components/cms-image";
 
 export type SimilarRoom = {
   title: string;
@@ -97,7 +98,7 @@ export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabe
                   <PhotoCarousel images={[room.image, ...room.images]} title={room.title} heightClass="aspect-[3/2]" />
                 ) : (
                   <div className="aspect-[3/2] overflow-hidden">
-                    <img src={room.image} alt={room.imageAlt} loading="lazy" className="h-full w-full object-cover" />
+                    <CmsImage sizes="(min-width: 1024px) 33vw, 85vw" src={room.image} alt={room.imageAlt} loading="lazy" className="h-full w-full object-cover" />
                   </div>
                 )}
                 <div className="relative z-10 mx-auto -mt-5 flex w-[calc(100%-24px)] flex-1 flex-col bg-pearl px-6 py-6 shadow-accommodation">

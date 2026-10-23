@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
+import { CmsImage } from "@/components/cms-image";
 
 type ResponsibleHostingProps = {
   eyebrow: string;
@@ -32,7 +33,7 @@ export function ResponsibleHosting({ eyebrow, lead, description, ctaLabel, ctaTo
           </Link> : null}
         </div>
         <div className="relative aspect-[1/0.88] w-full overflow-hidden lg:aspect-auto lg:self-stretch">
-          <img src={image} alt={imageAlt} loading="lazy" className="absolute inset-0 h-full w-full object-cover object-center" />
+          <CmsImage sizes="(min-width: 1024px) 50vw, 100vw" src={image} alt={imageAlt} loading="lazy" className="absolute inset-0 h-full w-full object-cover object-center" />
         </div>
       </div>
     </section>

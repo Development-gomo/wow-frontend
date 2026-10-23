@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
+import { CmsImage } from "@/components/cms-image";
 
 type StayCtaBannerProps = {
   eyebrow?: string;
@@ -39,7 +40,7 @@ export function StayCtaBanner({
       className={cn("relative overflow-hidden px-6 py-[88px] sm:px-20", className)}
     >
       {imageUrl && (
-        <img
+        <CmsImage sizes="100vw"
           src={imageUrl}
           alt={imageAlt}
           className="absolute inset-0 h-full w-full object-cover object-center"

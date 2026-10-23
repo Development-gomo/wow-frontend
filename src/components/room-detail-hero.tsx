@@ -4,6 +4,7 @@ import { useUi, useA11y, useLocalizeHref } from "@/components/cms/site-context";
 import { fill } from "@/lib/i18n";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CmsImage, optimizedSrc } from "@/components/cms-image";
 
 export type RoomGalleryImage = { url: string; alt: string };
 
@@ -58,12 +59,13 @@ export function RoomDetailHero({ breadcrumbParent, kicker, title, description, l
         <div>
           <div className="group/img relative aspect-[4/3] w-full overflow-hidden rounded-[4px] bg-ivory">
             {images.map((img, i) => (
-              <img
+              <CmsImage sizes="(min-width: 1024px) 60vw, 100vw"
                 key={img.url}
                 src={img.url}
                 alt={img.alt}
                 aria-hidden={i !== index}
                 loading={i === 0 ? "eager" : "lazy"}
+                priority={i === 0}
                 className={cn(
                   "absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out motion-reduce:transition-none",
                   i === index ? "opacity-100" : "opacity-0",
@@ -125,7 +127,7 @@ export function RoomDetailHero({ breadcrumbParent, kicker, title, description, l
                       "block aspect-[4/3] w-full cursor-pointer overflow-hidden rounded-[4px] bg-cover bg-center transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-taupe",
                       active ? "opacity-100 shadow-[inset_0_0_0_2px_var(--taupe)]" : "opacity-[0.78] shadow-[0_2px_12px_oklch(0_0_0/0.06)]",
                     )}
-                    style={{ backgroundImage: `url("${t.url}")` }}
+                    style={{ backgroundImage: `url("${optimizedSrc(t.url, 256)}")` }}
                   />
                 </li>
               );
