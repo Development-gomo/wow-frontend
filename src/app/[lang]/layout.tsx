@@ -14,7 +14,9 @@ import { Providers } from "./providers";
 
 type Params = { lang: string };
 
-export const dynamicParams = false;
+// No dynamicParams = false here: it would also apply to the pages below and
+// turn every unknown page into the bare framework 404. The middleware only
+// ever routes "sv" and "en" here, and the layout rejects anything else.
 
 export function generateStaticParams(): Params[] {
   return LANGS.map((lang) => ({ lang }));
