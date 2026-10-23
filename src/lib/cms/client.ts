@@ -30,6 +30,13 @@ export const CACHE_TAGS = {
 /** How long a page may be served stale before Next revalidates it in the background. */
 const REVALIDATE_SECONDS = 300;
 
+/** An old address of a page that now lives elsewhere (e.g. Swedish /rooms → /rum). */
+export type CmsRedirect = { redirect: string };
+
+export function isRedirect(value: CmsPage | CmsRedirect | null): value is CmsRedirect {
+  return value !== null && "redirect" in value;
+}
+
 export type CmsPage = {
   id: number;
   slug: string;
@@ -122,7 +129,7 @@ export async function getPageIndex(lang: Lang = DEFAULT_LANG): Promise<Array<{ s
 export async function getPage(
   slug: string,
   { preview = false, lang = DEFAULT_LANG }: { preview?: boolean; lang?: Lang } = {},
-): Promise<CmsPage | null> {
+): Promise<CmsPage | CmsRedirect | null> {
   const path = `/page/${slug || "home"}${preview ? "?preview=true" : ""}`;
 
   const raw = await cmsFetch(path, lang, {
@@ -131,6 +138,8 @@ export async function getPage(
   });
 
   if (!raw) return null;
+
+  if (typeof raw.redirect === "string" && raw.redirect.startsWith("/")) return { redirect: raw.redirect };
 
   const parsed = pageSchema.safeParse(raw);
 
