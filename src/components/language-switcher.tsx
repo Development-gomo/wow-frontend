@@ -5,8 +5,8 @@ import { hreflang, isLang, LANGS } from "@/lib/i18n";
 
 /*
  * Language menu: the current language's code with a chevron; opening it lists
- * the site's languages by their own names (WPML › Languages), the current one
- * ticked. A language added in WPML appears here once the site serves it (see
+ * the site's languages by their own names (WPML › Languages), default language
+ * first, the current one ticked. A language added in WPML appears here once the site serves it (see
  * src/lib/i18n.ts). Choosing one is a full page load, since each language has
  * its own root layout.
  */
@@ -37,8 +37,11 @@ export function LanguageSwitcher({ className = "", dark = false }: { className?:
   const rootRef = useRef<HTMLDivElement>(null);
   const listId = useId();
 
-  // WPML's languages that the site serves, in WPML's order; without WPML, the site's own list.
-  const fromCms = languages.filter((language) => isLang(language.code));
+  // WPML's languages that the site serves, in the site's order (default first, as in
+  // NEXT_PUBLIC_SITE_LANGUAGES); without WPML, the site's own list.
+  const fromCms = languages
+    .filter((language) => isLang(language.code))
+    .sort((a, b) => LANGS.indexOf(a.code) - LANGS.indexOf(b.code));
   const items = fromCms.length > 0 ? fromCms : LANGS.map((code) => ({ code, name: code.toUpperCase() }));
 
   useEffect(() => {
