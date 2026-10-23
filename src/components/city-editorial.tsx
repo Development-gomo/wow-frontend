@@ -67,7 +67,7 @@ export function EditorialMap({ id, eyebrow, title, description, image, imageAlt 
     <section aria-labelledby={id} className="px-6 pb-20 sm:px-10 lg:px-20 lg:pb-32">
       <EditorialSectionIntro id={id} eyebrow={eyebrow} title={title} description={description} descriptionClassName="mt-4" />
       <div className="mx-auto mt-16 max-w-[1200px]">
-        <CmsImage sizes="(min-width: 1024px) 50vw, 100vw" src={image} alt={imageAlt} width={1152} height={768} loading="lazy" className="h-auto w-full shadow-accommodation" />
+        <CmsImage sizes="(min-width: 1280px) 1200px, 100vw" src={image} alt={imageAlt} width={1152} height={768} loading="lazy" className="h-auto w-full shadow-accommodation" />
       </div>
     </section>
   );

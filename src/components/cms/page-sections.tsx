@@ -477,7 +477,7 @@ export function GalleryGrid({ ariaLabel, photos }: { ariaLabel: string; photos: 
               aria-label={`${index + 1} / ${count}: ${photo.alt}`}
               className={`group relative block h-auto min-w-0 overflow-hidden rounded-none bg-sand p-0 shadow-none hover:bg-sand focus-visible:ring-2 focus-visible:ring-clay ${SHAPE_CLASS[photo.shape]}`}
             >
-              <CmsImage sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" src={photo.src} alt={photo.alt} loading={index < 5 ? "eager" : "lazy"} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.035] motion-reduce:transition-none" />
+              <CmsImage sizes="(min-width: 1024px) 33vw, 50vw" src={photo.src} alt={photo.alt} loading={index < 5 ? "eager" : "lazy"} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.035] motion-reduce:transition-none" />
               <span className="sr-only">{photo.alt}</span>
             </Button>
           ))}

@@ -73,7 +73,7 @@ export function WelcomingLocations({ eyebrow, heading, showViewAll = true, viewA
                           ][photoIndex]
                         }`}
                       >
-                        <CmsImage sizes="(min-width: 1024px) 33vw, 100vw"
+                        <CmsImage sizes="(min-width: 1024px) 33vw, 50vw"
                           src={photo.src}
                           alt={photo.alt}
                           loading="lazy"
