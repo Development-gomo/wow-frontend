@@ -1,6 +1,7 @@
-"use client";
-
+import { getGlobals } from "@/lib/cms/client";
+import type { Globals } from "@/lib/cms/globals";
 import type { Section, ValidSection } from "@/lib/cms/schema";
+import type { Lang } from "@/lib/i18n";
 
 import { AccommodationListing, type Accommodation } from "@/components/accommodation-listing";
 import { EditorialCityGuide, EditorialDiscovery, EditorialMap, SeasonalNotes } from "@/components/city-editorial";
@@ -17,7 +18,6 @@ import { NeighbourhoodExplorer } from "@/components/neighbourhood-explorer";
 import { PageHero } from "@/components/page-hero";
 import { RelocationFirms } from "@/components/relocation-firms";
 import { RoomDetailHero } from "@/components/room-detail-hero";
-import { RoomInformation } from "@/components/room-information";
 import { RoomVariations } from "@/components/room-variations";
 import { SimilarRooms } from "@/components/similar-rooms";
 import { StatsBand } from "@/components/stats-band";
@@ -27,26 +27,26 @@ import { WelcomingLocations } from "@/components/welcoming-locations";
 import { WhyWow } from "@/components/why-wow";
 
 import {
-  HomeAccommodationTabs,
   HomeGallery,
   HomeHero,
   HomeIntro,
-  ProcessStepsSection,
   SirvoyBookingSection,
 } from "./home-sections";
+import { HomeAccommodationTabs } from "./home-accommodation-tabs";
 import { lucideIcon, whyWowIcon, withLineBreaks } from "./icon-map";
+import { GalleryGrid, LocationsMap } from "./page-sections-interactive";
+import { ProcessStepsSection } from "./process-steps-section";
+import { RoomInformationSection } from "./room-information-section";
 import {
   AboutStory,
   BookingCta,
   CareersCallout,
   ContactDetails,
   EditorialSplit,
-  GalleryGrid,
   GettingAround,
   GiftCardSection,
   GuestContact,
   LocationCards,
-  LocationsMap,
   PageIntro,
   QuoteBand,
   SplitIntro,
@@ -55,6 +55,9 @@ import {
 
 /**
  * Renders the ordered sections a page returns from the CMS.
+ *
+ * A Server Component: sections without interaction render to HTML only; the
+ * interactive ones are Client Components and hydrate on their own.
  *
  * Every branch hands the stored props straight to the component that already
  * existed before the CMS, so the markup is untouched. The only work done here
@@ -74,7 +77,7 @@ function UnknownSection({ section }: { section: Section }) {
   );
 }
 
-function renderSection(section: ValidSection) {
+function renderSection(section: ValidSection, site: Globals) {
   switch (section.type) {
     case "hero_video":
       return <HomeHero {...section.props} />;
@@ -220,37 +223,8 @@ function renderSection(section: ValidSection) {
     case "similar_rooms":
       return <SimilarRooms {...section.props} />;
 
-    case "room_information": {
-      const p = section.props;
-      return (
-        <RoomInformation
-          eyebrow={p.eyebrow}
-          heading={p.heading}
-          amenitiesHeading={p.amenitiesHeading}
-          amenities={p.amenities.map((a) => ({ icon: lucideIcon(a.icon), label: a.label }))}
-          notIncluded={p.notIncluded.map((a) => ({ icon: lucideIcon(a.icon), label: a.label }))}
-          location={{
-            ...p.location,
-            nearby: p.location.nearby.map((n) => ({
-              category: n.category,
-              icon: lucideIcon(n.icon),
-              place: n.place,
-              distance: n.distance,
-            })),
-          }}
-          rules={{
-            intro: p.rules.intro,
-            items: p.rules.items.map((r) => ({
-              icon: lucideIcon(r.icon),
-              label: r.label,
-              detail: r.detail,
-            })),
-          }}
-          cancellation={p.cancellation}
-          labels={p.labels}
-        />
-      );
-    }
+    case "room_information":
+      return <RoomInformationSection {...section.props} />;
 
     case "about_story":
       return <AboutStory {...section.props} />;
@@ -277,13 +251,13 @@ function renderSection(section: ValidSection) {
       return <CareersCallout {...section.props} />;
 
     case "guest_contact":
-      return <GuestContact {...section.props} />;
+      return <GuestContact {...section.props} guestContact={site.guestContact} />;
 
     case "contact_details":
-      return <ContactDetails {...section.props} />;
+      return <ContactDetails {...section.props} contact={site.contact} />;
 
     case "gift_card":
-      return <GiftCardSection {...section.props} />;
+      return <GiftCardSection {...section.props} contact={site.contact} />;
 
     case "page_intro":
       return <PageIntro {...section.props} />;
@@ -341,13 +315,17 @@ function renderSection(section: ValidSection) {
   }
 }
 
-export function SectionRenderer({ sections }: { sections: Section[] }) {
+export async function SectionRenderer({ sections, lang }: { sections: Section[]; lang: Lang }) {
+  // Site settings for the sections that show them (contact details, guest contact);
+  // the same cached request the layout makes.
+  const site = await getGlobals(lang);
+
   return (
     <>
       {sections.map((section) =>
         section.valid ? (
           <div key={section.id} id={section.anchor ?? undefined} className={section.anchor ? "scroll-mt-20" : undefined}>
-            {renderSection(section)}
+            {renderSection(section, site)}
           </div>
         ) : (
           <UnknownSection key={section.id} section={section} />

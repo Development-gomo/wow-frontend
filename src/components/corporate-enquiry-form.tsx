@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, type ComponentProps, type FormEvent } from "react";
 import { Calendar, CheckCircle2, ChevronDown, FileUp, X } from "lucide-react";
 import { useLang } from "@/components/cms/site-context";

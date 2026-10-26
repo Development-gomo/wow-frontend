@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Archive, BedDouble, BedSingle, Building2, Calendar, CalendarDays, Car, CigaretteOff, ClipboardList, Coffee,
   CookingPot, Droplet, Fence, Gift, Home, IdCard, Key, Lamp, Laptop, Layers, Lock, LogIn, LogOut,

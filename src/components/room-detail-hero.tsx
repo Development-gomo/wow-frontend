@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { useUi, useA11y, useLocalizeHref } from "@/components/cms/site-context";

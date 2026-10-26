@@ -1,3 +1,5 @@
+"use client";
+
 import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { MapPin, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";

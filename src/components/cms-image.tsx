@@ -4,7 +4,10 @@ import { getImageProps } from "next/image";
 import { useCallback, useState, type ImgHTMLAttributes, type SyntheticEvent } from "react";
 import { preload } from "react-dom";
 
-import { DEVICE_SIZES, IMAGE_QUALITY, IMAGE_SIZES, UPLOADS_PATH } from "@/lib/image-config";
+import { IMAGE_QUALITY } from "@/lib/image-config";
+import { isOptimizable } from "@/lib/image-url";
+
+export { isOptimizable, optimizedSrc } from "@/lib/image-url";
 
 /**
  * Optimised CMS images.
@@ -24,22 +27,6 @@ import { DEVICE_SIZES, IMAGE_QUALITY, IMAGE_SIZES, UPLOADS_PATH } from "@/lib/im
 /** Intrinsic size used only to build the srcset when the markup has none. */
 const DEFAULT_WIDTH = 1600;
 const DEFAULT_HEIGHT = 1067;
-
-/** A CMS upload the optimiser can process (not SVG or animated GIF). */
-export function isOptimizable(src: string | undefined): src is string {
-  return Boolean(src) && src!.includes(UPLOADS_PATH) && !/\.(svg|gif)(\?|$)/i.test(src!);
-}
-
-/**
- * One optimised URL at a fixed width, for places that cannot take a srcset
- * (a video poster, a CSS background). Snaps up to the nearest allowed width.
- */
-export function optimizedSrc(src: string, width: number): string {
-  if (!isOptimizable(src)) return src;
-  const allowed = [...IMAGE_SIZES, ...DEVICE_SIZES].sort((a, b) => a - b);
-  const w = allowed.find((size) => size >= width) ?? allowed[allowed.length - 1];
-  return `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=${IMAGE_QUALITY}`;
-}
 
 type CmsImageProps = Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "srcSet" | "sizes" | "width" | "height"> & {
   src: string;
