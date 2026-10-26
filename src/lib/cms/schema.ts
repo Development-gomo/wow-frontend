@@ -501,6 +501,8 @@ const sectionProps = {
     eyebrow: text,
     lead: text,
     paragraphs,
+    ctaLabel: z.string().nullable().optional(),
+    ctaTo: z.string().nullable().optional(),
     className: z.string().optional(),
   }),
 

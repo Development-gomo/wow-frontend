@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { useUi, useA11y } from "@/components/cms/site-context";
@@ -191,12 +191,39 @@ export function AccommodationListing({ eyebrow, heading, description, accommodat
 /** The card grid on its own, for sections (like the homepage tabs) that supply their own heading.
  * With more than three cards it becomes a sliding carousel whose cards keep the exact grid column width. */
 export function AccommodationGrid({ accommodations, actionLabel, actionTo, hideDivider, className }: Pick<AccommodationListingProps, "accommodations" | "actionLabel" | "actionTo" | "hideDivider" | "className">) {
+  if (accommodations.length <= 3) {
+    return (
+      <div className={`grid w-full max-w-[1200px] grid-cols-1 items-stretch gap-8 md:grid-cols-2 lg:grid-cols-3 ${className ?? ""}`}>
+        {accommodations.map((accommodation) => (
+          <AccommodationCard key={accommodation.title} accommodation={accommodation} actionLabel={actionLabel} actionTo={actionTo} hideDivider={hideDivider} />
+        ))}
+      </div>
+    );
+  }
+  return (
+    <CardCarousel
+      className={className}
+      keys={accommodations.map((accommodation) => accommodation.title)}
+      cards={accommodations.map((accommodation) => (
+        <AccommodationCard key={accommodation.title} accommodation={accommodation} actionLabel={actionLabel} actionTo={actionTo} hideDivider={hideDivider} />
+      ))}
+    />
+  );
+}
+
+/**
+ * The homepage card carousel, for any cards (accommodations, offers): one,
+ * two or three cards in view by width, auto-advancing every 3s, pausing on
+ * hover/touch and for reduced motion, with arrows. Cards keep the exact grid
+ * column width.
+ */
+export function CardCarousel({ cards, keys, className }: { cards: ReactNode[]; keys: string[]; className?: string }) {
   const a11y = useA11y();
   const trackRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
   // Bumped on every arrow click so the auto-advance timer restarts from zero.
   const [timerKey, setTimerKey] = useState(0);
-  const isCarousel = accommodations.length > 3;
+  const count = cards.length;
 
   // The card list is rendered twice; when the track reaches the copy it jumps back
   // one full set instantly (same picture), so sliding always continues forwards.
@@ -205,7 +232,7 @@ export function AccommodationGrid({ accommodations, actionLabel, actionTo, hideD
     const card = track?.firstElementChild as HTMLElement | null;
     if (!track || !card) return;
     const step = card.offsetWidth + 32;
-    const setWidth = step * accommodations.length;
+    const setWidth = step * count;
     if (dir > 0 && track.scrollLeft >= setWidth - 1) track.scrollTo({ left: track.scrollLeft - setWidth, behavior: "instant" });
     if (dir < 0 && track.scrollLeft <= 1) track.scrollTo({ left: track.scrollLeft + setWidth, behavior: "instant" });
     track.scrollBy({ left: dir * step, behavior: "smooth" });
@@ -218,21 +245,12 @@ export function AccommodationGrid({ accommodations, actionLabel, actionTo, hideD
 
   // Auto-advance one card every 3s; pauses while hovered or touched, and for reduced motion.
   useEffect(() => {
-    if (!isCarousel || paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const id = window.setInterval(() => scroll(1), 3000);
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCarousel, paused, timerKey]);
+  }, [paused, timerKey]);
 
-  if (!isCarousel) {
-    return (
-      <div className={`grid w-full max-w-[1200px] grid-cols-1 items-stretch gap-8 md:grid-cols-2 lg:grid-cols-3 ${className ?? ""}`}>
-        {accommodations.map((accommodation) => (
-          <AccommodationCard key={accommodation.title} accommodation={accommodation} actionLabel={actionLabel} actionTo={actionTo} hideDivider={hideDivider} />
-        ))}
-      </div>
-    );
-  }
   const arrowCls =
     "flex h-11 w-11 items-center justify-center rounded-full border border-taupe bg-taupe text-pearl transition-colors duration-150 hover:border-umber hover:bg-umber";
   return (
@@ -247,11 +265,11 @@ export function AccommodationGrid({ accommodations, actionLabel, actionTo, hideD
         ref={trackRef}
         className="-my-16 flex snap-x snap-mandatory gap-8 overflow-x-auto py-16 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {[...accommodations, ...accommodations].map((accommodation, index) => {
-          const isCopy = index >= accommodations.length;
+        {[...cards, ...cards].map((card, index) => {
+          const isCopy = index >= count;
           return (
-            <div key={`${accommodation.title}-${index}`} aria-hidden={isCopy || undefined} inert={isCopy} className="flex w-full flex-none snap-start md:w-[calc((100%-32px)/2)] lg:w-[calc((100%-64px)/3)]">
-              <AccommodationCard accommodation={accommodation} actionLabel={actionLabel} actionTo={actionTo} hideDivider={hideDivider} />
+            <div key={`${keys[index % count]}-${index}`} aria-hidden={isCopy || undefined} inert={isCopy} className="flex w-full flex-none snap-start md:w-[calc((100%-32px)/2)] lg:w-[calc((100%-64px)/3)]">
+              {card}
             </div>
           );
         })}

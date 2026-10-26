@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { CmsImage } from "@/components/cms-image";
 
@@ -9,12 +10,15 @@ type AboutStoryProps = {
   paragraphs: string[];
   /** Optional caption row under the photo (e.g. name and role). */
   caption?: { left: string; right: string };
+  /** Optional link under the text (same style as the other editorial sections). */
+  ctaLabel?: string | null;
+  ctaTo?: string | null;
   /** Extra classes for this page's band, e.g. to change its vertical padding. */
   className?: string;
 };
 
 /** Shared editorial "story" section: photo (with optional caption) beside an eyebrow, italic serif lead and body copy. */
-export function AboutStory({ image, imageAlt, eyebrow, lead, paragraphs, caption, className }: AboutStoryProps) {
+export function AboutStory({ image, imageAlt, eyebrow, lead, paragraphs, caption, ctaLabel, ctaTo, className }: AboutStoryProps) {
   return (
     <section className={cn("px-6 py-16 sm:px-10 sm:py-20 lg:px-20 lg:py-32", className)}>
       <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-24">
@@ -40,6 +44,15 @@ export function AboutStory({ image, imageAlt, eyebrow, lead, paragraphs, caption
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
+          {ctaLabel && ctaTo ? <Link
+            to={ctaTo}
+            className="mt-12 inline-flex items-center gap-[14px] self-start border-b border-clay/55 pb-[6px] pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] text-taupe transition-colors duration-200 hover:border-clay hover:text-taupe/70"
+          >
+            <span>{ctaLabel}</span>
+            <svg viewBox="0 0 16 12" width="16" height="12" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
+              <path d="M1 6 H14 M10 2 L14 6 L10 10" />
+            </svg>
+          </Link> : null}
         </div>
       </div>
     </section>

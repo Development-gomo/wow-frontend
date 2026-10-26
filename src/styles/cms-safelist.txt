@@ -21,9 +21,11 @@ gap-5
 h-[46svh]
 leading-[1.2]
 lg:aspect-auto
+lg:h-0
 lg:h-full
 lg:items-stretch
-lg:pb-0
+lg:min-h-full
+lg:pb-32
 lg:pb-[128px]
 lg:pt-0
 lg:pt-32
@@ -59,6 +61,7 @@ py-[128px]
 rounded-none
 shadow-accommodation
 sm:pb-0
+sm:pb-32
 sm:pb-[128px]
 sm:pt-0
 sm:pt-32
