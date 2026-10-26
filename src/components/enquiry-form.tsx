@@ -1,9 +1,23 @@
 import { useState, type FormEvent } from "react";
 import { Calendar, ChevronDown } from "lucide-react";
 
-import { useSite } from "@/components/cms/site-context";
+import { useLang, useSite } from "@/components/cms/site-context";
 import { text } from "@/lib/cms/globals";
+import { firstInvalid, submitLead } from "@/lib/leads";
 import { cn } from "@/lib/utils";
+
+/** Form field → its label key in Site settings › Enquiry form (for error messages). */
+const FIELD_LABEL_KEY: Record<string, string> = {
+  firstName: "firstName",
+  surname: "surname",
+  phone: "phone",
+  email: "email",
+  people: "people",
+  apartmentSize: "size",
+  checkin: "checkIn",
+  checkout: "checkOut",
+  notes: "other",
+};
 
 export type EnquiryFormProps = {
   eyebrow: string;
@@ -37,7 +51,7 @@ export type EnquiryFormProps = {
   notesPlaceholder?: string;
   /** Accessible name of the form; falls back to Site settings › Enquiry form. */
   formLabel?: string;
-  /** Where a submitted enquiry is stored. Unset keeps the form local (no submission). */
+  /** Which lead form receives the enquiry: "gift_card" for the gift card enquiry; unset for an apartment enquiry. */
   submitTo?: "gift_card";
   /** Section surface overrides (spacing), merged with cn so the page value wins. */
   className?: string;
@@ -133,6 +147,8 @@ export function EnquiryForm({
   const [checkin, setCheckin] = useState("");
   const [size, setSize] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [invalid, setInvalid] = useState("");
+  const lang = useLang();
   const sizes = APARTMENT_SIZES.filter((guests) => guests <= maxGuests);
 
   // Typing the party size preselects the smallest apartment that fits, unless the
@@ -144,29 +160,45 @@ export function EnquiryForm({
     if (fit && (!size || Number(size) < people)) setSize(String(fit));
   };
 
-  // Stores the enquiry when the page asks for it; the labels shown come from Site settings.
+  // Sends the enquiry to Contact Form 7 (gift card or apartment enquiry, by page);
+  // the labels shown come from Site settings.
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!submitTo || status === "sending") return;
+    if (status === "sending") return;
     const form = event.currentTarget;
     const data = new FormData(form);
-    const extras = services.filter((service) => data.get(service.toLowerCase().replace(/\s+/g, "-")) === "on");
-    setStatus("sending");
-    try {
-      const response = await fetch("/api/gift-card-enquiry", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          firstName: data.get("firstName"), surname: data.get("surname"), phone: data.get("phone"), email: data.get("email"),
-          giftFor: data.get(locked.hiddenName) ?? "", extras, notes: data.get("notes") ?? "", website: data.get("website") ?? "",
-        }),
-      });
-      if (!response.ok) throw new Error(String(response.status));
-      form.reset();
-      setStatus("sent");
-    } catch {
-      setStatus("error");
+    const chosen = services.filter((service) => data.get(service.toLowerCase().replace(/\s+/g, "-")) === "on").join(", ");
+    const gift = submitTo === "gift_card";
+
+    // One field per question, named as the Contact Form 7 form expects.
+    const lead = new FormData();
+    for (const name of ["firstName", "surname", "phone", "email", "notes", "website"]) lead.set(name, String(data.get(name) ?? ""));
+    if (gift) {
+      lead.set("giftFor", String(data.get(locked.hiddenName) ?? ""));
+      lead.set("extras", chosen);
+    } else {
+      for (const name of ["people", "apartmentSize", "checkin", "checkout"]) lead.set(name, String(data.get(name) ?? ""));
+      lead.set("apartment", String(data.get(locked.hiddenName) || locked.value));
+      lead.set("services", chosen);
     }
+
+    setStatus("sending");
+    setInvalid("");
+    const result = await submitLead(gift ? "giftCardEnquiry" : "apartmentEnquiry", lang, lead);
+    if (result.status === "sent") {
+      form.reset();
+      setCheckin("");
+      setSize("");
+      setStatus("sent");
+      return;
+    }
+    // A rejected field: Contact Form 7's message in the page language, named by its label.
+    const rejected = firstInvalid(result);
+    if (rejected) {
+      const label = FIELD_LABEL_KEY[rejected.field] ? t(FIELD_LABEL_KEY[rejected.field]) : "";
+      setInvalid([label, rejected.message].filter(Boolean).join(": "));
+    }
+    setStatus("error");
   }
 
   return (
@@ -319,7 +351,7 @@ export function EnquiryForm({
             </button>
           </div>
           {status === "sent" && t("msgSent") ? <p role="status" className="mt-4 text-[15px] text-taupe">{t("msgSent")}</p> : null}
-          {status === "error" && t("msgError") ? <p role="alert" className="mt-4 text-[15px] text-destructive">{t("msgError")}</p> : null}
+          {status === "error" && (invalid || t("msgError")) ? <p role="alert" className="mt-4 text-[15px] text-destructive">{invalid || t("msgError")}</p> : null}
         </form>
       </div>
     </section>

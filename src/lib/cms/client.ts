@@ -19,6 +19,11 @@ import { pageIndexSchema, pageSchema, parseSection, type Section } from "./schem
 const BASE = (process.env.WP_API_URL ?? "https://gomowebb.com/wow-backend").replace(/\/$/, "");
 const NAMESPACE = "wow/v1";
 
+/** The CMS base URL (server-only), e.g. for posting lead forms to Contact Form 7. */
+export function cmsBaseUrl(): string {
+  return BASE;
+}
+
 /** Cache tags, also used by the revalidation webhook. */
 export const CACHE_TAGS = {
   all: "cms",
