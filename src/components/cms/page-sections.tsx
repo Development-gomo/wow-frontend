@@ -42,7 +42,7 @@ const ArrowRight = () => (
 /* About us                                                                   */
 /* -------------------------------------------------------------------------- */
 
-export function AboutStory({ imageUrl, imageAlt, captionName, captionRole, eyebrow, lead, paragraphs, className }: {
+export function AboutStory({ imageUrl, imageAlt, captionName, captionRole, eyebrow, lead, paragraphs, ctaLabel, ctaTo, className }: {
   imageUrl: string;
   imageAlt: string;
   captionName: string;
@@ -50,10 +50,14 @@ export function AboutStory({ imageUrl, imageAlt, captionName, captionRole, eyebr
   eyebrow: string;
   lead: string;
   paragraphs: string[];
+  ctaLabel?: string | null;
+  ctaTo?: string | null;
   className?: string;
 }) {
   return (
     <StorySection
+      ctaLabel={ctaLabel}
+      ctaTo={ctaTo}
       image={imageUrl}
       imageAlt={imageAlt}
       eyebrow={eyebrow}
