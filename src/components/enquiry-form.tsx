@@ -178,7 +178,8 @@ export function EnquiryForm({
       lead.set("extras", chosen);
     } else {
       for (const name of ["people", "apartmentSize", "checkin", "checkout"]) lead.set(name, String(data.get(name) ?? ""));
-      lead.set("apartment", String(data.get(locked.hiddenName) || locked.value));
+      // The name the visitor saw: the chosen option, else the page's apartment.
+      lead.set("apartment", (locked.options && String(data.get(locked.hiddenName) ?? "")) || locked.value);
       lead.set("services", chosen);
     }
 
