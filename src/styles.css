@@ -414,3 +414,33 @@ header nav a, #wow-full-menu nav a:not(.rounded-cta) {
   header .rounded-cta { padding-inline: 4px; letter-spacing: 0; }
   header button[aria-label="Open menu"] { width: 32px; }
 }
+
+/* Rich text blocks from the CMS (e.g. the policy pages): the spacing, list
+   markers and link styling that the reset removes, in the site's type roles. */
+.wow-rich-text > * + * { margin-top: 1rem; }
+.wow-rich-text h2 {
+  margin-top: 3rem;
+  font-size: 32px;
+  line-height: 1.2;
+}
+.wow-rich-text h3 {
+  margin-top: 2rem;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.25;
+}
+.wow-rich-text > :first-child { margin-top: 0; }
+.wow-rich-text ul { list-style: disc; padding-left: 1.25rem; }
+.wow-rich-text ol { list-style: decimal; padding-left: 1.25rem; }
+/* Body copy throughout: a paragraph after a heading is not a subtitle here. */
+.wow-rich-text p:not(.uppercase),
+.wow-rich-text li {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-copy);
+  line-height: var(--text-body-copy--line-height);
+  font-weight: 300;
+}
+.wow-rich-text li + li { margin-top: 0.25rem; }
+.wow-rich-text a { text-decoration: underline; text-underline-offset: 4px; }
+.wow-rich-text a:hover { color: var(--color-umber); }
