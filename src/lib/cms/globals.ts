@@ -64,6 +64,8 @@ export const globalsSchema = z.object({
   notFound: z.record(z.string(), z.string()).optional().default({}),
   /** WPML › Languages: code and the language's own name, in WPML's order. */
   languages: z.array(z.object({ code: z.string(), name: z.string() })).optional().default([]),
+  /** Contact Form 7 IDs of the lead forms in this language (contact, apartmentEnquiry, …). */
+  forms: z.record(z.string(), z.number()).optional().default({}),
   menus: z
     .object({
       header: z.array(menuItem).optional().default([]),

@@ -1,6 +1,8 @@
 import { useState, type ComponentProps, type FormEvent } from "react";
 import { Calendar, CheckCircle2, ChevronDown, FileUp, X } from "lucide-react";
+import { useLang } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
+import { firstInvalid, submitLead } from "@/lib/leads";
 import { CHECKBOX_CLASS, FIELD_CLASS, LABEL_CLASS, SUBMIT_CLASS, TEXTAREA_CLASS } from "@/components/enquiry-form";
 import {
   corporateEnquirySchema,
@@ -37,6 +39,7 @@ export function CorporateEnquiryForm({ eyebrow, heading, description, noteStrong
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const [reference, setReference] = useState("");
+  const lang = useLang();
 
   const message = (key: CorporateEnquiryMessage) => messages[key] ?? messages.error ?? "";
   const copy = (name: keyof CorporateEnquiryFormProps["fields"]) => fields[name] ?? {};
@@ -54,16 +57,18 @@ export function CorporateEnquiryForm({ eyebrow, heading, description, noteStrong
     if (file) data.set("pdf", file); else data.delete("pdf");
     setPending(true);
     setError("");
-    try {
-      const response = await fetch("/api/corporate-enquiry", { method: "POST", body: data });
-      const result = (await response.json().catch(() => ({}))) as { reference?: string; message?: CorporateEnquiryMessage };
-      if (!response.ok || !result.reference) { setError(message(result.message ?? "error")); return; }
+    const result = await submitLead("corporateEnquiry", lang, data);
+    setPending(false);
+    if (result.status === "sent") {
       setReference(result.reference);
       form.reset();
       setFile(undefined);
-    } catch {
-      setError(message("error"));
-    } finally { setPending(false); }
+      return;
+    }
+    // A rejected field: this section's own message when it has one, else Contact Form 7's.
+    const rejected = firstInvalid(result);
+    const own = rejected && rejected.field in messages ? messages[rejected.field as CorporateEnquiryMessage] : undefined;
+    setError(own || rejected?.message || message("error"));
   }
 
   return (
