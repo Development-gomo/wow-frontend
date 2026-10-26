@@ -1,29 +1,45 @@
 import { useState } from "react";
-import { useSite } from "@/components/cms/site-context";
+import { useLang, useSite } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
 import { list, text } from "@/lib/cms/globals";
+import { firstInvalid, submitLead } from "@/lib/leads";
+
+/** Form field → its label key in Site settings › Contact form (for error messages). */
+const FIELD_LABEL_KEY: Record<string, string> = {
+  purpose: "purpose",
+  name: "name",
+  email: "email",
+  checkin: "checkIn",
+  checkout: "checkOut",
+  message: "message",
+};
 
 /**
  * Contact form. Every label, option and message comes from WordPress ›
- * Site settings › Interface text › Contact form; the recipient is the
- * contact email in Site settings › Contact.
+ * Site settings › Interface text › Contact form. Submissions go to the
+ * Contact Form 7 form "Contact" and are stored in wp-admin › Contact Forms.
  */
 export function ContactForm() {
-  const { contactForm, contact } = useSite();
+  const { contactForm } = useSite();
+  const lang = useLang();
   const t = (key: string) => text(contactForm, key);
   const [status, setStatus] = useState("");
+  const [sending, setSending] = useState(false);
+  const [invalidField, setInvalidField] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const today = new Date().toISOString().slice(0, 10);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    if (sending) return;
+    const element = event.currentTarget;
+    const form = new FormData(element);
     const name = String(form.get("name") ?? "").trim();
     const email = String(form.get("email") ?? "").trim();
-    const purpose = String(form.get("purpose") ?? "").trim();
     const message = String(form.get("message") ?? "").trim();
 
+    setInvalidField("");
     if (!name || !email || !message) {
       setStatus(t("msgIncomplete"));
       return;
@@ -33,13 +49,36 @@ export function ContactForm() {
       return;
     }
 
-    const none = t("notSpecified");
-    const subject = encodeURIComponent(t("mailSubject").replace("{name}", name));
-    const dates = `${t("checkIn")}: ${checkIn || none}\n${t("checkOut")}: ${checkOut || none}`;
-    const body = encodeURIComponent(`${t("name")}: ${name}\n${t("email")}: ${email}\n${t("purpose")}: ${purpose || none}\n${dates}\n\n${message}`);
-    window.location.href = `mailto:${contact.email}?subject=${subject}&body=${body}`;
-    setStatus(t("msgOpening"));
+    setSending(true);
+    setStatus("");
+    const result = await submitLead("contact", lang, form);
+    setSending(false);
+
+    if (result.status === "sent") {
+      element.reset();
+      setCheckIn("");
+      setCheckOut("");
+      setStatus(t("msgSent"));
+      return;
+    }
+
+    // A rejected field: Contact Form 7's message in the page language, named by its label.
+    const invalid = firstInvalid(result);
+    if (invalid) {
+      setInvalidField(invalid.field);
+      if (invalid.field === "checkout" && !invalid.message) {
+        setStatus(t("msgDates"));
+        return;
+      }
+      const label = FIELD_LABEL_KEY[invalid.field] ? t(FIELD_LABEL_KEY[invalid.field]) : "";
+      setStatus([label, invalid.message].filter(Boolean).join(": ") || t("msgError"));
+      return;
+    }
+
+    setStatus(t("msgError"));
   }
+
+  const invalidProps = (field: string) => (invalidField === field ? { "aria-invalid": true as const } : {});
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col" noValidate>
@@ -66,6 +105,7 @@ export function ContactForm() {
         type="text"
         autoComplete="name"
         required
+        {...invalidProps("name")}
         className="mt-2 h-12 w-full rounded-[4px] border border-clay/35 bg-pearl px-4 text-[15px] font-light text-taupe outline-none transition-colors placeholder:text-clay/65 focus:border-taupe"
       />
 
@@ -78,6 +118,7 @@ export function ContactForm() {
         type="email"
         autoComplete="email"
         required
+        {...invalidProps("email")}
         className="mt-2 h-12 w-full rounded-[4px] border border-clay/35 bg-pearl px-4 text-[15px] font-light text-taupe outline-none transition-colors placeholder:text-clay/65 focus:border-taupe"
       />
 
@@ -92,6 +133,7 @@ export function ContactForm() {
             type="date"
             min={today}
             value={checkIn}
+            {...invalidProps("checkin")}
             onChange={(e) => {
               setCheckIn(e.target.value);
               if (checkOut && e.target.value && checkOut <= e.target.value) setCheckOut("");
@@ -109,6 +151,7 @@ export function ContactForm() {
             type="date"
             min={checkIn || today}
             value={checkOut}
+            {...invalidProps("checkout")}
             onChange={(e) => setCheckOut(e.target.value)}
             className="mt-2 h-12 w-full rounded-[4px] border border-clay/35 bg-pearl px-4 text-[15px] font-light text-taupe outline-none transition-colors focus:border-taupe"
           />
@@ -124,11 +167,15 @@ export function ContactForm() {
         name="message"
         rows={7}
         required
+        {...invalidProps("message")}
         className="mt-2 w-full resize-y rounded-[4px] border border-clay/35 bg-pearl px-4 py-3 text-[15px] font-light leading-[1.7] text-taupe outline-none transition-colors placeholder:text-clay/65 focus:border-taupe"
       />
 
-      <Button type="submit" className="mt-8 h-12 self-start rounded-cta bg-taupe px-8 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl shadow-none transition-colors hover:bg-umber">
-        {t("submit")}
+      {/* Spam trap: hidden from people, filled in by bots. */}
+      <div className="hidden" aria-hidden="true"><label>Website{/* content-exempt: spam trap, never shown */}<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
+
+      <Button type="submit" disabled={sending} className="mt-8 h-12 self-start rounded-cta bg-taupe px-8 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl shadow-none transition-colors hover:bg-umber disabled:opacity-70">
+        {sending && t("sending") ? t("sending") : t("submit")}
       </Button>
       <p role="status" aria-live="polite" className="mt-4 min-h-5 text-[13px] font-light text-taupe/75">
         {status}

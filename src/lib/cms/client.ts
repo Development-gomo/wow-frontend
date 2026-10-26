@@ -19,6 +19,11 @@ import { pageIndexSchema, pageSchema, parseSection, type Section } from "./schem
 const BASE = (process.env.WP_API_URL ?? "https://gomowebb.com/wow-backend").replace(/\/$/, "");
 const NAMESPACE = "wow/v1";
 
+/** The CMS base URL (server-only), e.g. for posting lead forms to Contact Form 7. */
+export function cmsBaseUrl(): string {
+  return BASE;
+}
+
 /** Cache tags, also used by the revalidation webhook. */
 export const CACHE_TAGS = {
   all: "cms",
@@ -29,6 +34,13 @@ export const CACHE_TAGS = {
 
 /** How long a page may be served stale before Next revalidates it in the background. */
 const REVALIDATE_SECONDS = 300;
+
+/** An old address of a page that now lives elsewhere (e.g. Swedish /rooms → /rum). */
+export type CmsRedirect = { redirect: string };
+
+export function isRedirect(value: CmsPage | CmsRedirect | null): value is CmsRedirect {
+  return value !== null && "redirect" in value;
+}
 
 export type CmsPage = {
   id: number;
@@ -122,7 +134,7 @@ export async function getPageIndex(lang: Lang = DEFAULT_LANG): Promise<Array<{ s
 export async function getPage(
   slug: string,
   { preview = false, lang = DEFAULT_LANG }: { preview?: boolean; lang?: Lang } = {},
-): Promise<CmsPage | null> {
+): Promise<CmsPage | CmsRedirect | null> {
   const path = `/page/${slug || "home"}${preview ? "?preview=true" : ""}`;
 
   const raw = await cmsFetch(path, lang, {
@@ -131,6 +143,8 @@ export async function getPage(
   });
 
   if (!raw) return null;
+
+  if (typeof raw.redirect === "string" && raw.redirect.startsWith("/")) return { redirect: raw.redirect };
 
   const parsed = pageSchema.safeParse(raw);
 

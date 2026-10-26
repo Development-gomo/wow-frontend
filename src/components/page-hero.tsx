@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 import { ProcessSteps, type ProcessStep } from "@/components/process-steps";
+import { CmsImage } from "@/components/cms-image";
 
 type PageHeroProps = {
   title: string;
@@ -42,11 +43,11 @@ export function PageHero({
         className,
       )}
     >
-      <img
+      <CmsImage sizes="100vw"
         src={media.imageUrl}
         alt={media.imageAlt}
         className="absolute inset-0 h-full w-full object-cover object-center"
-        fetchPriority="high"
+        priority
       />
       <div aria-hidden="true" className={cn("absolute inset-0", overlayClassName)} />
       <div

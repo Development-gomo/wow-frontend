@@ -6,7 +6,8 @@ import { z } from "zod";
  * its WordPress section (Corporate enquiry form › Messages).
  */
 
-export const MAX_PDF_BYTES = 10 * 1024 * 1024;
+/** Vercel caps a request to a server function at 4.5 MB, so the PDF stays under 4 MB. */
+export const MAX_PDF_BYTES = 4 * 1024 * 1024;
 
 export type CorporateEnquiryMessage =
   | "company"

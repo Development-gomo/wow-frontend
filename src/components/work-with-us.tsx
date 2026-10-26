@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
+import { CmsImage } from "@/components/cms-image";
 
 type WorkWithUsProps = {
   image: string;
@@ -33,7 +34,7 @@ export function WorkWithUs({ image, imageAlt, imageClassName, eyebrow, title, qu
     <section className={cn("bg-background px-6 pb-[128px] pt-[128px] sm:px-10 lg:px-20", className)}>
       <div className="mx-auto flex max-w-[1200px] flex-col gap-12 md:flex-row md:gap-[96px]">
         <div className="relative aspect-[4/5] w-full min-w-0 flex-1 overflow-hidden md:aspect-auto">
-          <img
+          <CmsImage sizes="(min-width: 1024px) 50vw, 100vw"
             src={image}
             alt={imageAlt}
             loading="lazy"

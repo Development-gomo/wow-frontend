@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { CmsImage } from "@/components/cms-image";
 
 type LocationPhoto = {
   src: string;
@@ -72,7 +73,7 @@ export function WelcomingLocations({ eyebrow, heading, showViewAll = true, viewA
                           ][photoIndex]
                         }`}
                       >
-                        <img
+                        <CmsImage sizes="(min-width: 1024px) 33vw, 50vw"
                           src={photo.src}
                           alt={photo.alt}
                           loading="lazy"

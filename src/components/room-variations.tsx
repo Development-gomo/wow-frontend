@@ -1,6 +1,7 @@
 import { BedSingle, Expand, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PhotoCarousel } from "@/components/photo-carousel";
+import { CmsImage } from "@/components/cms-image";
 
 export type RoomVariation = {
   title: string;
@@ -44,7 +45,7 @@ export function RoomVariations({ title, options, label, heading, pricePrefix, pr
                   <PhotoCarousel images={[option.image, ...option.images]} title={option.title} heightClass="h-[240px] shrink-0" />
                 ) : (
                   <div className="relative h-[240px] shrink-0 overflow-hidden">
-                    <img src={option.image} alt={option.imageAlt} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+                    <CmsImage sizes="(min-width: 1024px) 40vw, 100vw" src={option.image} alt={option.imageAlt} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
                   </div>
                 )}
 

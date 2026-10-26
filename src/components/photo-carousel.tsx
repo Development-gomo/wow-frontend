@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { useA11y } from "@/components/cms/site-context";
 import { fill } from "@/lib/i18n";
+import { CmsImage } from "@/components/cms-image";
 
 /**
  * The photo carousel used on accommodation cards: a sliding strip of photos
@@ -24,7 +25,7 @@ export function PhotoCarousel({ images, title, heightClass = "h-[240px]" }: { im
         style={{ transform: `translateX(-${index * 100}%)` }}
       >
         {images.map((src, i) => (
-          <img
+          <CmsImage sizes="(min-width: 1024px) 440px, (min-width: 640px) 50vw, 100vw"
             key={`${src}-${i}`}
             src={src}
             alt={fill(a11y.photoOf, { title, n: i + 1, total: count })}

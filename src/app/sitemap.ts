@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import { getPage, getPageIndex } from "@/lib/cms/client";
+import { getPage, getPageIndex, isRedirect } from "@/lib/cms/client";
 import { hreflang, LANGS, pagePath, type Lang } from "@/lib/i18n";
 
 /**
@@ -17,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const lang of LANGS) {
     for (const item of await getPageIndex(lang)) {
       const page = await getPage(item.slug, { lang }).catch(() => null);
-      if (!page) continue;
+      if (!page || isRedirect(page)) continue;
 
       const languages: Record<string, string> = {};
       for (const code of LANGS) {
