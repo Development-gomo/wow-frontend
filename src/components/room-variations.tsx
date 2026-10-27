@@ -1,4 +1,5 @@
 import { BedSingle, Expand, UserRound } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { PhotoCarousel } from "@/components/photo-carousel";
 import { CmsImage } from "@/components/cms-image";
@@ -26,9 +27,11 @@ type RoomVariationsProps = {
   pricePrefix?: string;
   priceSuffix?: string;
   ctaLabel?: string;
+  /** The room's booking page (e.g. /single-room); every option's button goes there. */
+  ctaHref?: string;
 };
 
-export function RoomVariations({ title, options, label, heading, pricePrefix, priceSuffix, ctaLabel }: RoomVariationsProps) {
+export function RoomVariations({ title, options, label, heading, pricePrefix, priceSuffix, ctaLabel, ctaHref }: RoomVariationsProps) {
   return (
     <section id="room-variations" aria-labelledby="room-variations-heading" className="bg-sand px-5 py-16 text-taupe md:px-10 lg:px-20">
       <div className="mx-auto max-w-[1200px]">
@@ -68,7 +71,13 @@ export function RoomVariations({ title, options, label, heading, pricePrefix, pr
                     <p aria-label={[pricePrefix, option.price, priceSuffix].filter(Boolean).join(" ")} className="m-0 flex flex-wrap items-baseline gap-1.5 font-serif leading-[1.15]">
                       <span className="font-serif text-base">{pricePrefix}</span><span className="font-serif text-[26px] font-medium">{option.price}</span><span className="font-serif text-sm opacity-65">{priceSuffix}</span>
                     </p>
-                    <Button type="button" aria-label={`${ctaLabel ?? ""} ${option.title}`.trim()} className="h-11 w-full cursor-pointer rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl shadow-none transition-colors duration-200 hover:bg-umber">{ctaLabel}</Button>
+                    {ctaHref ? (
+                      <Button asChild className="h-11 w-full cursor-pointer rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl shadow-none transition-colors duration-200 hover:bg-umber">
+                        <Link to={ctaHref} aria-label={`${ctaLabel ?? ""} ${option.title}`.trim()}>{ctaLabel}</Link>
+                      </Button>
+                    ) : (
+                      <Button type="button" aria-label={`${ctaLabel ?? ""} ${option.title}`.trim()} className="h-11 w-full cursor-pointer rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl shadow-none transition-colors duration-200 hover:bg-umber">{ctaLabel}</Button>
+                    )}
                   </div>
                 </div>
               </article>

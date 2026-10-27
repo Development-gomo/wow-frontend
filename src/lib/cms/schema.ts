@@ -403,6 +403,7 @@ const sectionProps = {
     pricePrefix: text,
     priceSuffix: text,
     ctaLabel: text,
+    ctaHref: z.string().optional(),
     options: z
       .array(
         z.object({
