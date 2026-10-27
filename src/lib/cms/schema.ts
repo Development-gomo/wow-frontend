@@ -364,6 +364,7 @@ const sectionProps = {
     description: z.union([z.string(), z.array(z.string())]).optional().default(""),
     ctaLabel: z.string().optional().default(""),
     ctaHref: z.string().optional().default(""),
+    ctaVariant: z.enum(["link", "button"]).optional(),
     image: z.string().optional().default(""),
     imageAlt: z.string().optional().default(""),
     className: z.string().optional(),
