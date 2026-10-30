@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { DEFAULT_LANG, isLang, type Lang } from "@/lib/i18n";
 
 import { globalsSchema, type Globals } from "./globals";
@@ -131,10 +133,19 @@ export async function getPageIndex(lang: Lang = DEFAULT_LANG): Promise<Array<{ s
  *
  * Returns null when the page does not exist, so the caller can call notFound().
  */
-export async function getPage(
+export function getPage(
   slug: string,
   { preview = false, lang = DEFAULT_LANG }: { preview?: boolean; lang?: Lang } = {},
 ): Promise<CmsPage | CmsRedirect | null> {
+  return loadPage(slug, preview, lang);
+}
+
+/**
+ * Memoised per request: generateMetadata and the page body both ask for the
+ * same page, and the answer is parsed and validated once. Plain arguments, so
+ * every caller shares one cache key.
+ */
+const loadPage = cache(async (slug: string, preview: boolean, lang: Lang): Promise<CmsPage | CmsRedirect | null> => {
   const path = `/page/${slug || "home"}${preview ? "?preview=true" : ""}`;
 
   const raw = await cmsFetch(path, lang, {
@@ -171,7 +182,7 @@ export async function getPage(
     seo: parsed.data.seo,
     sections,
   };
-}
+});
 
 /**
  * Site settings and menus.
@@ -183,7 +194,12 @@ export async function getPage(
  * a site without its navigation and footer must never be rendered and cached.
  * During revalidation Next then keeps serving the last good version.
  */
-export async function getGlobals(lang: Lang = DEFAULT_LANG): Promise<Globals> {
+export function getGlobals(lang: Lang = DEFAULT_LANG): Promise<Globals> {
+  return loadGlobals(lang);
+}
+
+/** Memoised per request: the layout, its metadata and the sections share one parsed copy. */
+const loadGlobals = cache(async (lang: Lang): Promise<Globals> => {
   const raw = await cmsFetch("/globals", lang, { tags: [CACHE_TAGS.globals] });
 
   // The endpoint always exists; a 404 means the plugin is missing.
@@ -197,4 +213,4 @@ export async function getGlobals(lang: Lang = DEFAULT_LANG): Promise<Globals> {
   }
 
   return parsed.data;
-}
+});

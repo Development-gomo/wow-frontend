@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
 import { useState } from "react";
 
 import { AccommodationGrid, type Accommodation } from "@/components/accommodation-listing";
@@ -93,7 +93,7 @@ export function HomeAccommodationTabs({
         </div>
         {viewAllLabel && viewAllTo && (
           <Button asChild className="mt-16 h-12 px-8 rounded-cta bg-taupe text-pearl hover:bg-umber text-[11px] uppercase tracking-[0.28em] gap-4">
-            <Link to={viewAllTo}>
+            <Link href={viewAllTo}>
               {viewAllLabel}
             </Link>
           </Button>

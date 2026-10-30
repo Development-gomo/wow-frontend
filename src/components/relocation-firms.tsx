@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
 import { Building2, CalendarDays, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -26,7 +26,7 @@ export function RelocationFirms({ eyebrow, heading, description, points = [], ct
           <p className="mt-4 max-w-[520px] text-title-subtext font-light leading-[30px]">{description}</p>
           {ctaLabel && ctaTo && (
             <Button asChild className="mt-8 h-12 rounded-cta bg-taupe px-8 text-cta-label text-linen uppercase tracking-[0.15em] shadow-none hover:bg-umber hover:text-linen">
-              <Link to={ctaTo}>{ctaLabel}</Link>
+              <Link href={ctaTo}>{ctaLabel}</Link>
             </Button>
           )}
         </div>

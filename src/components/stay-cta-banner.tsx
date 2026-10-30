@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
 import { cn } from "@/lib/utils";
 import { CmsImage } from "@/components/cms-image";
 
@@ -71,7 +71,7 @@ export function StayCtaBanner({
         <div className="mt-8 flex flex-wrap items-center justify-center gap-cta">
           {primaryLabel && primaryTo ? (
             <Link
-              to={primaryTo}
+              href={primaryTo}
               className="inline-flex h-12 items-center justify-center rounded-cta border border-pearl bg-pearl px-8 text-[11px] font-medium uppercase tracking-[0.28em] text-taupe transition-colors duration-200 hover:bg-sand hover:text-umber"
             >
               {primaryLabel}
@@ -79,7 +79,7 @@ export function StayCtaBanner({
           ) : null}
           {secondaryLabel && secondaryTo ? (
             <Link
-              to={secondaryTo}
+              href={secondaryTo}
               className="inline-flex h-12 items-center justify-center rounded-cta border border-pearl/60 bg-transparent px-8 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl transition-colors duration-200 hover:border-pearl hover:bg-pearl hover:text-taupe"
             >
               {secondaryLabel}

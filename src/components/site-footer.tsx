@@ -1,9 +1,10 @@
+import Link from "next/link";
 import { Fragment } from "react";
-import { Link } from "@tanstack/react-router";
 
 import { FooterNewsletter } from "@/components/footer-newsletter";
 import { text, type Globals, type MenuItem } from "@/lib/cms/globals";
 import { localizeHref, type Lang } from "@/lib/i18n";
+import { isPlainAnchor } from "@/lib/links";
 
 /*
  * Footer.
@@ -116,14 +117,15 @@ const SOCIAL_ICONS: Record<string, React.ReactNode> = {
 
 const footerLinkClass = "font-light text-linen/80 transition-colors duration-200 hover:text-linen focus-visible:outline-offset-4";
 
-/** In-page anchors and placeholders render as plain links; routes use the router. */
+/** Routes use next/link, localized here on the server; in-page anchors, placeholders and other schemes stay plain links. */
 function FooterLink({ item, lang }: { item: MenuItem; lang: Lang }) {
+  const href = localizeHref(item.href, lang);
   return (
     <li>
-      {item.href.includes("#") ? (
-        <a href={localizeHref(item.href, lang)} className={footerLinkClass}>{item.label}</a>
+      {item.href.includes("#") || isPlainAnchor(href) ? (
+        <a href={href} className={footerLinkClass}>{item.label}</a>
       ) : (
-        <Link to={item.href} className={footerLinkClass}>{item.label}</Link>
+        <Link href={href} className={footerLinkClass}>{item.label}</Link>
       )}
     </li>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
 import { useUi, useA11y, useLocalizeHref } from "@/components/cms/site-context";
 import { fill } from "@/lib/i18n";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -50,9 +50,9 @@ export function RoomDetailHero({ breadcrumbParent, kicker, title, description, l
   return (
     <section className="flex flex-col items-center bg-sand px-6 pb-16 pt-28 sm:pt-32 md:px-20">
       <nav aria-label={a11y.breadcrumb} className="w-full max-w-[1200px] text-[11px] font-normal uppercase tracking-[0.24em] text-clay">
-        <Link to="/" className="transition-colors duration-200 hover:text-umber">{ui.breadcrumbHome}</Link>
+        <Link href="/" className="transition-colors duration-200 hover:text-umber">{ui.breadcrumbHome}</Link>
         <span aria-hidden="true" className="px-3">›</span>
-        <Link to={breadcrumbParent.to} className="transition-colors duration-200 hover:text-umber">{breadcrumbParent.label}</Link>
+        <Link href={breadcrumbParent.to} className="transition-colors duration-200 hover:text-umber">{breadcrumbParent.label}</Link>
         <span aria-hidden="true" className="px-3">›</span>
         <span aria-current="page" className="text-taupe">{title}</span>
       </nav>

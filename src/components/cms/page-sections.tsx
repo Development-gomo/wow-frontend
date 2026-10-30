@@ -1,5 +1,4 @@
 import { Fragment, type ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
 import { Gift, Mail, Phone } from "lucide-react";
 
 import { AboutStory as StorySection } from "@/components/about-story";
@@ -13,7 +12,7 @@ import { WorkWithUs } from "@/components/work-with-us";
 import { cn } from "@/lib/utils";
 
 import { withLineBreaks } from "./icon-map";
-import { SmartLink } from "./smart-link";
+import { Link } from "@/components/localized-link";
 import { CmsImage } from "@/components/cms-image";
 
 /*
@@ -33,7 +32,7 @@ const ArrowRight = () => (
 /* About us                                                                   */
 /* -------------------------------------------------------------------------- */
 
-export function AboutStory({ imageUrl, imageAlt, captionName, captionRole, eyebrow, lead, paragraphs, className }: {
+export function AboutStory({ imageUrl, imageAlt, captionName, captionRole, eyebrow, lead, paragraphs, ctaLabel, ctaTo, className }: {
   imageUrl: string;
   imageAlt: string;
   captionName: string;
@@ -41,10 +40,14 @@ export function AboutStory({ imageUrl, imageAlt, captionName, captionRole, eyebr
   eyebrow: string;
   lead: string;
   paragraphs: string[];
+  ctaLabel?: string | null;
+  ctaTo?: string | null;
   className?: string;
 }) {
   return (
     <StorySection
+      ctaLabel={ctaLabel}
+      ctaTo={ctaTo}
       image={imageUrl}
       imageAlt={imageAlt}
       eyebrow={eyebrow}
@@ -107,13 +110,13 @@ export function LocationCards({ eyebrow, heading, description, linkLabel, linkTo
         )}
         {description ? <p className="mt-4 max-w-[640px] text-title-subtext text-taupe/85">{description}</p> : null}
         {linkLabel && linkTo && (
-          <SmartLink
-            to={linkTo}
+          <Link
+            href={linkTo}
             className="mt-10 inline-flex items-center gap-[14px] border-b border-clay/55 pb-[6px] pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] text-taupe transition-colors duration-200 hover:border-clay hover:text-taupe/70 motion-safe:hover:gap-[20px] sm:mt-12"
           >
             <span>{linkLabel}</span>
             <ArrowRight />
-          </SmartLink>
+          </Link>
         )}
       </div>
 

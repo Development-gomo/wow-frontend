@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
 import { useUi, useA11y } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
 import { PhotoCarousel } from "@/components/photo-carousel";
@@ -115,16 +115,16 @@ export function SimilarRooms({ rooms, eyebrow, heading, subheading, carouselLabe
                   {actionLabel && actionTo ? (
                     <div className="mt-auto flex items-center justify-between gap-3 pt-8">
                       {room.href ? (
-                        <Link to={room.href} className="inline-flex border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">{ui.readMore}</Link>
+                        <Link href={room.href} className="inline-flex border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">{ui.readMore}</Link>
                       ) : (
                         <a href="#" className="inline-flex border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">{ui.readMore}</a>
                       )}
                       <Button asChild className="h-9 rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.24em] text-pearl hover:bg-umber">
-                        <Link to={room.bookingPath ?? actionTo}>{actionLabel}</Link>
+                        <Link href={room.bookingPath ?? actionTo}>{actionLabel}</Link>
                       </Button>
                     </div>
                   ) : room.href ? (
-                    <Link to={room.href} className="mt-auto inline-flex self-start pt-8 border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">{ui.readMore}</Link>
+                    <Link href={room.href} className="mt-auto inline-flex self-start pt-8 border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">{ui.readMore}</Link>
                   ) : (
                     <a href="#" className="mt-auto inline-flex self-start pt-8 border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay">{ui.readMore}</a>
                   )}

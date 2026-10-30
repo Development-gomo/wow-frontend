@@ -4,9 +4,10 @@ import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from "rea
 import { MapPin, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type IconItem = { icon: LucideIcon; label: string };
+/** `icon` is a rendered icon: the server resolves the CMS icon key (see RoomInformationSection). */
+export type IconItem = { icon: ReactNode; label: string };
 export type RuleItem = IconItem & { detail: string };
-export type NearbyItem = { category: string; icon: LucideIcon; place: string; distance: string };
+export type NearbyItem = { category: string; icon: ReactNode; place: string; distance: string };
 export type CancellationTier = { window: string; title: string; detail: string };
 export type CancellationInfo = { intro: string; tiers: CancellationTier[]; notes: ReactNode[] };
 
@@ -130,7 +131,7 @@ function AmenitiesPanel({ amenitiesHeading, amenities, notIncluded, labels = {} 
       <ul className={cn(grid3, "mt-10 gap-5")}>
         {amenities.map(({ icon, label }) => (
           <li key={label} className={cn(tile, "flex items-center gap-[18px] px-8 py-[26px] text-xl leading-[1.2]")}>
-            <Icon icon={icon} />
+            {icon}
             {label}
           </li>
         ))}
@@ -141,7 +142,7 @@ function AmenitiesPanel({ amenitiesHeading, amenities, notIncluded, labels = {} 
       <ul aria-label={labels.notIncludedHeading} className={cn(grid3, "mt-7 gap-4")}>
         {notIncluded.map(({ icon, label }) => (
           <li key={label} className="flex items-center gap-4 rounded-[20px] border border-dashed border-clay/55 px-7 py-5 text-lg leading-[1.2] text-muted-taupe">
-            <Icon icon={icon} size={24} />
+            {icon}
             {label}
           </li>
         ))}
@@ -176,7 +177,7 @@ function LocationPanel({ heading, description, address, mapsHref, nearby, labels
             <div key={category}>
               <h4 className="m-0 text-xl font-medium leading-[1.2]">{category}</h4>
               <div className="mt-3.5 flex items-center gap-3 text-base">
-                <Icon icon={icon} size={20} />
+                {icon}
                 <span>{place} <span className="text-stone/90">· {distance}</span></span>
               </div>
             </div>
@@ -219,7 +220,7 @@ function RulesPanel({ intro, items, title }: RoomInformationProps["rules"] & { t
       <ul className={cn(grid3, "mt-10 gap-5")}>
         {items.map(({ icon, label, detail }) => (
           <li key={label} className={cn(tile, "flex items-start gap-[18px] px-[30px] py-[26px]")}>
-            <Icon icon={icon} />
+            {icon}
             <div>
               <div className="text-xl font-medium leading-[1.2]">{label}</div>
               <div className="mt-1.5 text-base font-light leading-normal">{detail}</div>

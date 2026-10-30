@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
 import { CmsImage } from "@/components/cms-image";
 
 type LocationPhoto = {
@@ -43,7 +43,7 @@ export function WelcomingLocations({ eyebrow, heading, showViewAll = true, viewA
         )}
         {showViewAll && viewAllLabel && viewAllTo && (
           <Link
-            to={viewAllTo}
+            href={viewAllTo}
             className="mt-10 inline-flex items-center gap-3.5 border-b border-clay/55 pb-1.5 text-[11px] font-medium uppercase tracking-[0.32em] text-taupe transition-colors hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-clay focus-visible:outline-offset-4 md:mt-12"
           >
             {viewAllLabel}

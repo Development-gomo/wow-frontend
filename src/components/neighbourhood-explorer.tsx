@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useUi, useLocalizeHref } from "@/components/cms/site-context";
 import { cn } from "@/lib/utils";
 import { PhotoCarousel } from "@/components/photo-carousel";
-import { PriceTag, CardActionButton, type Price } from "@/components/accommodation-listing";
+import { CardCarousel, PriceTag, CardActionButton, type Price } from "@/components/accommodation-listing";
 
 export type ExplorePlace = {
   kicker: string;
@@ -55,6 +55,37 @@ export function NeighbourhoodExplorer({ id, eyebrow, title, description, neighbo
   const placeLinkLabel = linkLabel ?? ui.explorePlace;
   const [active, setActive] = useState(0);
   const current = neighbourhoods[active];
+  // A single group of more than three cards (the offer lists) uses the homepage carousel.
+  const isCarousel = neighbourhoods.length === 1 && current.places.length > 3;
+
+  const renderCard = (p: ExplorePlace) => (
+    <article className={cn("group flex h-full w-full flex-col", cardHoverMotion && "transition-transform duration-[260ms] ease-out motion-safe:hover:-translate-y-[3px]")}>
+      {p.image ? (
+        <PhotoCarousel images={[p.image, ...(p.images ?? [])]} title={p.title} heightClass="aspect-[16/10]" />
+      ) : (
+        <div className="aspect-[16/10] w-full bg-gradient-to-br from-sand to-clay/50" />
+      )}
+      <div className="relative z-10 mx-auto -mt-5 flex min-h-[140px] w-[calc(100%-24px)] flex-grow flex-col bg-pearl px-6 py-6 shadow-accommodation">
+        <p className="pl-[0.32em] text-[10px] uppercase tracking-[0.32em] text-clay">{p.kicker}</p>
+        <h4 className="mt-4 font-serif text-[22px] font-normal leading-[1.15]">{p.title}</h4>
+        <p className="mt-1 text-[14px] font-light leading-[1.6] opacity-85">{p.description}</p>
+        {p.action ? (
+          <div className="mt-auto flex flex-nowrap items-center justify-between gap-0.5 pt-6">
+            {p.price ? <PriceTag price={p.price} compact /> : <span />}
+            <CardActionButton label={p.action.label} to={p.action.to} className="shrink-0 whitespace-nowrap px-2.5" />
+          </div>
+        ) : p.href && (<a
+          href={localize(p.href)}
+          className="mt-4 inline-flex items-center gap-2.5 self-start border-b border-clay/55 pb-1 pt-1 text-[11px] font-medium uppercase tracking-[0.32em] transition-colors duration-[180ms] hover:border-umber/70 hover:text-umber"
+        >
+          <span>{placeLinkLabel}</span>
+          <svg viewBox="0 0 16 12" width="14" height="10" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
+            <path d="M1 6 H14 M10 2 L14 6 L10 10" />
+          </svg>
+        </a>)}
+      </div>
+    </article>
+  );
 
   return (
     <section id={id} className={cn("scroll-mt-20 flex w-full flex-col items-center bg-sand px-6 text-taupe sm:px-10 sm:py-24 lg:px-20 lg:py-32", className)}>
@@ -100,38 +131,17 @@ export function NeighbourhoodExplorer({ id, eyebrow, title, description, neighbo
           </div>
         ) : null}
 
-        <ul className={cn("grid w-full list-none grid-cols-1 gap-8 p-0 sm:grid-cols-2 lg:grid-cols-3", current.places.some((place) => place.price && place.action) && "sm:grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] lg:grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))]", current.heading === "" && !current.intro ? "" : "mt-12")}>
-          {current.places.map((p) => (
-            <li key={p.title}>
-              <article className={cn("group flex h-full flex-col", cardHoverMotion && "transition-transform duration-[260ms] ease-out motion-safe:hover:-translate-y-[3px]")}>
-                {p.image ? (
-                  <PhotoCarousel images={[p.image, ...(p.images ?? [])]} title={p.title} heightClass="aspect-[16/10]" />
-                ) : (
-                  <div className="aspect-[16/10] w-full bg-gradient-to-br from-sand to-clay/50" />
-                )}
-                <div className="relative z-10 mx-auto -mt-5 flex min-h-[140px] w-[calc(100%-24px)] flex-grow flex-col bg-pearl px-6 py-6 shadow-accommodation">
-                  <p className="pl-[0.32em] text-[10px] uppercase tracking-[0.32em] text-clay">{p.kicker}</p>
-                  <h4 className="mt-4 font-serif text-[22px] font-normal leading-[1.15]">{p.title}</h4>
-                  <p className="mt-1 text-[14px] font-light leading-[1.6] opacity-85">{p.description}</p>
-                  {p.price && p.action ? (
-                    <div className="mt-auto flex flex-nowrap items-center justify-between gap-0.5 pt-6">
-                      <PriceTag price={p.price} compact />
-                      <CardActionButton label={p.action.label} to={p.action.to} className="shrink-0 whitespace-nowrap px-2.5" />
-                    </div>
-                  ) : p.href && (<a
-                    href={localize(p.href)}
-                    className="mt-4 inline-flex items-center gap-2.5 self-start border-b border-clay/55 pb-1 pt-1 text-[11px] font-medium uppercase tracking-[0.32em] transition-colors duration-[180ms] hover:border-umber/70 hover:text-umber"
-                  >
-                    <span>{placeLinkLabel}</span>
-                    <svg viewBox="0 0 16 12" width="14" height="10" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true">
-                      <path d="M1 6 H14 M10 2 L14 6 L10 10" />
-                    </svg>
-                  </a>)}
-                </div>
-              </article>
-            </li>
-          ))}
-        </ul>
+        {isCarousel ? (
+          <CardCarousel className={current.heading === "" && !current.intro ? "" : "mt-12"} keys={current.places.map((p) => p.title)} cards={current.places.map(renderCard)} />
+        ) : (
+          <ul className={cn("grid w-full list-none grid-cols-1 gap-8 p-0 sm:grid-cols-2 lg:grid-cols-3", current.places.some((place) => place.price && place.action) && "sm:grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] lg:grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))]", current.heading === "" && !current.intro ? "" : "mt-12")}>
+            {current.places.map((p) => (
+              <li key={p.title}>
+                  {renderCard(p)}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   );

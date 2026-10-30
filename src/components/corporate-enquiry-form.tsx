@@ -6,12 +6,7 @@ import { useLang } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
 import { firstInvalid, submitLead } from "@/lib/leads";
 import { CHECKBOX_CLASS, FIELD_CLASS, LABEL_CLASS, SUBMIT_CLASS, TEXTAREA_CLASS } from "@/components/enquiry-form";
-import {
-  corporateEnquirySchema,
-  firstMessage,
-  isAcceptablePdf,
-  type CorporateEnquiryMessage,
-} from "@/lib/corporate-enquiry-schema";
+import { isAcceptablePdf, type CorporateEnquiryMessage } from "@/lib/corporate-enquiry-rules";
 
 type FieldCopy = { label?: string; placeholder?: string };
 
@@ -51,6 +46,15 @@ export function CorporateEnquiryForm({ eyebrow, heading, description, noteStrong
     if (pending) return;
     const form = event.currentTarget;
     const data = new FormData(form);
+    // The zod schema loads on submit, so zod is not in the page's JavaScript.
+    let schema: typeof import("@/lib/corporate-enquiry-schema");
+    try {
+      schema = await import("@/lib/corporate-enquiry-schema");
+    } catch {
+      setError(message("error"));
+      return;
+    }
+    const { corporateEnquirySchema, firstMessage } = schema;
     const parsed = corporateEnquirySchema.safeParse({
       ...Object.fromEntries([...data.entries()].filter(([, value]) => typeof value === "string")),
       consent: data.get("consent") === "on",

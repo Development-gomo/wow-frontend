@@ -78,17 +78,5 @@ export const globalsSchema = z.object({
 export type Globals = z.infer<typeof globalsSchema>;
 export type MenuItem = MenuNode;
 
-/** An all-empty value, used when WordPress is unreachable. */
-export const EMPTY_GLOBALS: Globals = globalsSchema.parse({});
-
-/** Read a key from one of the free-form text groups, empty when unset. */
-export function text(group: Record<string, unknown> | undefined, key: string): string {
-  const value = group?.[key];
-  return typeof value === "string" ? value : "";
-}
-
-/** Read a list from a free-form group (e.g. contact form purpose options). */
-export function list(group: Record<string, unknown> | undefined, key: string): string[] {
-  const value = group?.[key];
-  return Array.isArray(value) ? value.filter((v): v is string => typeof v === "string") : [];
-}
+// Client-safe helpers live in globals-text.ts (no zod); re-exported for server code.
+export { EMPTY_GLOBALS, list, text } from "./globals-text";

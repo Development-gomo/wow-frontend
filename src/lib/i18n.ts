@@ -79,6 +79,19 @@ export function localizeHref(href: string, lang: Lang): string {
   return `${prefix}${href}`;
 }
 
+/**
+ * The address-bar form of a pathname. Default-language pages are served from an
+ * internal /sv/... route (the middleware rewrites to it); usePathname() reports
+ * that internal path while rendering on the server but the public one in the
+ * browser. Dropping it makes both agree, so the server HTML matches hydration.
+ */
+export function publicPath(pathname: string): string {
+  const internal = `/${DEFAULT_LANG}`;
+  if (pathname === internal) return "/";
+  if (pathname.startsWith(`${internal}/`)) return pathname.slice(internal.length);
+  return pathname;
+}
+
 /** The language of a browser path and the path without its language prefix. */
 export function splitPath(pathname: string): { lang: Lang; path: string } {
   for (const lang of LANGS) {

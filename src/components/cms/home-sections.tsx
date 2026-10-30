@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
 import { preload } from "react-dom";
 
 import { AccommodationGrid, type Accommodation } from "@/components/accommodation-listing";
@@ -83,7 +83,7 @@ export function HomeHero({
                   : "inline-flex items-center justify-center px-8 h-12 text-[11px] uppercase tracking-[0.28em] font-medium text-taupe bg-linen/95 hover:bg-sand hover:text-umber shadow-none transition-colors duration-200 rounded-cta"
               }
             >
-              <Link to={cta.to}>{cta.label}</Link>
+              <Link href={cta.to}>{cta.label}</Link>
             </Button>
           ))}
         </div>
@@ -154,7 +154,7 @@ export function HomeGallery({
           {heading}
         </h2>
         {linkLabel && linkTo && (
-          <Link to={linkTo} className="mt-[26px] inline-flex items-center gap-3.5 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] border-b border-clay/55 hover:text-umber hover:border-umber/60 focus-visible:outline focus-visible:outline-clay focus-visible:outline-offset-4 transition-colors">
+          <Link href={linkTo} className="mt-[26px] inline-flex items-center gap-3.5 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] border-b border-clay/55 hover:text-umber hover:border-umber/60 focus-visible:outline focus-visible:outline-clay focus-visible:outline-offset-4 transition-colors">
             {linkLabel}
             <svg viewBox="0 0 16 12" width="16" height="12" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true"><path d="M1 6h13m-4-4 4 4-4 4" /></svg>
           </Link>

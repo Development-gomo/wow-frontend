@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { Calendar, ChevronDown } from "lucide-react";
 
 import { useLang, useSite } from "@/components/cms/site-context";
-import { text } from "@/lib/cms/globals";
+import { text } from "@/lib/cms/globals-text";
 import { firstInvalid, submitLead } from "@/lib/leads";
 import { cn } from "@/lib/utils";
 
@@ -34,9 +34,9 @@ export type EnquiryFormProps = {
     /** When provided, renders a dropdown with these options (plus the default value) instead of the locked field. */
     options?: string[];
   };
-  /** Caption under the locked field; falls back to Site settings › Enquiry form. */
+  /** Sent by the CMS; no longer shown since the field moved into the form grid. */
   lockedCaption?: string;
-  /** Optional add-on checkboxes in the left column. */
+  /** Optional add-on checkboxes, shown in a row above the message box. */
   services: string[];
   submitLabel?: string;
   /** Minimum nights between check-in and check-out (earlier check-out dates are disabled). */
@@ -129,7 +129,6 @@ export function EnquiryForm({
   heading,
   description,
   locked,
-  lockedCaption,
   services,
   submitLabel,
   minStayNights = 7,
@@ -153,15 +152,6 @@ export function EnquiryForm({
   const lang = useLang();
   const sizes = APARTMENT_SIZES.filter((guests) => guests <= maxGuests);
 
-  // Typing the party size preselects the smallest apartment that fits, unless the
-  // guest already picked a size that is big enough.
-  const handlePeopleChange = (value: string) => {
-    const people = Number(value);
-    if (!people) return;
-    const fit = sizes.find((guests) => guests >= people);
-    if (fit && (!size || Number(size) < people)) setSize(String(fit));
-  };
-
   // Sends the enquiry to Contact Form 7 (gift card or apartment enquiry, by page);
   // the labels shown come from Site settings.
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -179,7 +169,7 @@ export function EnquiryForm({
       lead.set("giftFor", String(data.get(locked.hiddenName) ?? ""));
       lead.set("extras", chosen);
     } else {
-      for (const name of ["people", "apartmentSize", "checkin", "checkout"]) lead.set(name, String(data.get(name) ?? ""));
+      for (const name of ["apartmentSize", "checkin", "checkout"]) lead.set(name, String(data.get(name) ?? ""));
       // The name the visitor saw: the chosen option, else the page's apartment.
       lead.set("apartment", (locked.options && String(data.get(locked.hiddenName) ?? "")) || locked.value);
       lead.set("services", chosen);
@@ -204,6 +194,62 @@ export function EnquiryForm({
     setStatus("error");
   }
 
+  // The page's apartment (or gift card) field: beside the apartment size on stay
+  // enquiries, under the phone field on the gift card form.
+  const lockedField = (
+    <>
+      <span className={LABEL_CLASS}>{locked.label}</span>
+      {locked.options ? (
+        <div className="relative">
+          <select
+            name={locked.hiddenName}
+            form="wow-enquire-form"
+            defaultValue=""
+            className={`${FIELD_CLASS} cursor-pointer appearance-none pr-11`}
+          >
+            <option value="">{locked.value}</option>
+            {locked.options.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <ChevronDown aria-hidden="true" size={16} strokeWidth={1.2} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-clay" />
+        </div>
+      ) : (
+        <div
+          role="textbox"
+          aria-readonly="true"
+          tabIndex={0}
+          className="flex h-11 w-full items-center justify-between gap-3 rounded-[4px] border border-clay/30 bg-pearl px-3.5 text-[15px] text-taupe"
+        >
+          <span>{locked.value}</span>
+        </div>
+      )}
+      {!locked.options && <input type="hidden" name={locked.hiddenName} value={locked.hiddenValue} form="wow-enquire-form" />}
+    </>
+  );
+
+  const servicesBlock = (
+    <div>
+      <p className="m-0 pl-[0.32em] text-[10px] font-normal uppercase tracking-[0.32em] text-clay">{servicesTitle || t("servicesHeading")}</p>
+      {(servicesNote || t("servicesNote")) && <p className="mt-2 pl-[0.32em] text-[12px] font-light text-clay">{servicesNote || t("servicesNote")}</p>}
+      <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
+        {services.map((service) => (
+          <label key={service} className="inline-flex cursor-pointer select-none items-center gap-3 text-[15px] text-taupe">
+            <input
+              type="checkbox"
+              name={service.toLowerCase().replace(/\s+/g, "-")}
+              form="wow-enquire-form"
+              className={CHECKBOX_CLASS}
+            />
+            <span>{service}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <section id="enquire" aria-labelledby="enquire-heading" className={cn("bg-sand px-5 py-16 text-taupe md:px-10 lg:px-20 lg:py-20", className)}>
       <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-start gap-12 lg:grid-cols-[340px_1fr] lg:gap-20">
@@ -215,56 +261,6 @@ export function EnquiryForm({
             <p className="mt-5 text-[15px] font-light leading-[1.75] text-taupe/85">{description}</p>
           </div>
 
-          <div>
-            <span className={LABEL_CLASS}>{locked.label}</span>
-            {locked.options ? (
-              <div className="relative">
-                <select
-                  name={locked.hiddenName}
-                  form="wow-enquire-form"
-                  defaultValue=""
-                  className={`${FIELD_CLASS} h-11 cursor-pointer appearance-none pr-11`}
-                >
-                  <option value="">{locked.value}</option>
-                  {locked.options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown aria-hidden="true" size={16} strokeWidth={1.2} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-clay" />
-              </div>
-            ) : (
-              <div
-                role="textbox"
-                aria-readonly="true"
-                tabIndex={0}
-                className="flex h-11 w-full items-center justify-between gap-3 rounded-[4px] border border-clay/30 bg-pearl px-3.5 text-[15px] text-taupe"
-              >
-                <span>{locked.value}</span>
-              </div>
-            )}
-            {!locked.options && <input type="hidden" name={locked.hiddenName} value={locked.hiddenValue} form="wow-enquire-form" />}
-            <p className="mt-1.5 text-[11px] text-clay/85">{lockedCaption || t("lockedCaption")}</p>
-          </div>
-
-          <div>
-            <p className="m-0 pl-[0.32em] text-[10px] font-normal uppercase tracking-[0.32em] text-clay">{servicesTitle || t("servicesHeading")}</p>
-            {(servicesNote || t("servicesNote")) && <p className="mt-2 pl-[0.32em] text-[12px] font-light text-clay">{servicesNote || t("servicesNote")}</p>}
-            <div className="mt-4 flex flex-col gap-3">
-              {services.map((service) => (
-                <label key={service} className="inline-flex cursor-pointer select-none items-center gap-3 text-[15px] text-taupe">
-                  <input
-                    type="checkbox"
-                    name={service.toLowerCase().replace(/\s+/g, "-")}
-                    form="wow-enquire-form"
-                    className={CHECKBOX_CLASS}
-                  />
-                  <span>{service}</span>
-                </label>
-              ))}
-            </div>
-          </div>
         </aside>
 
         {/* Right: form */}
@@ -293,12 +289,11 @@ export function EnquiryForm({
               <input id="wow-email" name="email" type="email" required placeholder={t("emailPlaceholder")} autoComplete="email" className={FIELD_CLASS} />
             </div>
 
+            {/* Gift card form: what the gift is for, under the phone field. */}
+            {!stayFields && <div>{lockedField}</div>}
+
             {stayFields && (
               <>
-            <div>
-              <FieldLabel htmlFor="wow-people">{t("people")}</FieldLabel>
-              <input id="wow-people" name="people" type="number" min={1} max={maxGuests} required placeholder={t("peoplePlaceholder")} onChange={(event) => handlePeopleChange(event.target.value)} className={FIELD_CLASS} />
-            </div>
             <div>
               <FieldLabel htmlFor="wow-size">{t("size")}</FieldLabel>
               <div className="relative">
@@ -322,12 +317,15 @@ export function EnquiryForm({
                 <ChevronDown aria-hidden="true" size={16} strokeWidth={1.2} className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-clay" />
               </div>
             </div>
+            <div>{lockedField}</div>
 
             <DateField id="wow-checkin" name="checkin" label={t("checkIn")} onChange={setCheckin} />
             <DateField id="wow-checkout" name="checkout" label={t("checkOut")} min={addDays(checkin, minStayNights)} />
               </>
             )}
           </div>
+
+          {services.length > 0 && <div className="mt-[22px]">{servicesBlock}</div>}
 
           <div className="mt-[22px]">
             <label htmlFor="wow-notes" className={LABEL_CLASS}>

@@ -1,11 +1,14 @@
 "use client";
 
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useSite, useLocalizeHref, useA11y } from "@/components/cms/site-context";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import type { MenuItem } from "@/lib/cms/globals";
+import { publicPath } from "@/lib/i18n";
+import { isActivePath } from "@/lib/links";
 
 /*
  * Header and slide-out menu.
@@ -21,12 +24,16 @@ function MenuLink({ item, onNavigate }: { item: MenuItem; onNavigate: () => void
   return item.href.includes("#") ? (
     <a href={localize(item.href)} onClick={onNavigate} className={className}>{item.label}</a>
   ) : (
-    <Link to={item.href} onClick={onNavigate} className={className}>{item.label}</Link>
+    <Link href={item.href} onClick={onNavigate} className={className}>{item.label}</Link>
   );
 }
 
 export function SiteNavbar() {
   const a11y = useA11y();
+  // Public path on both server and client, so the active link is in the server HTML (no hydration mismatch).
+  const rawPathname = usePathname();
+  const pathname = rawPathname && publicPath(rawPathname);
+  const localize = useLocalizeHref();
   const { brand, booking, menus } = useSite();
   const desktopLinks = menus.header;
   const menuGroups = menus.menu;
@@ -66,7 +73,7 @@ export function SiteNavbar() {
     <header className="fixed inset-x-0 top-0 z-40 border-b border-pearl/40 bg-sand/45 text-taupe shadow-[0_1px_24px_rgba(0,0,0,0.04)] backdrop-blur-sm backdrop-saturate-150">
       <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-5 md:gap-8 px-3 sm:h-20 sm:px-4 md:gap-3 md:px-6 xl:px-10">
         <div className="flex shrink-0 items-center gap-5 md:gap-8">
-          <Link to="/" aria-label={homeLabel} className="flex shrink-0 flex-col items-start leading-none text-taupe">
+          <Link href="/" aria-label={homeLabel} className="flex shrink-0 flex-col items-start leading-none text-taupe">
             <span className="pl-[0.18em] font-serif tracking-[0.18em]" style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: 28, lineHeight: "28px", fontWeight: 500, fontStyle: "normal", color: "lab(28.0658 2.08874 4.94074)" }}>{brand.name}</span>
             <span className="mt-[6px] pl-[0.32em] uppercase tracking-[0.32em]" style={{ fontFamily: '"Barlow Condensed", Inter, sans-serif', fontSize: 8, lineHeight: "8px", fontWeight: 300, fontStyle: "normal", color: "oklab(0.38 0.00591253 0.0126966 / 0.75)" }}>{brand.tagline}</span>
           </Link>
@@ -79,9 +86,8 @@ export function SiteNavbar() {
           {desktopLinks.map((item) => (
             <Link
               key={item.id ?? item.label}
-              to={item.href}
-              className="whitespace-nowrap text-[10px] font-normal uppercase tracking-[0.14em] text-taupe transition-colors duration-200 hover:text-umber xl:text-[11px] xl:tracking-[0.18em]"
-              activeProps={{ className: "text-umber" }}
+              href={item.href}
+              className={`whitespace-nowrap text-[10px] font-normal uppercase tracking-[0.14em] text-taupe transition-colors duration-200 hover:text-umber xl:text-[11px] xl:tracking-[0.18em]${isActivePath(pathname, localize(item.href)) ? " text-umber" : ""}`}
             >
               {item.label}
             </Link>
@@ -91,10 +97,10 @@ export function SiteNavbar() {
         <div className="ml-auto flex shrink-0 items-center gap-cta">
           <LanguageSwitcher className="mr-2 hidden sm:flex" />
           <Button asChild className="h-9 rounded-cta bg-taupe px-2 text-[9px] font-medium uppercase tracking-[0.04em] text-ivory shadow-none transition-colors duration-200 hover:bg-umber sm:h-11 sm:px-5 sm:text-[11px] sm:tracking-[0.24em] xl:px-7">
-            <Link to={booking.roomTo}>{booking.roomLabel}</Link>
+            <Link href={booking.roomTo}>{booking.roomLabel}</Link>
           </Button>
           <Button asChild className="h-9 rounded-cta bg-taupe/65 px-2 text-[9px] font-medium uppercase tracking-[0.04em] text-ivory shadow-none transition-colors duration-200 hover:bg-taupe/85 sm:h-11 sm:px-5 sm:text-[11px] sm:tracking-[0.24em] xl:px-7">
-            <Link to={booking.apartmentTo}>{booking.apartmentLabel}</Link>
+            <Link href={booking.apartmentTo}>{booking.apartmentLabel}</Link>
           </Button>
         </div>
       </div>
@@ -105,7 +111,7 @@ export function SiteNavbar() {
         <div className={`absolute inset-0 bg-umber/55 backdrop-blur-sm transition-opacity duration-300 ease-out ${menuVisible ? "opacity-100" : "opacity-0"}`} onClick={closeMenu} aria-hidden="true" />
         <div className={`absolute inset-y-0 left-0 flex w-[min(85vw,340px)] flex-col overflow-y-auto bg-taupe px-7 pb-5 pt-5 text-linen shadow-2xl transition-transform duration-300 ease-out sm:px-9 [@media(max-height:604px)]:pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${menuVisible ? "translate-x-0" : "-translate-x-full"}`}>
           <div className="flex items-start justify-between gap-5">
-            <Link to="/" onClick={closeMenu} aria-label={homeLabel} className="flex flex-col leading-none text-linen">
+            <Link href="/" onClick={closeMenu} aria-label={homeLabel} className="flex flex-col leading-none text-linen">
               <span className="font-serif text-[28px]">{brand.name}</span>
               <span className="mt-1 text-[8px] uppercase tracking-[0.25em]">{brand.tagline}</span>
             </Link>
@@ -151,10 +157,10 @@ export function SiteNavbar() {
             <div className="mt-auto pt-4 [@media(max-height:604px)]:pt-3 [@media(min-height:800px)]:pt-5">
               <div className="flex flex-col gap-1.5">
                 <Button asChild className="h-12 border border-linen/25 rounded-cta bg-umber/25 px-2 text-[9px] font-medium uppercase tracking-[0.04em] text-ivory shadow-none transition-colors duration-200 hover:bg-taupe sm:h-12 sm:px-5 sm:text-[11px] sm:tracking-[0.24em] xl:px-7">
-                  <Link to={booking.roomTo} onClick={closeMenu}>{booking.roomLabel}</Link>
+                  <Link href={booking.roomTo} onClick={closeMenu}>{booking.roomLabel}</Link>
                 </Button>
                 <Button asChild className="h-12 w-full rounded-cta border border-linen/25 bg-taupe/65 px-5 text-[10px] font-medium uppercase tracking-[0.24em] text-ivory shadow-none transition-colors duration-200 hover:bg-umber/25">
-                  <Link to={booking.apartmentTo} onClick={closeMenu}>{booking.apartmentLabel}</Link>
+                  <Link href={booking.apartmentTo} onClick={closeMenu}>{booking.apartmentLabel}</Link>
                 </Button>
               </div>
             </div>

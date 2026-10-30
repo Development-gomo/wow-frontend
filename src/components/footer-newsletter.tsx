@@ -3,7 +3,8 @@
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { text, type Globals } from "@/lib/cms/globals";
+import type { Globals } from "@/lib/cms/globals";
+import { text } from "@/lib/cms/globals-text";
 import { subscribeNewsletter, type NewsletterStatus } from "@/lib/newsletter.functions";
 
 const STATUS_FIELD: Record<NewsletterStatus, string> = {

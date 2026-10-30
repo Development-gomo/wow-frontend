@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useLang, useSite } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
-import { list, text } from "@/lib/cms/globals";
+import { list, text } from "@/lib/cms/globals-text";
 import { firstInvalid, submitLead } from "@/lib/leads";
 
 /** Form field → its label key in Site settings › Contact form (for error messages). */

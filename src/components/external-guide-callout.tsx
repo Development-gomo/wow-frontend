@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 import { CmsImage } from "@/components/cms-image";
 import { SectionLink } from "@/components/section-link";
@@ -25,12 +26,14 @@ type Props = {
   /** Inline styles for the paragraph text, for sizes the global type roles would otherwise override. */
   descriptionStyle?: CSSProperties;
   ctaClassName?: string;
+  /** "button": the header's filled Book room button style instead of the arrow link. */
+  ctaVariant?: "link" | "button";
   /** Optional override for the content/photo row, e.g. "lg:items-start". */
   contentClassName?: string;
   className?: string;
 };
 
-export function ExternalGuideCallout({ eyebrow, title, description, ctaLabel, ctaHref, image, imageAlt, imageClassName, titleClassName, titleStyle, descriptionClassName, descriptionStyle, ctaClassName, contentClassName, className }: Props) {
+export function ExternalGuideCallout({ eyebrow, title, description, ctaLabel, ctaHref, image, imageAlt, imageClassName, titleClassName, titleStyle, descriptionClassName, descriptionStyle, ctaClassName, ctaVariant, contentClassName, className }: Props) {
   const paragraphs = Array.isArray(description) ? description : [description];
   const isExternal = ctaHref ? /^https?:/.test(ctaHref) : false;
 
@@ -53,12 +56,14 @@ export function ExternalGuideCallout({ eyebrow, title, description, ctaLabel, ct
             href={ctaHref}
             localize
             {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-            className={cn("group/link mt-12 inline-flex items-center gap-3.5 self-start border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors duration-[180ms] hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay", ctaClassName)}
+            className={ctaVariant === "button"
+              ? cn(buttonVariants(), "mt-12 h-11 self-start rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.24em] text-ivory shadow-none transition-colors duration-200 hover:bg-umber xl:px-7", ctaClassName)
+              : cn("group/link mt-12 inline-flex items-center gap-3.5 self-start border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors duration-[180ms] hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay", ctaClassName)}
           >
             <span>{ctaLabel}</span>
-            <svg viewBox="0 0 16 12" width="14" height="10" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true" className="transition-transform duration-[220ms] group-hover/link:translate-x-[3px]">
+            {ctaVariant === "button" ? null : <svg viewBox="0 0 16 12" width="14" height="10" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true" className="transition-transform duration-[220ms] group-hover/link:translate-x-[3px]">
               <path d="M1 6 H14 M10 2 L14 6 L10 10" />
-            </svg>
+            </svg>}
           </SectionLink> : null}
         </div>
         <CmsImage sizes="(min-width: 1024px) 45vw, 100vw"

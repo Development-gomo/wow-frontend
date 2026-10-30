@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import { useLocalizeHref, useSite } from "@/components/cms/site-context";
-import { text } from "@/lib/cms/globals";
+import { text } from "@/lib/cms/globals-text";
 
 /** Markup from the original NotFoundComponent; copy from Site settings › Page not found. */
 export default function NotFound() {

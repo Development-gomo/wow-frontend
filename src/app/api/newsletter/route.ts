@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { newsletterInput, type NewsletterStatus } from "@/lib/newsletter.functions";
+import { newsletterInput } from "@/lib/newsletter-input";
+import type { NewsletterStatus } from "@/lib/newsletter.functions";
 
 /**
  * Newsletter sign-up. Returns a status code; the visible wording lives in

@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
 import { cn } from "@/lib/utils";
 import { CmsImage } from "@/components/cms-image";
 
@@ -23,7 +23,7 @@ export function ResponsibleHosting({ eyebrow, lead, description, ctaLabel, ctaTo
           <p className="mt-6 max-w-[520px] font-serif text-[28px] font-normal leading-[1.3] text-taupe sm:text-[32px]">{lead}</p>
           <p className="mt-4 max-w-[460px] font-light leading-[1.75] text-taupe/80" style={{ fontSize: 18 }}>{description}</p>
           {ctaLabel && ctaTo ? <Link
-            to={ctaTo}
+            href={ctaTo}
             className="mt-12 inline-flex items-center gap-[14px] self-start border-b border-clay/55 pb-[6px] pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] text-taupe transition-colors duration-200 hover:border-clay hover:text-taupe/70"
           >
             <span>{ctaLabel}</span>

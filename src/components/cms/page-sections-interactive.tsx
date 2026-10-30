@@ -7,7 +7,7 @@ import { useA11y } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-import { SmartLink } from "./smart-link";
+import { Link } from "@/components/localized-link";
 
 /*
  * The interactive sections of the one-off pages: the Gallery lightbox and the
@@ -240,12 +240,12 @@ export function LocationsMap({ eyebrow, heading, mapLabel, itemLabel, locations,
             })}
           </ul>
           {ctaLabel && ctaTo && (
-            <SmartLink
-              to={ctaTo}
+            <Link
+              href={ctaTo}
               className="wow-cta-primary ml-0 mt-7 inline-flex h-12 items-center gap-3.5 self-start rounded-cta bg-taupe px-[30px] text-[11px] font-medium uppercase tracking-[0.28em] text-pearl transition-colors hover:bg-umber md:ml-6"
             >
               <span>{ctaLabel}</span>
-            </SmartLink>
+            </Link>
           )}
         </div>
       </div>

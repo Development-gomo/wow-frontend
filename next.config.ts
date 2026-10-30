@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import path from "node:path";
 
 import { DEVICE_SIZES, IMAGE_CACHE_SECONDS, IMAGE_QUALITY, IMAGE_SIZES, UPLOADS_PATH } from "./src/lib/image-config";
 
@@ -10,15 +9,6 @@ const CMS_UPLOADS = {
   hostname: cms.hostname,
   port: cms.port,
   pathname: `${cms.pathname.replace(/\/$/, "")}${UPLOADS_PATH}**`,
-};
-
-const ASSET_ALIASES = {
-  // Routing adapter: the copied components import `Link` from TanStack Router.
-  // Resolving that specifier to a local shim keeps every component file unchanged.
-  "@tanstack/react-router": path.resolve(
-    process.cwd(),
-    "src/compat/tanstack-react-router.tsx",
-  ),
 };
 
 const nextConfig: NextConfig = {
@@ -38,8 +28,6 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: IMAGE_CACHE_SECONDS,
   },
   webpack: (config) => {
-    config.resolve.alias = { ...config.resolve.alias, ...ASSET_ALIASES };
-
     config.module.rules.push({
       test: /\.(png|jpe?g|gif|webp|avif|svg)$/i,
       type: "asset/resource",
