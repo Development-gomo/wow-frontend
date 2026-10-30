@@ -3,7 +3,8 @@
 import { usePathname } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 
-import { EMPTY_GLOBALS, type Globals } from "@/lib/cms/globals";
+import type { Globals } from "@/lib/cms/globals";
+import { EMPTY_GLOBALS } from "@/lib/cms/globals-text";
 import { a11yLabels, DEFAULT_LANG, localizeHref, switchPath, type A11yLabels, type Lang } from "@/lib/i18n";
 
 /**

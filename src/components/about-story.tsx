@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
 import { cn } from "@/lib/utils";
 import { CmsImage } from "@/components/cms-image";
 
@@ -45,7 +45,7 @@ export function AboutStory({ image, imageAlt, eyebrow, lead, paragraphs, caption
             ))}
           </div>
           {ctaLabel && ctaTo ? <Link
-            to={ctaTo}
+            href={ctaTo}
             className="mt-12 inline-flex items-center gap-[14px] self-start border-b border-clay/55 pb-[6px] pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] text-taupe transition-colors duration-200 hover:border-clay hover:text-taupe/70"
           >
             <span>{ctaLabel}</span>

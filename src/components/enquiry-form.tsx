@@ -1,8 +1,10 @@
+"use client";
+
 import { useState, type FormEvent } from "react";
 import { Calendar, ChevronDown } from "lucide-react";
 
 import { useLang, useSite } from "@/components/cms/site-context";
-import { text } from "@/lib/cms/globals";
+import { text } from "@/lib/cms/globals-text";
 import { firstInvalid, submitLead } from "@/lib/leads";
 import { cn } from "@/lib/utils";
 

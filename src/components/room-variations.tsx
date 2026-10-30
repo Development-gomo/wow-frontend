@@ -1,5 +1,5 @@
 import { BedSingle, Expand, UserRound } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
 import { Button } from "@/components/ui/button";
 import { PhotoCarousel } from "@/components/photo-carousel";
 import { CmsImage } from "@/components/cms-image";
@@ -73,7 +73,7 @@ export function RoomVariations({ title, options, label, heading, pricePrefix, pr
                     </p>
                     {ctaHref ? (
                       <Button asChild className="h-11 w-full cursor-pointer rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl shadow-none transition-colors duration-200 hover:bg-umber">
-                        <Link to={ctaHref} aria-label={`${ctaLabel ?? ""} ${option.title}`.trim()}>{ctaLabel}</Link>
+                        <Link href={ctaHref} aria-label={`${ctaLabel ?? ""} ${option.title}`.trim()}>{ctaLabel}</Link>
                       </Button>
                     ) : (
                       <Button type="button" aria-label={`${ctaLabel ?? ""} ${option.title}`.trim()} className="h-11 w-full cursor-pointer rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.28em] text-pearl shadow-none transition-colors duration-200 hover:bg-umber">{ctaLabel}</Button>

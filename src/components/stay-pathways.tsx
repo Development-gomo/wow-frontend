@@ -1,4 +1,4 @@
-import type { MouseEvent } from "react";
+import { SectionLink } from "@/components/section-link";
 import { cn } from "@/lib/utils";
 
 export type StayPathway = {
@@ -17,14 +17,6 @@ type Props = {
   description: string;
   items: StayPathway[];
   className?: string;
-};
-
-const scrollTo = (e: MouseEvent<HTMLAnchorElement>, id: string) => {
-  const el = document.getElementById(id);
-  if (!el) return;
-  e.preventDefault();
-  el.scrollIntoView({ behavior: "smooth", block: "start" });
-  history.replaceState(null, "", `#${id}`);
 };
 
 /** Two-column intro: section heading left, numbered stay options right, each linking to a section further down the page. */
@@ -48,16 +40,15 @@ export function StayPathways({ eyebrow, title, description, items, className }: 
                 </div>
                 <h3 className="mt-[18px] font-serif leading-[1.2]" style={{ fontSize: 32, fontWeight: 400 }}>{item.title}</h3>
                 <p className="mt-2 max-w-[560px] font-light leading-[1.8] opacity-[0.88]" style={{ fontSize: 16 }}>{item.description}</p>
-                <a
+                <SectionLink
                   href={`#${item.targetId}`}
-                  onClick={(e) => scrollTo(e, item.targetId)}
                   className="group/link mt-[22px] inline-flex items-center gap-2.5 self-start border-b border-clay/55 pb-[5px] pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] text-taupe transition-colors duration-[180ms] hover:border-umber/90 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay"
                 >
                   <span>{item.linkLabel}</span>
                   <svg viewBox="0 0 16 10" width="16" height="10" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform duration-[220ms] group-hover/link:translate-x-[3px]">
                     <path d="M1 5 H14 M10 1 L14 5 L10 9" />
                   </svg>
-                </a>
+                </SectionLink>
               </article>
             </div>
           ))}

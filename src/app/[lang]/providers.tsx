@@ -1,32 +1,22 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { SiteProvider } from "@/components/cms/site-context";
 import { SiteNavbar } from "@/components/site-navbar";
 import type { Globals } from "@/lib/cms/globals";
 import type { Lang } from "@/lib/i18n";
-import { SiteFooter } from "@/components/site-footer";
 
 /**
- * Mirrors the RootComponent of the original `src/routes/__root.tsx`:
- * a QueryClientProvider wrapping SiteNavbar -> page -> SiteFooter.
- *
- * It is a client component so the copied navbar/footer (and the whole page tree
- * beneath them) keep their original hooks and event handlers without needing a
- * "use client" directive added to any migrated component file.
+ * Site settings and language for the interactive (client) components, and the
+ * navbar. Page content and the footer are server-rendered and pass through as
+ * children; they do not become client code by sitting inside this provider.
  */
 export function Providers({ children, globals, lang }: { children: ReactNode; globals: Globals; lang: Lang }) {
-  const [queryClient] = useState(() => new QueryClient());
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <SiteProvider value={globals} lang={lang}>
-        <SiteNavbar />
-        {children}
-        <SiteFooter />
-      </SiteProvider>
-    </QueryClientProvider>
+    <SiteProvider value={globals} lang={lang}>
+      <SiteNavbar />
+      {children}
+    </SiteProvider>
   );
 }

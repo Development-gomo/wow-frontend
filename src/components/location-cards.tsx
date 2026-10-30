@@ -1,4 +1,4 @@
-import type { MouseEvent } from "react";
+import { SectionLink } from "@/components/section-link";
 import { cn } from "@/lib/utils";
 
 export type LocationCard = {
@@ -23,14 +23,6 @@ type Props = {
   className?: string;
 };
 
-const openSection = (e: MouseEvent<HTMLAnchorElement>, id: string) => {
-  const el = document.getElementById(id);
-  if (!el) return;
-  e.preventDefault();
-  el.scrollIntoView({ behavior: "smooth", block: "start" });
-  history.replaceState(null, "", `#${id}`);
-};
-
 /** Centred intro with one pearl card per address: number, area, note, label/value rows and a directions link. */
 export function LocationCards({ id, eyebrow, title, description, cards, listLabel = "Locations", className }: Props) {
   return (
@@ -44,7 +36,6 @@ export function LocationCards({ id, eyebrow, title, description, cards, listLabe
       <ul aria-label={listLabel} className="mx-auto mt-16 grid w-full max-w-[1200px] list-none grid-cols-1 gap-7 p-0 md:grid-cols-3">
         {cards.map((card) => {
           const isExternal = /^https?:/.test(card.cta.href);
-          const sectionId = card.cta.href.startsWith("#") ? card.cta.href.slice(1) : null;
           return (
             <li key={card.name} className="flex min-w-0">
               <article className="flex h-full w-full flex-col rounded-[4px] bg-pearl px-9 pb-9 pt-10 shadow-accommodation">
@@ -62,17 +53,16 @@ export function LocationCards({ id, eyebrow, title, description, cards, listLabe
                     </li>
                   ))}
                 </ul>
-                {card.cta.label && card.cta.href ? <a
+                {card.cta.label && card.cta.href ? <SectionLink
                   href={card.cta.href}
                   {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  onClick={sectionId ? (e) => openSection(e, sectionId) : undefined}
                   className="group/link mt-auto inline-flex items-center gap-2.5 self-start border-b border-clay/55 pb-[5px] pl-[0.32em] pr-[0.32em] pt-[28px] text-[11px] font-medium uppercase tracking-[0.32em] text-taupe transition-colors duration-[180ms] hover:border-umber/90 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay"
                 >
                   <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="transition-transform duration-[220ms] group-hover/link:translate-x-[3px]">
                     <path d="M7 1 C9.76 1 12 3.24 12 6 C12 10 7 13 7 13 C7 13 2 10 2 6 C2 3.24 4.24 1 7 1 Z M7 7.5 A1.5 1.5 0 1 1 7 4.5 A1.5 1.5 0 1 1 7 7.5 Z" />
                   </svg>
                   <span>{card.cta.label}</span>
-                </a> : null}
+                </SectionLink> : null}
               </article>
             </li>
           );

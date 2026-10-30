@@ -1,9 +1,9 @@
-import type { CSSProperties, MouseEvent } from "react";
+import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-import { useLocalizeHref } from "@/components/cms/site-context";
 import { CmsImage } from "@/components/cms-image";
+import { SectionLink } from "@/components/section-link";
 type Props = {
   eyebrow: string;
   /** Section heading; "\n" starts a new line. */
@@ -33,19 +33,9 @@ type Props = {
   className?: string;
 };
 
-const openSection = (e: MouseEvent<HTMLAnchorElement>, id: string) => {
-  const el = document.getElementById(id);
-  if (!el) return;
-  e.preventDefault();
-  el.scrollIntoView({ behavior: "smooth", block: "start" });
-  history.replaceState(null, "", `#${id}`);
-};
-
 export function ExternalGuideCallout({ eyebrow, title, description, ctaLabel, ctaHref, image, imageAlt, imageClassName, titleClassName, titleStyle, descriptionClassName, descriptionStyle, ctaClassName, ctaVariant, contentClassName, className }: Props) {
-  const localize = useLocalizeHref();
   const paragraphs = Array.isArray(description) ? description : [description];
   const isExternal = ctaHref ? /^https?:/.test(ctaHref) : false;
-  const sectionId = ctaHref?.startsWith("#") ? ctaHref.slice(1) : null;
 
   return (
     <section className={cn("mx-auto max-w-[1280px] px-6 pb-24 pt-16 text-umber sm:px-10 sm:pb-32 lg:px-20", className)}>
@@ -62,10 +52,10 @@ export function ExternalGuideCallout({ eyebrow, title, description, ctaLabel, ct
               <p key={paragraph} style={descriptionStyle}>{paragraph}</p>
             ))}
           </div>
-          {ctaLabel && ctaHref ? <a
-            href={localize(ctaHref)}
+          {ctaLabel && ctaHref ? <SectionLink
+            href={ctaHref}
+            localize
             {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-            onClick={sectionId ? (e) => openSection(e, sectionId) : undefined}
             className={ctaVariant === "button"
               ? cn(buttonVariants(), "mt-12 h-11 self-start rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.24em] text-ivory shadow-none transition-colors duration-200 hover:bg-umber xl:px-7", ctaClassName)
               : cn("group/link mt-12 inline-flex items-center gap-3.5 self-start border-b border-clay/55 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] transition-colors duration-[180ms] hover:border-umber/60 hover:text-umber focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-4 focus-visible:outline-clay", ctaClassName)}
@@ -74,7 +64,7 @@ export function ExternalGuideCallout({ eyebrow, title, description, ctaLabel, ct
             {ctaVariant === "button" ? null : <svg viewBox="0 0 16 12" width="14" height="10" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true" className="transition-transform duration-[220ms] group-hover/link:translate-x-[3px]">
               <path d="M1 6 H14 M10 2 L14 6 L10 10" />
             </svg>}
-          </a> : null}
+          </SectionLink> : null}
         </div>
         <CmsImage sizes="(min-width: 1024px) 45vw, 100vw"
           src={image}

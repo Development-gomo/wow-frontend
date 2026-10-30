@@ -18,8 +18,7 @@
     "noFallthroughCasesInSwitch": true,
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./src/*"],
-      "@tanstack/react-router": ["./src/compat/tanstack-react-router.tsx"]
+      "@/*": ["./src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

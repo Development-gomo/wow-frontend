@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useId, useRef, useState } from "react";
 
 import { useA11y, useLang, useLanguageHref, useSite } from "@/components/cms/site-context";

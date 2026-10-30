@@ -115,7 +115,7 @@ export default async function CmsPage({ params }: { params: Promise<Params> }) {
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-clay/30">
       <PageAlternates value={alternates(page)} />
-      <SectionRenderer sections={page.sections} />
+      <SectionRenderer sections={page.sections} lang={lang} />
     </div>
   );
 }

@@ -1,5 +1,7 @@
+"use client";
+
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
 import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { useUi, useA11y } from "@/components/cms/site-context";
 import { Button } from "@/components/ui/button";
@@ -74,7 +76,7 @@ export function PriceTag({ price, className, compact = false }: { price: Price; 
 export function CardActionButton({ label, to, className }: { label: string; to?: string; className?: string }) {
   return (
     <Button asChild className={cn("h-9 rounded-cta bg-taupe px-5 text-[11px] font-medium uppercase tracking-[0.24em] text-pearl hover:bg-umber", className)}>
-      {to ? <Link to={to}>{label}</Link> : <a href="#">{label}</a>}
+      {to ? <Link href={to}>{label}</Link> : <a href="#">{label}</a>}
     </Button>
   );
 }
@@ -150,7 +152,7 @@ export function AccommodationCard({ accommodation, actionLabel, actionTo, hideDi
         <div className={`mt-auto flex items-center justify-between gap-3 ${hideDivider ? "pt-12" : "pt-6"}`}>
           {accommodation.detailPath ? (
             <Link
-              to={accommodation.detailPath}
+              href={accommodation.detailPath}
               aria-label={`${ui.readMore ?? ""}: ${accommodation.title}`}
               className={readMoreCls}
             >
@@ -181,7 +183,7 @@ export function AccommodationListing({ eyebrow, heading, description, accommodat
       {viewAllTo && viewAllLabel ? (
         <div className="mt-16 flex justify-center">
           <Button asChild className="h-12 rounded-cta bg-taupe px-8 text-[11px] uppercase tracking-[0.28em] text-pearl hover:bg-umber">
-            <Link to={viewAllTo}>{viewAllLabel}</Link>
+            <Link href={viewAllTo}>{viewAllLabel}</Link>
           </Button>
         </div>
       ) : null}
@@ -266,9 +268,14 @@ export function CardCarousel({ cards, keys, className }: { cards: ReactNode[]; k
         className="-my-16 flex snap-x snap-mandatory gap-8 overflow-x-auto py-16 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {[...cards, ...cards].map((card, index) => {
+          // The copy is often on screen (after a couple of arrow clicks, or
+          // going back from the start), so it must stay interactive: no
+          // `inert`, which would switch off its hover effects, photo arrows
+          // and links. aria-hidden only keeps screen readers from reading
+          // every card twice.
           const isCopy = index >= count;
           return (
-            <div key={`${keys[index % count]}-${index}`} aria-hidden={isCopy || undefined} inert={isCopy} className="flex w-full flex-none snap-start md:w-[calc((100%-32px)/2)] lg:w-[calc((100%-64px)/3)]">
+            <div key={`${keys[index % count]}-${index}`} aria-hidden={isCopy || undefined} className="flex w-full flex-none snap-start md:w-[calc((100%-32px)/2)] lg:w-[calc((100%-64px)/3)]">
               {card}
             </div>
           );

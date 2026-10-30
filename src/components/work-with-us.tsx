@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
 import { cn } from "@/lib/utils";
 import { CmsImage } from "@/components/cms-image";
 
@@ -67,7 +67,7 @@ export function WorkWithUs({ image, imageAlt, imageClassName, eyebrow, title, qu
               {phone}
             </a>
           </> : null}
-          {ctaLabel ? (ctaTo ? <Link to={ctaTo} className={ctaClassName}>{ctaContent}</Link> : <a href={ctaHref} className={ctaClassName}>{ctaContent}</a>) : null}
+          {ctaLabel ? (ctaTo ? <Link href={ctaTo} className={ctaClassName}>{ctaContent}</Link> : <a href={ctaHref} className={ctaClassName}>{ctaContent}</a>) : null}
         </div>
       </div>
     </section>

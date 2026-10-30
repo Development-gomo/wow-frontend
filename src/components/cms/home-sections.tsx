@@ -1,17 +1,14 @@
-"use client";
-
-import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Link } from "@/components/localized-link";
 import { preload } from "react-dom";
 
 import { AccommodationGrid, type Accommodation } from "@/components/accommodation-listing";
-import { ProcessSteps, type ProcessStep } from "@/components/process-steps";
 import { SirvoyBooking } from "@/components/sirvoy-booking";
 import { Button } from "@/components/ui/button";
 import { StatsBand, type StatItem } from "@/components/stats-band";
 
-import { useA11y } from "@/components/cms/site-context";
-import { CmsImage, optimizedSrc } from "@/components/cms-image";
+import { a11yLabels, isLang } from "@/lib/i18n";
+import { CmsImage } from "@/components/cms-image";
+import { optimizedSrc } from "@/lib/image-url";
 /**
  * The homepage's Hero, Intro and Gallery.
  *
@@ -43,7 +40,7 @@ export function HomeHero({
 }) {
   // The original cycled a headline array on a 6s interval; a single headline
   // is the configured content, so the key only needs to change if that grows.
-  const [idx] = useState(0);
+  const idx = 0;
 
   // The poster is the first thing painted (the page's LCP): fetch it first.
   const poster = posterUrl ? optimizedSrc(posterUrl, 1920) : undefined;
@@ -86,7 +83,7 @@ export function HomeHero({
                   : "inline-flex items-center justify-center px-8 h-12 text-[11px] uppercase tracking-[0.28em] font-medium text-taupe bg-linen/95 hover:bg-sand hover:text-umber shadow-none transition-colors duration-200 rounded-cta"
               }
             >
-              <Link to={cta.to}>{cta.label}</Link>
+              <Link href={cta.to}>{cta.label}</Link>
             </Button>
           ))}
         </div>
@@ -157,7 +154,7 @@ export function HomeGallery({
           {heading}
         </h2>
         {linkLabel && linkTo && (
-          <Link to={linkTo} className="mt-[26px] inline-flex items-center gap-3.5 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] border-b border-clay/55 hover:text-umber hover:border-umber/60 focus-visible:outline focus-visible:outline-clay focus-visible:outline-offset-4 transition-colors">
+          <Link href={linkTo} className="mt-[26px] inline-flex items-center gap-3.5 pb-1.5 pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] border-b border-clay/55 hover:text-umber hover:border-umber/60 focus-visible:outline focus-visible:outline-clay focus-visible:outline-offset-4 transition-colors">
             {linkLabel}
             <svg viewBox="0 0 16 12" width="16" height="12" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true"><path d="M1 6h13m-4-4 4 4-4 4" /></svg>
           </Link>
@@ -178,103 +175,6 @@ export function HomeGallery({
   );
 }
 
-/* -------------------- ACCOMMODATION TABS -------------------- */
-
-export function HomeAccommodationTabs({
-  eyebrow,
-  heading,
-  description,
-  roomsTabLabel,
-  apartmentsTabLabel,
-  roomsActionLabel,
-  apartmentsActionLabel,
-  roomsActionTo,
-  apartmentsActionTo,
-  roomsViewAllLabel,
-  roomsViewAllTo,
-  apartmentsViewAllLabel,
-  apartmentsViewAllTo,
-  rooms,
-  apartments,
-}: {
-  eyebrow: string;
-  heading: string;
-  description: string;
-  roomsTabLabel: string;
-  apartmentsTabLabel: string;
-  roomsActionLabel: string;
-  apartmentsActionLabel: string;
-  roomsActionTo?: string;
-  apartmentsActionTo?: string;
-  roomsViewAllLabel?: string;
-  roomsViewAllTo?: string;
-  apartmentsViewAllLabel?: string;
-  apartmentsViewAllTo?: string;
-  rooms: Accommodation[];
-  apartments: Accommodation[];
-}) {
-  const [category, setCategory] = useState<"rooms" | "apartments">("rooms");
-  const isRooms = category === "rooms";
-  const viewAllLabel = isRooms ? roomsViewAllLabel : apartmentsViewAllLabel;
-  const viewAllTo = isRooms ? roomsViewAllTo : apartmentsViewAllTo;
-
-  return (
-    <section id="rum" className="overflow-x-clip bg-linen py-32 px-5 md:px-10 lg:px-20">
-      <div className="max-w-[1200px] mx-auto flex flex-col items-center">
-        <div className="text-center max-w-2xl mx-auto">
-          <span className="block text-[10px] uppercase tracking-[0.45em] text-clay">
-            {eyebrow}
-          </span>
-          <h2 className="font-serif text-[42px] md:text-[48px] text-taupe font-normal leading-[1.15] mt-6">
-            {heading}
-          </h2>
-          <p className="text-[15px] leading-[1.8] text-taupe/85 max-w-[560px] mx-auto mt-4">
-            {description}
-          </p>
-          <div role="tablist" aria-label={`${roomsTabLabel} / ${apartmentsTabLabel}`} className="mt-16 flex w-full gap-cta sm:w-auto sm:inline-flex">
-            <button
-              role="tab"
-              id="rooms-tab"
-              aria-selected={isRooms}
-              aria-controls="accommodation-panel"
-              onClick={() => setCategory("rooms")}
-              className={`flex-1 sm:flex-none sm:w-[200px] h-12 rounded-cta border font-medium uppercase tracking-[0.28em] cursor-pointer transition-colors duration-200 ${isRooms ? "bg-taupe border-taupe text-ivory hover:bg-umber hover:border-umber" : "bg-taupe/65 border-transparent text-ivory hover:bg-taupe/85"}`}
-            >
-              {roomsTabLabel}
-            </button>
-            <button
-              role="tab"
-              id="apartments-tab"
-              aria-selected={!isRooms}
-              aria-controls="accommodation-panel"
-              onClick={() => setCategory("apartments")}
-              className={`flex-1 sm:flex-none sm:w-[200px] h-12 rounded-cta border font-medium uppercase tracking-[0.28em] cursor-pointer transition-colors duration-200 ${!isRooms ? "bg-taupe border-taupe text-ivory hover:bg-umber hover:border-umber" : "bg-taupe/65 border-transparent text-ivory hover:bg-taupe/85"}`}
-            >
-              {apartmentsTabLabel}
-            </button>
-          </div>
-        </div>
-
-        <div key={category} id="accommodation-panel" role="tabpanel" aria-labelledby={isRooms ? "rooms-tab" : "apartments-tab"} className="w-full mt-12 flex justify-center animate-accommodation-in">
-          <AccommodationGrid
-            accommodations={isRooms ? rooms : apartments}
-            actionLabel={isRooms ? roomsActionLabel : apartmentsActionLabel}
-            actionTo={isRooms ? roomsActionTo : apartmentsActionTo}
-            hideDivider={!isRooms}
-          />
-        </div>
-        {viewAllLabel && viewAllTo && (
-          <Button asChild className="mt-16 h-12 px-8 rounded-cta bg-taupe text-pearl hover:bg-umber text-[11px] uppercase tracking-[0.28em] gap-4">
-            <Link to={viewAllTo}>
-              {viewAllLabel}
-            </Link>
-          </Button>
-        )}
-      </div>
-    </section>
-  );
-}
-
 /* -------------------- SIRVOY BOOKING SECTION -------------------- */
 
 /**
@@ -289,7 +189,7 @@ export function HomeAccommodationTabs({
  */
 /** The booking widget band; the form comes from the page's Sirvoy section in WordPress. */
 export function SirvoyBookingSection({ formId, lang }: { formId: string; lang?: string }) {
-  const a11y = useA11y();
+  const a11y = a11yLabels(isLang(lang) ? lang : "sv");
   return (
     <div className="flow-root bg-linen">
       <section aria-label={a11y.roomBooking} className="relative z-10 mx-5 -mt-16 mb-[128px] bg-white md:mx-20 md:-mt-24">
@@ -297,42 +197,5 @@ export function SirvoyBookingSection({ formId, lang }: { formId: string; lang?: 
         <SirvoyBooking key={formId} formId={formId} lang={lang} />
       </section>
     </div>
-  );
-}
-
-/* -------------------- PROCESS STEPS SECTION -------------------- */
-
-/**
- * ProcessSteps renders a bare <div>; on book-apartment the baseline wrapped it
- * in a titled section. That wrapper markup is reproduced verbatim here so the
- * eyebrow and heading become editable without changing the rendered output.
- */
-export function ProcessStepsSection({
-  eyebrow,
-  heading,
-  steps,
-  variant,
-  className,
-}: {
-  eyebrow?: string | null;
-  heading?: string | null;
-  steps: ProcessStep[];
-  variant?: "hero" | "section";
-  className?: string;
-}) {
-  if (!eyebrow && !heading) {
-    return <ProcessSteps steps={steps} variant={variant} className={className} />;
-  }
-
-  return (
-    <section aria-labelledby="how-it-works-heading" className="bg-white px-5 py-[128px] text-center">
-      {eyebrow && <p className="m-0 pl-[0.45em] uppercase tracking-[0.45em] text-clay">{eyebrow}</p>}
-      {heading && (
-        <h2 id="how-it-works-heading" className="mx-auto mt-6 max-w-[720px] font-serif text-[42px] font-normal leading-[1.15] text-taupe md:text-[48px]">
-          {heading}
-        </h2>
-      )}
-      <ProcessSteps steps={steps} variant={variant ?? "section"} className={className ?? "mt-14"} />
-    </section>
   );
 }

@@ -1,9 +1,10 @@
-import { Fragment, useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
-import { useSite, useLocalizeHref } from "@/components/cms/site-context";
-import { text, type MenuItem } from "@/lib/cms/globals";
-import { subscribeNewsletter, type NewsletterStatus } from "@/lib/newsletter.functions";
+import Link from "next/link";
+import { Fragment } from "react";
+
+import { FooterNewsletter } from "@/components/footer-newsletter";
+import { text, type Globals, type MenuItem } from "@/lib/cms/globals";
+import { localizeHref, type Lang } from "@/lib/i18n";
+import { isPlainAnchor } from "@/lib/links";
 
 /*
  * Footer.
@@ -14,38 +15,16 @@ import { subscribeNewsletter, type NewsletterStatus } from "@/lib/newsletter.fun
  * the social icon artwork live here.
  */
 
-const STATUS_FIELD: Record<NewsletterStatus, string> = {
-  subscribed: "msgSubscribed",
-  already: "msgAlready",
-  invalid: "msgInvalid",
-  error: "msgError",
-};
-
-export function SiteFooter() {
-  const { brand, contact, footer, newsletter, menus } = useSite();
-  const [signupStatus, setSignupStatus] = useState("");
-  const [isSigningUp, setIsSigningUp] = useState(false);
-
-  async function handleSignup(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const email = new FormData(form).get("email");
-    if (typeof email !== "string") return;
-    setIsSigningUp(true);
-    setSignupStatus("");
-    const status = await subscribeNewsletter({ data: { email } });
-    setSignupStatus(text(newsletter, STATUS_FIELD[status]));
-    if (status === "subscribed" || status === "already") form.reset();
-    setIsSigningUp(false);
-  }
-
+/** Server-rendered; site settings and the language come from the layout. */
+export function SiteFooter({ site, lang }: { site: Globals; lang: Lang }) {
+  const { brand, contact, footer, newsletter, menus } = site;
   return (
     <footer id="kontakt" className="bg-umber px-6 pb-4 pt-16 text-linen md:px-10 xl:px-20">
       <div className="mx-auto max-w-[1400px]">
         <div className={footerGridClass}>
           {menus.footer.map((column) => (
             <FCol key={column.id ?? column.label} title={column.label}>
-              {(column.children ?? []).map((item) => <FooterLink key={item.id ?? item.label} item={item} />)}
+              {(column.children ?? []).map((item) => <FooterLink key={item.id ?? item.label} item={item} lang={lang} />)}
             </FCol>
           ))}
           <FCol title={footer.contactHeading}>
@@ -78,20 +57,7 @@ export function SiteFooter() {
           <div id="newsletter" className="col-span-2 max-w-md scroll-mt-24 md:col-span-3 lg:col-span-4">
             <h3 className="font-serif text-[22px] font-normal">{text(newsletter, "heading")}</h3>
             <p className="mt-4 text-[13px] font-light leading-[1.65] text-linen/75">{text(newsletter, "text")}</p>
-            <form id="wow-footer-newsletter" onSubmit={handleSignup} className="mt-5 flex items-stretch gap-2 max-w-[402px]">
-              <label className="min-w-0 flex-1">
-                <span className="sr-only">{text(newsletter, "emailLabel")}</span>
-                <input name="email" type="email" placeholder={text(newsletter, "placeholder")} autoComplete="email" required className="h-[42px] w-full rounded border border-linen/30 bg-umber px-4 text-[13px] font-light text-linen placeholder:text-linen/45 outline-none transition-colors duration-200 focus:border-linen/60" />
-              </label>
-              <Button type="submit" disabled={isSigningUp} className="h-[42px] shrink-0 rounded-cta bg-linen px-4 text-[11px] font-medium uppercase tracking-[0.24em] text-taupe shadow-none transition-colors duration-200 hover:bg-sand hover:text-umber sm:px-[22px]">
-                {isSigningUp ? text(newsletter, "sendingLabel") : text(newsletter, "submitLabel")}
-              </Button>
-            </form>
-            <label className="mt-4 flex cursor-pointer items-start gap-2.5 text-[11px] font-light leading-[1.55] text-linen/60">
-              <input type="checkbox" required form="wow-footer-newsletter" className="mt-[3px] h-3 w-3 shrink-0 accent-linen" />
-              <span>{text(newsletter, "consent")}</span>
-            </label>
-            <p role="status" aria-live="polite" className="mt-2 text-[12px] text-linen">{signupStatus}</p>
+            <FooterNewsletter newsletter={newsletter} />
           </div>
           {/* Same column as Contact Us at every breakpoint, so both left edges line up. */}
           <div className="col-span-2 md:col-span-1 md:col-start-2 lg:col-start-5">
@@ -151,15 +117,15 @@ const SOCIAL_ICONS: Record<string, React.ReactNode> = {
 
 const footerLinkClass = "font-light text-linen/80 transition-colors duration-200 hover:text-linen focus-visible:outline-offset-4";
 
-/** In-page anchors and placeholders render as plain links; routes use the router. */
-function FooterLink({ item }: { item: MenuItem }) {
-  const localize = useLocalizeHref();
+/** Routes use next/link, localized here on the server; in-page anchors, placeholders and other schemes stay plain links. */
+function FooterLink({ item, lang }: { item: MenuItem; lang: Lang }) {
+  const href = localizeHref(item.href, lang);
   return (
     <li>
-      {item.href.includes("#") ? (
-        <a href={localize(item.href)} className={footerLinkClass}>{item.label}</a>
+      {item.href.includes("#") || isPlainAnchor(href) ? (
+        <a href={href} className={footerLinkClass}>{item.label}</a>
       ) : (
-        <Link to={item.href} className={footerLinkClass}>{item.label}</Link>
+        <Link href={href} className={footerLinkClass}>{item.label}</Link>
       )}
     </li>
   );

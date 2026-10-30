@@ -1,26 +1,14 @@
 import { z } from "zod";
 
+import type { CorporateEnquiryMessage } from "./corporate-enquiry-rules";
+
+export { MAX_PDF_BYTES, isAcceptablePdf, type CorporateEnquiryMessage } from "./corporate-enquiry-rules";
+
 /**
  * Corporate (relocation) enquiry, validated in the browser and again on the
  * server. Messages are keys, not copy: the form shows the matching text from
  * its WordPress section (Corporate enquiry form › Messages).
  */
-
-/** Vercel caps a request to a server function at 4.5 MB, so the PDF stays under 4 MB. */
-export const MAX_PDF_BYTES = 4 * 1024 * 1024;
-
-export type CorporateEnquiryMessage =
-  | "company"
-  | "contactName"
-  | "email"
-  | "employees"
-  | "moveIn"
-  | "lengthOfStay"
-  | "requirements"
-  | "consent"
-  | "pdf"
-  | "rateLimited"
-  | "error";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -50,9 +38,4 @@ export type CorporateEnquiryInput = z.infer<typeof corporateEnquirySchema>;
 /** The first failing field's message key. */
 export function firstMessage(error: z.ZodError): CorporateEnquiryMessage {
   return (error.issues[0]?.message as CorporateEnquiryMessage | undefined) ?? "error";
-}
-
-/** Is a file an acceptable requirements PDF (type, extension and size)? */
-export function isAcceptablePdf(file: { size: number; type: string; name: string }): boolean {
-  return file.size > 0 && file.size <= MAX_PDF_BYTES && file.type === "application/pdf" && file.name.toLowerCase().endsWith(".pdf");
 }

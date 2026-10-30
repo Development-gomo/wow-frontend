@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import "../../styles.css";
 import { getGlobals } from "@/lib/cms/client";
 import { isLang, LANGS, ogLocale, type Lang } from "@/lib/i18n";
+import { SiteFooter } from "@/components/site-footer";
+
 import { Providers } from "./providers";
 
 /**
@@ -63,7 +65,11 @@ export default async function RootLayout({ children, params }: { children: React
         />
       </head>
       <body>
-        <Providers globals={globals} lang={lang}>{children}</Providers>
+        <Providers globals={globals} lang={lang}>
+          {children}
+          {/* Server-rendered; only its newsletter form hydrates. */}
+          <SiteFooter site={globals} lang={lang as Lang} />
+        </Providers>
       </body>
     </html>
   );

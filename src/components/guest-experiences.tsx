@@ -1,3 +1,5 @@
+"use client";
+
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useId, useState } from "react";
 import { useUi, useA11y } from "@/components/cms/site-context";

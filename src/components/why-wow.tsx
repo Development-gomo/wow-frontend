@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "@/components/localized-link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -59,7 +59,7 @@ export function WhyWow({
             {description}
           </p>
           {ctaLabel && ctaTo ? (
-            <Link to={ctaTo} className="mt-12 inline-flex items-center gap-3 border-b border-linen/40 pb-[5px] pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] text-linen transition-colors duration-200 hover:border-sand/70 hover:text-sand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-linen">
+            <Link href={ctaTo} className="mt-12 inline-flex items-center gap-3 border-b border-linen/40 pb-[5px] pl-[0.32em] text-[11px] font-medium uppercase tracking-[0.32em] text-linen transition-colors duration-200 hover:border-sand/70 hover:text-sand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-linen">
               {ctaLabel}
               <svg viewBox="0 0 16 12" width="16" height="12" fill="none" stroke="currentColor" strokeWidth="1" aria-hidden="true"><path d="M1 6 H14 M10 2 L14 6 L10 10" /></svg>
             </Link>
