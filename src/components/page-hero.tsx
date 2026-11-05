@@ -64,7 +64,10 @@ export function PageHero({
       >
         <h1
           className={cn(
-            "font-serif text-linen text-5xl md:text-7xl font-light tracking-[-0.01em] leading-[1.1] drop-shadow-lg",
+            // 40px on phones: long single Swedish words such as "Säsongserbjudanden"
+            // are ~7.9em wide and only fit the 335px phone column below ~42px.
+            // overflow-wrap is the safety net for any longer word an editor adds.
+            "font-serif text-linen text-[40px] sm:text-5xl md:text-7xl font-light tracking-[-0.01em] leading-[1.1] drop-shadow-lg max-w-full hyphens-auto [overflow-wrap:anywhere]",
             titleClassName,
           )}
         >
