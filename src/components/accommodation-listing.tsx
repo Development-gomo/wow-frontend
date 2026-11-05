@@ -224,6 +224,36 @@ export function CardCarousel({ cards, keys, className }: { cards: ReactNode[]; k
   // Bumped on every arrow click so the auto-advance timer restarts from zero.
   const [timerKey, setTimerKey] = useState(0);
   const count = cards.length;
+  // Which slides are in view, by index into the doubled list. Until it is measured
+  // (server render, first paint) the original set is the interactive one.
+  const [inView, setInView] = useState<boolean[] | null>(null);
+
+  // Slides in view stay interactive whether they are originals or loop copies;
+  // the rest are hidden from keyboard and screen readers so the copies never
+  // read as duplicate content. Also catches the instant jump back to the originals.
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track || typeof IntersectionObserver === "undefined") return;
+    const slides = Array.from(track.children) as HTMLElement[];
+    const state = slides.map((_, index) => index < count);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        let changed = false;
+        for (const entry of entries) {
+          const index = slides.indexOf(entry.target as HTMLElement);
+          const visible = entry.isIntersecting && entry.intersectionRatio >= 0.5;
+          if (index >= 0 && state[index] !== visible) {
+            state[index] = visible;
+            changed = true;
+          }
+        }
+        if (changed) setInView([...state]);
+      },
+      { root: track, threshold: [0, 0.5, 1] },
+    );
+    slides.forEach((slide) => observer.observe(slide));
+    return () => observer.disconnect();
+  }, [count]);
 
   // The card list is rendered twice; when the track reaches the copy it jumps back
   // one full set instantly (same picture), so sliding always continues forwards.
@@ -266,9 +296,9 @@ export function CardCarousel({ cards, keys, className }: { cards: ReactNode[]; k
         className="-my-16 flex snap-x snap-mandatory gap-8 overflow-x-auto py-16 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {[...cards, ...cards].map((card, index) => {
-          const isCopy = index >= count;
+          const hidden = inView ? !inView[index] : index >= count;
           return (
-            <div key={`${keys[index % count]}-${index}`} aria-hidden={isCopy || undefined} inert={isCopy} className="flex w-full flex-none snap-start md:w-[calc((100%-32px)/2)] lg:w-[calc((100%-64px)/3)]">
+            <div key={`${keys[index % count]}-${index}`} aria-hidden={hidden || undefined} inert={hidden} className="flex w-full flex-none snap-start md:w-[calc((100%-32px)/2)] lg:w-[calc((100%-64px)/3)]">
               {card}
             </div>
           );
